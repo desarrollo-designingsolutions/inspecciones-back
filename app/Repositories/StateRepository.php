@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Helpers\Constants;
 use App\Models\State;
 use App\Repositories\BaseRepository;
 
@@ -33,7 +34,7 @@ class StateRepository extends BaseRepository
                 }
             });
         if (empty($request['typeData'])) {
-            $data = $data->paginate($request['perPage'] ?? 10);
+            $data = $data->paginate($request['perPage'] ?? Constants::ITEMS_PER_PAGE);
         } else {
             $data = $data->get();
         }

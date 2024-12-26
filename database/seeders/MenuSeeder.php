@@ -54,6 +54,14 @@ class MenuSeeder extends Seeder
                 'father' => 3,
                 'requiredPermission' => 'menu.role',
             ],
+            [
+                'id' => 6,
+                'order' => 60,
+                'title' => 'Clientes',
+                'to' => 'Client-List',
+                'icon' => 'tabler-user-shield',
+                'requiredPermission' => 'client.list',
+            ],
         ];
 
         // Inicializar la barra de progreso

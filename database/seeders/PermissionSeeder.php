@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Helpers\Constants;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
@@ -46,6 +47,12 @@ class PermissionSeeder extends Seeder
                 'description' => 'Visualizar Menú Roles',
                 'menu_id' => 5,
             ],
+            [
+                'id' => 6,
+                'name' => 'client.list',
+                'description' => 'Visualizar Menú Clientes',
+                'menu_id' => 6,
+            ],
 
         ];
 
@@ -71,7 +78,7 @@ class PermissionSeeder extends Seeder
         $permissions = Permission::whereIn('id', collect($arrayData)->pluck('id'))->get();
 
         // Asignar permisos al rol
-        $role = Role::find(1);
+        $role = Role::find(Constants::ROLE_SUPERADMIN_UUID);
         if ($role) {
             $role->syncPermissions($permissions);
         }
