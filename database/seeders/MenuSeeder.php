@@ -89,6 +89,15 @@ class MenuSeeder extends Seeder
                 'father' => 7,
                 'requiredPermission' => 'menu.brand.vehicle',
             ],
+            [
+                'id' => 10,
+                'order' => 100,
+                'title' => 'Tipo de documentos',
+                'to' => 'Type-Document-List',
+                'icon' => '',
+                'father' => 7,
+                'requiredPermission' => 'menu.type.document',
+            ],
         ];
 
         // Inicializar la barra de progreso

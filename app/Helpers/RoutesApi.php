@@ -18,5 +18,6 @@ class RoutesApi
         'routes/client.php',
         'routes/typeVehicle.php',
         'routes/brandVehicle.php',
+        'routes/typeDocument.php',
     ];
 }

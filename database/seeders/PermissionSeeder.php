@@ -71,6 +71,12 @@ class PermissionSeeder extends Seeder
                 'description' => 'Visualizar Menú Marca De Vehículos',
                 'menu_id' => 9,
             ],
+            [
+                'id' => 10,
+                'name' => 'menu.type.document',
+                'description' => 'Visualizar Menú Tipo De Documentos',
+                'menu_id' => 10,
+            ],
         ];
 
         // Inicializar la barra de progreso

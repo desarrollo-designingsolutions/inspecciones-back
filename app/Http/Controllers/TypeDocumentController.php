@@ -2,28 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\BrandVehicleListExport;
-use App\Http\Requests\BrandVehicle\BrandVehicleStoreRequest;
-use App\Http\Resources\BrandVehicle\BrandVehicleFormResource;
-use App\Http\Resources\BrandVehicle\BrandVehicleListResource;
-use App\Repositories\BrandVehicleRepository;
+use App\Exports\TypeDocumentListExport;
+use App\Http\Requests\TypeDocument\TypeDocumentStoreRequest;
+use App\Http\Resources\TypeDocument\TypeDocumentFormResource;
+use App\Http\Resources\TypeDocument\TypeDocumentListResource;
+use App\Repositories\TypeDocumentRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 use Maatwebsite\Excel\Facades\Excel;
 
-class BrandVehicleController extends Controller
+class TypeDocumentController extends Controller
 {
     public function __construct(
-        protected BrandVehicleRepository $brandVehicleRepository,
+        protected TypeDocumentRepository $typeDocumentRepository,
         protected QueryController $queryController,
     ) {}
 
     public function list(Request $request)
     {
         try {
-            $data = $this->brandVehicleRepository->list($request->all());
-            $tableData = BrandVehicleListResource::collection($data);
+            $data = $this->typeDocumentRepository->list($request->all());
+            $tableData = TypeDocumentListResource::collection($data);
 
             return [
                 'code' => 200,
@@ -51,16 +51,16 @@ class BrandVehicleController extends Controller
         }
     }
 
-    public function store(BrandVehicleStoreRequest $request)
+    public function store(TypeDocumentStoreRequest $request)
     {
         try {
             DB::beginTransaction();
 
-            $brandVehicle = $this->brandVehicleRepository->store($request->all());
+            $typeVehicle = $this->typeDocumentRepository->store($request->all());
 
             DB::commit();
 
-            return response()->json(['code' => 200, 'message' => 'Marca de vehículo agregada correctamente', 'data' => $brandVehicle]);
+            return response()->json(['code' => 200, 'message' => 'Tipo de documento agregado correctamente', 'data' => $typeVehicle]);
         } catch (Throwable $th) {
             DB::rollBack();
 
@@ -76,8 +76,8 @@ class BrandVehicleController extends Controller
     public function edit($id)
     {
         try {
-            $brandVehicle = $this->brandVehicleRepository->find($id);
-            $form = new BrandVehicleFormResource($brandVehicle);
+            $typeVehicle = $this->typeDocumentRepository->find($id);
+            $form = new TypeDocumentFormResource($typeVehicle);
 
             return response()->json([
                 'code' => 200,
@@ -89,18 +89,18 @@ class BrandVehicleController extends Controller
         }
     }
 
-    public function update(BrandVehicleStoreRequest $request, $id)
+    public function update(TypeDocumentStoreRequest $request, $id)
     {
         try {
             DB::beginTransaction();
 
             $post = $request->all();
 
-            $brandVehicle = $this->brandVehicleRepository->store($post);
+            $typeVehicle = $this->typeDocumentRepository->store($post);
 
             DB::commit();
 
-            return response()->json(['code' => 200, 'message' => 'Marca de vehículo modificada correctamente', 'data' => $brandVehicle]);
+            return response()->json(['code' => 200, 'message' => 'Tipo de documento modificado correctamente', 'data' => $typeVehicle]);
         } catch (Throwable $th) {
             DB::rollBack();
 
@@ -117,9 +117,9 @@ class BrandVehicleController extends Controller
     {
         try {
             DB::beginTransaction();
-            $brandVehicle = $this->brandVehicleRepository->find($id);
-            if ($brandVehicle) {
-                $brandVehicle->delete();
+            $typeVehicle = $this->typeDocumentRepository->find($id);
+            if ($typeVehicle) {
+                $typeVehicle->delete();
                 $msg = 'Registro eliminado correctamente';
             } else {
                 $msg = 'El registro no existe';
@@ -144,13 +144,13 @@ class BrandVehicleController extends Controller
         try {
             DB::beginTransaction();
 
-            $model = $this->brandVehicleRepository->changeState($request->input('id'), strval($request->input('value')), $request->input('field'));
+            $model = $this->typeDocumentRepository->changeState($request->input('id'), strval($request->input('value')), $request->input('field'));
 
             ($model->is_active == 1) ? $msg = 'habilitado(a)' : $msg = 'inhabilitado(a)';
 
             DB::commit();
 
-            return response()->json(['code' => 200, 'message' => 'Marca de vehículo '.$msg.' con éxito']);
+            return response()->json(['code' => 200, 'message' => 'Tipo de documento '.$msg.' con éxito']);
         } catch (Throwable $th) {
             DB::rollback();
 
@@ -166,12 +166,12 @@ class BrandVehicleController extends Controller
                 'typeData' => 'all',
             ];
 
-             $data = $this->brandVehicleRepository->list([
+             $data = $this->typeDocumentRepository->list([
                 ...$filter,
                 ...$request->all(),
             ]);
 
-            $excel = Excel::raw(new BrandVehicleListExport($data), \Maatwebsite\Excel\Excel::XLSX);
+            $excel = Excel::raw(new TypeDocumentListExport($data), \Maatwebsite\Excel\Excel::XLSX);
 
             $excelBase64 = base64_encode($excel);
 

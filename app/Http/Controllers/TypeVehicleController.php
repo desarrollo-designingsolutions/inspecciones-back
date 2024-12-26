@@ -150,7 +150,7 @@ class TypeVehicleController extends Controller
 
             DB::commit();
 
-            return response()->json(['code' => 200, 'message' => 'typeVehiclee '.$msg.' con éxito']);
+            return response()->json(['code' => 200, 'message' => 'Tipo de vehículo '.$msg.' con éxito']);
         } catch (Throwable $th) {
             DB::rollback();
 
