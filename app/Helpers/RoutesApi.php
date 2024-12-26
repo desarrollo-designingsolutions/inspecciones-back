@@ -16,5 +16,6 @@ class RoutesApi
         'routes/user.php',
         'routes/role.php',
         'routes/client.php',
+        'routes/typeVehicle.php',
     ];
 }

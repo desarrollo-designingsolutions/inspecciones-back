@@ -59,8 +59,26 @@ class MenuSeeder extends Seeder
                 'order' => 60,
                 'title' => 'Clientes',
                 'to' => 'Client-List',
-                'icon' => 'tabler-user-shield',
+                'icon' => 'tabler-users-group',
                 'requiredPermission' => 'client.list',
+            ],
+            [
+                'id' => 7,
+                'order' => 9999,
+                'title' => 'Configuración',
+                'to' => null,
+                'icon' => 'tabler-settings',
+                'father' => null,
+                'requiredPermission' => 'menu.configuration',
+            ],
+            [
+                'id' => 8,
+                'order' => 80,
+                'title' => 'Clase de vehículos',
+                'to' => 'Type-Vehicle-List',
+                'icon' => '',
+                'father' => 7,
+                'requiredPermission' => 'menu.type.vehicle',
             ],
         ];
 
