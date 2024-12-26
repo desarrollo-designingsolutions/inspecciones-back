@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\VehicleStructure;
+use App\Models\TypePhotograph;
 use Illuminate\Database\Seeder;
 
-class VehicleStructureSeeder extends Seeder
+class TypePhotographSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,10 +15,16 @@ class VehicleStructureSeeder extends Seeder
         // Datos para insertar o actualizar
         $arrayData = [
             [
-                'name' => 'Rigido',
+                'name' => 'Frontal',
             ],
             [
-                'name' => 'Articulado',
+                'name' => 'Trasera',
+            ],
+            [
+                'name' => 'Lateral derecho',
+            ],
+            [
+                'name' => 'Lateral izquierdo',
             ],
         ];
 
@@ -28,7 +34,7 @@ class VehicleStructureSeeder extends Seeder
 
         // Insertar o actualizar estructuras de vehiculos
         foreach ($arrayData as $value) {
-            VehicleStructure::updateOrCreate(
+            TypePhotograph::updateOrCreate(
                 ['name' => $value['name']],
                 [
                     'name' => $value['name'],
