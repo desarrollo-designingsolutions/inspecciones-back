@@ -80,6 +80,15 @@ class MenuSeeder extends Seeder
                 'father' => 7,
                 'requiredPermission' => 'menu.type.vehicle',
             ],
+            [
+                'id' => 9,
+                'order' => 90,
+                'title' => 'Marcas de vehículo',
+                'to' => 'Brand-Vehicle-List',
+                'icon' => '',
+                'father' => 7,
+                'requiredPermission' => 'menu.brand.vehicle',
+            ],
         ];
 
         // Inicializar la barra de progreso
