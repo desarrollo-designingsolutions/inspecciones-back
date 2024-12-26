@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('brand_vehicles', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name');
             $table->foreignUuid('company_id')->constrained();
+            $table->string('name');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
