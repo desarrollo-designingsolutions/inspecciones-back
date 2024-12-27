@@ -98,6 +98,15 @@ class MenuSeeder extends Seeder
                 'father' => 7,
                 'requiredPermission' => 'menu.type.document',
             ],
+            [
+                'id' => 11,
+                'order' => 110,
+                'title' => 'Elementos de emergencia',
+                'to' => 'Emergency-Element-List',
+                'icon' => '',
+                'father' => 7,
+                'requiredPermission' => 'menu.emergency.element',
+            ],
         ];
 
         // Inicializar la barra de progreso

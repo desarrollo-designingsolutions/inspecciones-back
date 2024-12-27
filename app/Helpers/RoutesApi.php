@@ -19,5 +19,6 @@ class RoutesApi
         'routes/typeVehicle.php',
         'routes/brandVehicle.php',
         'routes/typeDocument.php',
+        'routes/emergencyElement.php',
     ];
 }

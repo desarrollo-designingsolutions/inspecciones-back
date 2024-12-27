@@ -77,6 +77,12 @@ class PermissionSeeder extends Seeder
                 'description' => 'Visualizar Menú Tipo De Documentos',
                 'menu_id' => 10,
             ],
+            [
+                'id' => 11,
+                'name' => 'menu.emergency.element',
+                'description' => 'Visualizar Menú Elementos De Emergencia',
+                'menu_id' => 11,
+            ],
         ];
 
         // Inicializar la barra de progreso
