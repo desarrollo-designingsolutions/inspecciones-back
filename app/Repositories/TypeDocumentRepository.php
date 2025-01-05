@@ -25,9 +25,17 @@ class TypeDocumentRepository extends BaseRepository
                 $query->where('is_active', $request['is_active']);
             }
         })->where(function ($query) use ($request) {
-            if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
-                $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
-                $query->orWhere('document', 'like', '%'.$request['searchQueryInfinite'].'%');
+            if (isset($request['searchQueryGeneral']) && ! empty($request['searchQueryGeneral'])) {
+                $query->Where('name', 'like', '%'.$request['searchQueryGeneral'].'%');
+            }
+            if (isset($request['searchQueryArray']) && !empty($request['searchQueryArray'])) {
+                $query->where(function ($subQuery) use ($request) {
+                    foreach ($request['searchQueryArray'] as $item) {
+                        if (isset($item['search'])) {
+                            $subQuery->orWhere('is_active', 'like', '%' . $item['search'] . '%');
+                        }
+                    }
+                });
             }
         });
 
