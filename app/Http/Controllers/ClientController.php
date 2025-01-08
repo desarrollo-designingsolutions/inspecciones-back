@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ClientListExport;
+use App\Helpers\Constants;
 use App\Http\Requests\Client\ClientStoreRequest;
 use App\Http\Resources\Client\ClientFormResource;
 use App\Http\Resources\Client\ClientListResource;
 use App\Repositories\ClientRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Throwable;
 use Maatwebsite\Excel\Facades\Excel;
+use Throwable;
 
 class ClientController extends Controller
 {
     public function __construct(
         protected ClientRepository $clientRepository,
-        protected QueryController $queryController,
     ) {}
 
     public function list(Request $request)
@@ -34,8 +34,12 @@ class ClientController extends Controller
                 'currentPage' => $data->currentPage(),
             ];
         } catch (Throwable $th) {
-
-            return response()->json(['code' => 500, 'message' => 'Error Al Buscar Los Datos', $th->getMessage(), $th->getLine()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 
@@ -46,8 +50,12 @@ class ClientController extends Controller
                 'code' => 200,
             ]);
         } catch (Throwable $th) {
-
-            return response()->json(['code' => 500, $th->getMessage(), $th->getLine()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 
@@ -66,7 +74,7 @@ class ClientController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => 'Algo Ocurrio, Comunicate Con El Equipo De Desarrollo',
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);
@@ -84,8 +92,12 @@ class ClientController extends Controller
                 'form' => $form,
             ]);
         } catch (Throwable $th) {
-
-            return response()->json(['code' => 500, $th->getMessage(), $th->getLine()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 
@@ -106,7 +118,7 @@ class ClientController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => 'Algo Ocurrio, Comunicate Con El Equipo De Desarrollo',
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);
@@ -132,7 +144,7 @@ class ClientController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => $th->getMessage(),
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);
@@ -154,7 +166,12 @@ class ClientController extends Controller
         } catch (Throwable $th) {
             DB::rollback();
 
-            return response()->json(['code' => 500, 'message' => $th->getMessage()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 
@@ -166,7 +183,7 @@ class ClientController extends Controller
                 'typeData' => 'all',
             ];
 
-             $data = $this->clientRepository->list([
+            $data = $this->clientRepository->list([
                 ...$filter,
                 ...$request->all(),
             ]);
@@ -177,7 +194,12 @@ class ClientController extends Controller
 
             return response()->json(['code' => 200, 'excel' => $excelBase64]);
         } catch (Throwable $th) {
-            return response()->json(['code' => 500, 'message' => $th->getMessage()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 }

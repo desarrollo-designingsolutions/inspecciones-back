@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Helpers\Constants;
 use App\Models\State;
-use App\Repositories\BaseRepository;
 
 class StateRepository extends BaseRepository
 {

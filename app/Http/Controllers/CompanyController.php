@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Constants;
 use App\Http\Requests\Company\CompanyStoreRequest;
 use App\Http\Resources\Company\CompanyFormResource;
 use App\Http\Resources\Company\CompanyListResource;
@@ -17,7 +18,6 @@ class CompanyController extends Controller
         protected CompanyRepository $companyRepository,
         protected QueryController $queryController,
     ) {}
-
 
     public function list(Request $request)
     {
@@ -35,7 +35,12 @@ class CompanyController extends Controller
             ];
         } catch (Throwable $th) {
 
-            return response()->json(['code' => 500, 'message' => 'Error Al Buscar Los Datos', $th->getMessage(), $th->getLine()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 
@@ -52,8 +57,12 @@ class CompanyController extends Controller
                 ...$selectInfiniteCountries,
             ]);
         } catch (Throwable $th) {
-
-            return response()->json(['code' => 500, $th->getMessage(), $th->getLine()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 
@@ -67,20 +76,21 @@ class CompanyController extends Controller
 
             if ($request->file('logo')) {
                 $file = $request->file('logo');
-                $ruta = 'companies/company_' . $company->id . $request->input('logo');
+                $ruta = 'companies/company_'.$company->id.$request->input('logo');
                 $logo = $file->store($ruta, 'public');
                 $company->logo = $logo;
                 $company->save();
             }
 
             DB::commit();
+
             return response()->json(['code' => 200, 'message' => 'Compañia agregada correctamente']);
         } catch (Throwable $th) {
             DB::rollBack();
 
             return response()->json([
                 'code' => 500,
-                'message' => 'Algo Ocurrio, Comunicate Con El Equipo De Desarrollo',
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);
@@ -102,10 +112,14 @@ class CompanyController extends Controller
             ]);
         } catch (Throwable $th) {
 
-            return response()->json(['code' => 500, $th->getMessage(), $th->getLine()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
-
 
     public function update(CompanyStoreRequest $request, $id)
     {
@@ -118,20 +132,21 @@ class CompanyController extends Controller
 
             if ($request->file('logo')) {
                 $file = $request->file('logo');
-                $ruta = 'companies/company_' . $company->id . $request->input('logo');
+                $ruta = 'companies/company_'.$company->id.$request->input('logo');
                 $logo = $file->store($ruta, 'public');
                 $company->logo = $logo;
                 $company->save();
             }
 
             DB::commit();
+
             return response()->json(['code' => 200, 'message' => 'Compañia modificada correctamente']);
         } catch (Throwable $th) {
             DB::rollBack();
 
             return response()->json([
                 'code' => 500,
-                'message' => 'Algo Ocurrio, Comunicate Con El Equipo De Desarrollo',
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);
@@ -152,7 +167,6 @@ class CompanyController extends Controller
                     throw new \Exception('No se puede eliminar la compañía, por que tiene relación de datos en otros módulos');
                 }
 
-
                 $company->delete();
                 $msg = 'Registro eliminado correctamente';
             } else {
@@ -166,7 +180,7 @@ class CompanyController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => $th->getMessage(),
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);
@@ -178,18 +192,22 @@ class CompanyController extends Controller
         try {
             DB::beginTransaction();
 
-
             $model = $this->companyRepository->changeState($request->input('id'), strval($request->input('value')), $request->input('field'));
 
             ($model->is_active == 1) ? $msg = 'habilitada' : $msg = 'inhabilitada';
 
             DB::commit();
 
-            return response()->json(['code' => 200, 'message' => 'Compañia ' . $msg . ' con éxito']);
+            return response()->json(['code' => 200, 'message' => 'Compañia '.$msg.' con éxito']);
         } catch (Throwable $th) {
             DB::rollback();
 
-            return response()->json(['code' => 500, 'message' => $th->getMessage()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 }

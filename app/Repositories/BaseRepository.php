@@ -121,7 +121,7 @@ class BaseRepository
         }
         // dd('pasí');
 
-        $nombre = $nombre . '.pdf';
+        $nombre = $nombre.'.pdf';
         if ($is_stream) {
             return $pdf->stream($nombre);
         } else {
@@ -138,7 +138,7 @@ class BaseRepository
     {
         foreach ($array as $clave => $valor) {
             // if ($valor === 'null' || $valor === "undefined" || $valor === 0 || $valor === "0") {
-            if ($valor === 'null' || $valor === "undefined") {
+            if ($valor === 'null' || $valor === 'undefined') {
                 $array[$clave] = null; // Asignar null en lugar de 'null'
             }
         }
@@ -161,5 +161,4 @@ class BaseRepository
             $this->model->getConnection()->getDatabaseName(),
         ];
     }
-
 }

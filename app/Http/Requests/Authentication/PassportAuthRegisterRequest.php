@@ -59,7 +59,6 @@ class PassportAuthRegisterRequest extends FormRequest
         $this->merge([]);
     }
 
-
     public function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([

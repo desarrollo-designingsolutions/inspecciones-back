@@ -29,11 +29,11 @@ class ClientRepository extends BaseRepository
             if (isset($request['searchQueryGeneral']) && ! empty($request['searchQueryGeneral'])) {
                 $query->Where('name', 'like', '%'.$request['searchQueryGeneral'].'%');
             }
-            if (isset($request['searchQueryArray']) && !empty($request['searchQueryArray'])) {
+            if (isset($request['searchQueryArray']) && ! empty($request['searchQueryArray'])) {
                 $query->where(function ($subQuery) use ($request) {
                     foreach ($request['searchQueryArray'] as $item) {
                         if (isset($item['search'])) {
-                            $subQuery->orWhere('is_active', 'like', '%' . $item['search'] . '%');
+                            $subQuery->orWhere('is_active', 'like', '%'.$item['search'].'%');
                         }
                     }
                 });

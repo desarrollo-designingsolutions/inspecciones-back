@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Exports\TypeVehicleListExport;
+use App\Helpers\Constants;
 use App\Http\Requests\TypeVehicle\TypeVehicleStoreRequest;
 use App\Http\Resources\TypeVehicle\TypeVehicleFormResource;
 use App\Http\Resources\TypeVehicle\TypeVehicleListResource;
 use App\Repositories\TypeVehicleRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Throwable;
 use Maatwebsite\Excel\Facades\Excel;
+use Throwable;
 
 class TypeVehicleController extends Controller
 {
     public function __construct(
         protected TypeVehicleRepository $TypeVehicleRepository,
-        protected QueryController $queryController,
     ) {}
 
     public function list(Request $request)
@@ -34,8 +34,12 @@ class TypeVehicleController extends Controller
                 'currentPage' => $data->currentPage(),
             ];
         } catch (Throwable $th) {
-
-            return response()->json(['code' => 500, 'message' => 'Error Al Buscar Los Datos', $th->getMessage(), $th->getLine()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 
@@ -46,8 +50,12 @@ class TypeVehicleController extends Controller
                 'code' => 200,
             ]);
         } catch (Throwable $th) {
-
-            return response()->json(['code' => 500, $th->getMessage(), $th->getLine()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 
@@ -66,7 +74,7 @@ class TypeVehicleController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => 'Algo Ocurrio, Comunicate Con El Equipo De Desarrollo',
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);
@@ -84,8 +92,12 @@ class TypeVehicleController extends Controller
                 'form' => $form,
             ]);
         } catch (Throwable $th) {
-
-            return response()->json(['code' => 500, $th->getMessage(), $th->getLine()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 
@@ -106,7 +118,7 @@ class TypeVehicleController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => 'Algo Ocurrio, Comunicate Con El Equipo De Desarrollo',
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);
@@ -132,7 +144,7 @@ class TypeVehicleController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => $th->getMessage(),
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);
@@ -154,7 +166,12 @@ class TypeVehicleController extends Controller
         } catch (Throwable $th) {
             DB::rollback();
 
-            return response()->json(['code' => 500, 'message' => $th->getMessage()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 
@@ -166,7 +183,7 @@ class TypeVehicleController extends Controller
                 'typeData' => 'all',
             ];
 
-             $data = $this->TypeVehicleRepository->list([
+            $data = $this->TypeVehicleRepository->list([
                 ...$filter,
                 ...$request->all(),
             ]);
@@ -177,7 +194,12 @@ class TypeVehicleController extends Controller
 
             return response()->json(['code' => 200, 'excel' => $excelBase64]);
         } catch (Throwable $th) {
-            return response()->json(['code' => 500, 'message' => $th->getMessage()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 }

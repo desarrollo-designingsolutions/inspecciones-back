@@ -4,7 +4,7 @@ use App\Http\Controllers\ClientController;
 use Illuminate\Support\Facades\Route;
 
 //Rutas protegidas
-Route::middleware(["check.permission:client.list"])->group(function () {
+Route::middleware(['check.permission:client.list'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------

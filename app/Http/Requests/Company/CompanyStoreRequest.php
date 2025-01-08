@@ -27,11 +27,11 @@ class CompanyStoreRequest extends FormRequest
             'start_date' => 'required|date',
         ];
 
-        if (!empty($this->email) || $this->email != 'null' || $this->email != null) {
-            $rules["email"] = 'required|unique:companies,email,' . $this->id . ',id';
+        if (! empty($this->email) || $this->email != 'null' || $this->email != null) {
+            $rules['email'] = 'required|unique:companies,email,'.$this->id.',id';
         }
-        if (!empty($this->final_date) && $this->final_date != 'null' && $this->final_date != null) {
-            $rules["final_date"] = 'required|date|after:start_date';
+        if (! empty($this->final_date) && $this->final_date != 'null' && $this->final_date != null) {
+            $rules['final_date'] = 'required|date|after:start_date';
         }
 
         return $rules;
@@ -52,7 +52,7 @@ class CompanyStoreRequest extends FormRequest
             'email.email' => 'El campo debe contener un correo valido',
             'start_date.required' => 'El campo es obligatorio',
             'final_date.required' => 'El campo es obligatorio',
-            'final_date.after' => 'La fecha debe ser posterior a ' . $this->start_date,
+            'final_date.after' => 'La fecha debe ser posterior a '.$this->start_date,
         ];
     }
 

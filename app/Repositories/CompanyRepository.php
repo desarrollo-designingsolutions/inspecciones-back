@@ -20,15 +20,14 @@ class CompanyRepository extends BaseRepository
                 filterComponent($query, $request);
 
                 if (! empty($request['name'])) {
-                    $query->where('name', 'like', '%' . $request['name'] . '%');
+                    $query->where('name', 'like', '%'.$request['name'].'%');
                 }
             })
             ->where(function ($query) use ($request) {
                 if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
-                    $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
+                    $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
                 }
             });
-
 
         if (isset($request['sortBy'])) {
             $sortBy = json_decode($request['sortBy'], 1);
@@ -66,7 +65,7 @@ class CompanyRepository extends BaseRepository
     public function selectList($request = [], $with = [], $select = [], $fieldValue = 'id', $fieldTitle = 'name')
     {
         $data = $this->model->with($with)->where(function ($query) use ($request) {
-            if (!empty($request['idsAllowed'])) {
+            if (! empty($request['idsAllowed'])) {
                 $query->whereIn('id', $request['idsAllowed']);
             }
         })->get()->map(function ($value) use ($with, $select, $fieldValue, $fieldTitle) {

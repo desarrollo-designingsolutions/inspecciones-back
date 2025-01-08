@@ -2,21 +2,19 @@
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 function filterComponent($query, $request, $model = null)
 {
-    if (isset($request["searchQuery"]) && is_string($request["searchQuery"])) {
-        $request["searchQuery"] = json_decode($request["searchQuery"], 1);
+    if (isset($request['searchQuery']) && is_string($request['searchQuery'])) {
+        $request['searchQuery'] = json_decode($request['searchQuery'], 1);
         // var_dump($request["searchQuery"]);
     }
 
     // Aplicar búsqueda global si existe el término de búsqueda
-    if (!empty($request["searchQuery"]['generalSearch'])) {
-        $relations = $request["searchQuery"]['relationsGeneral'] ?? [];
-        $query->search($request["searchQuery"]['generalSearch'], $relations);
+    if (! empty($request['searchQuery']['generalSearch'])) {
+        $relations = $request['searchQuery']['relationsGeneral'] ?? [];
+        $query->search($request['searchQuery']['generalSearch'], $relations);
     }
-
 
     $query->where(function ($query) use ($request, $model) {
         if (isset($request['searchQuery']['arrayFilter']) && count($request['searchQuery']['arrayFilter']) > 0) {
@@ -31,17 +29,17 @@ function filterComponent($query, $request, $model = null)
                 }
 
                 //Busquedas si tiene relacion o no
-                if (isset($value['type']) && !empty($value['type']) && $value['type'] == 'has' && isset($value['relation']) && !empty($value['relation'])) {
+                if (isset($value['type']) && ! empty($value['type']) && $value['type'] == 'has' && isset($value['relation']) && ! empty($value['relation'])) {
 
                     foreach ($value['relation'] as $key => $relation) {
 
                         $findRelation = $relation; //relaciona  buscar
                         if ((strpos($relation, '.') !== false)) { // si la relacion o palabra tiene "."
-                            $findRelation = explode(".", $relation);
+                            $findRelation = explode('.', $relation);
                             $findRelation = $findRelation[0]; // debo obtener el primer valor y solo este se busca en la class o modelo
                         }
                         //si se pasa el modelo, la relacion debe existir en el modelo, pero si no se pasa el modelo se entiende que es sobre el modelo, de donde se usa esta funcion
-                        if ((!empty($model) && method_exists($model, $findRelation)) || is_null($model)) { //busco la relacion en mi modelo
+                        if ((! empty($model) && method_exists($model, $findRelation)) || is_null($model)) { //busco la relacion en mi modelo
                             if ($value['search'] === 1 || $value['search'] === '1') {
                                 $query->has($relation);
                             } elseif ($value['search'] === 0 || $value['search'] === '0') {
@@ -52,7 +50,7 @@ function filterComponent($query, $request, $model = null)
                 }
 
                 //Busqueda normal
-                if (!empty($value['input_type']) && isset($value['search']) && !empty($value['search_key'])) {
+                if (! empty($value['input_type']) && isset($value['search']) && ! empty($value['search_key'])) {
 
                     if ($value['input_type'] == 'date') {
                         $query->whereDate($value['search_key'], $value['search']);
@@ -62,19 +60,19 @@ function filterComponent($query, $request, $model = null)
                     } else {
                         $search = $value['search'];
 
-                        if ($value['type'] == 'LIKE' && !is_array($search)) {
-                            $search = '%' . $value['search'] . '%';
+                        if ($value['type'] == 'LIKE' && ! is_array($search)) {
+                            $search = '%'.$value['search'].'%';
                         }
                         if (isset($value['relation'])) {
                             foreach ($value['relation'] as $key => $relation) {
                                 $findRelation = $relation; //relaciona  buscar
                                 if ((strpos($relation, '.') !== false)) { // si la relacion o palabra tiene "."
-                                    $findRelation = explode(".", $relation);
+                                    $findRelation = explode('.', $relation);
                                     $findRelation = $findRelation[0]; // debo obtener el primer valor y solo este se busca en la class o modelo
                                 }
 
                                 //si se pasa el modelo, la relacion debe existir en el modelo, pero si no se pasa el modelo se entiende que es sobre el modelo, de donde se usa esta funcion
-                                if ((!empty($model) && method_exists($model, $findRelation)) || is_null($model)) { //busco la relacion en mi modelo
+                                if ((! empty($model) && method_exists($model, $findRelation)) || is_null($model)) { //busco la relacion en mi modelo
                                     $query->whereHas($relation, function ($x) use ($value, $search) {
                                         if (is_array($search)) {
                                             // Verificar si es un array de objetos con clave "value"
@@ -84,7 +82,7 @@ function filterComponent($query, $request, $model = null)
                                             $x->whereIn($value['relation_key'], $search);
                                         } else {
                                             // Maneja el caso del valor cero
-                                            if ($search === 0 || $search === '0' || !empty($search)) {
+                                            if ($search === 0 || $search === '0' || ! empty($search)) {
                                                 $x->where($value['relation_key'], $value['type'], $search);
                                             }
                                         }
@@ -101,7 +99,7 @@ function filterComponent($query, $request, $model = null)
                                 $query->whereIn($value['search_key'], $search);
                             } else {
                                 // Maneja el caso del valor cero
-                                if ($search === 0 || $search === '0' || !empty($search)) {
+                                if ($search === 0 || $search === '0' || ! empty($search)) {
                                     $query->where($value['search_key'], $value['type'], $search);
                                 }
                             }
@@ -147,7 +145,6 @@ function paginatePerzonalized($data)
     );
 }
 
-
 function clearCacheLaravel()
 {
     // Limpia la caché de permisos
@@ -156,7 +153,6 @@ function clearCacheLaravel()
     Artisan::call('view:clear');
     Artisan::call('optimize:clear');
 }
-
 
 function generatePastelColor($opacity = 1.0)
 {
@@ -186,7 +182,6 @@ function formatNumber($number)
 
     return $formattedNumber;
 }
-
 
 function formattedElement($element)
 {

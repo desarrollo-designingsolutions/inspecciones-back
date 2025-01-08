@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Helpers\Constants;
 use App\Models\Country;
-use App\Repositories\BaseRepository;
 
 class CountryRepository extends BaseRepository
 {

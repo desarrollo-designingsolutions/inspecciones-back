@@ -107,6 +107,15 @@ class MenuSeeder extends Seeder
                 'father' => 7,
                 'requiredPermission' => 'menu.emergency.element',
             ],
+            [
+                'id' => 12,
+                'order' => 120,
+                'title' => 'Vehiculo',
+                'to' => 'Vehicle-List',
+                'icon' => '',
+                'father' => 7,
+                'requiredPermission' => 'menu.vehicle.LIST',
+            ],
         ];
 
         // Inicializar la barra de progreso
@@ -115,8 +124,8 @@ class MenuSeeder extends Seeder
 
         foreach ($arrayData as $key => $value) {
             $data = Menu::find($value['id']);
-            if (!$data) {
-                $data = new Menu();
+            if (! $data) {
+                $data = new Menu;
             }
             $data->id = $value['id'];
             $data->order = $value['order'];

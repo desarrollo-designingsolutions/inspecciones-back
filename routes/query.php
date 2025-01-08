@@ -11,4 +11,3 @@ Route::get('/selectCities/country/{country_id}', [QueryController::class, 'selec
 // Lista de Pais, Departamentos y Ciudades
 
 // Route::post('/selectInifiniteInsurance', [QueryController::class, 'selectInifiniteInsurance']);
-

@@ -83,6 +83,12 @@ class PermissionSeeder extends Seeder
                 'description' => 'Visualizar Menú Elementos De Emergencia',
                 'menu_id' => 11,
             ],
+            [
+                'id' => 12,
+                'name' => 'menu.vehicle.list',
+                'description' => 'Visualizar Menú Vehiculos',
+                'menu_id' => 12,
+            ],
         ];
 
         // Inicializar la barra de progreso
@@ -97,11 +103,10 @@ class PermissionSeeder extends Seeder
                     'name' => $value['name'],
                     'description' => $value['description'],
                     'menu_id' => $value['menu_id'],
-                    'guard_name' => 'api'
+                    'guard_name' => 'api',
                 ]
             );
         }
-
 
         // Obtener permisos
         $permissions = Permission::whereIn('id', collect($arrayData)->pluck('id'))->get();

@@ -4,7 +4,7 @@ use App\Http\Controllers\TypeDocumentController;
 use Illuminate\Support\Facades\Route;
 
 //Rutas protegidas
-Route::middleware(["check.permission:menu.type.document"])->group(function () {
+Route::middleware(['check.permission:menu.type.document'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
