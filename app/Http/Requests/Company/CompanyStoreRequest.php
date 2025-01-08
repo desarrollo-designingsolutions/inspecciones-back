@@ -40,13 +40,15 @@ class CompanyStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'phone.required' => 'El campo es obligatorio',
             'email.required' => 'El campo es obligatorio',
             'email.unique' => 'El Email ya existe',
             'nit.required' => 'El campo es obligatorio',
             'nit.unique' => 'El Nit ya existe',
             'country_id.required' => 'El campo es obligatorio',
-            'city_id.required' => 'El campo es obligatorio',
             'state_id.required' => 'El campo es obligatorio',
+            'city_id.required' => 'El campo es obligatorio',
+            'address.required' => 'El campo es obligatorio',
             'email.email' => 'El campo debe contener un correo valido',
             'start_date.required' => 'El campo es obligatorio',
             'final_date.required' => 'El campo es obligatorio',
