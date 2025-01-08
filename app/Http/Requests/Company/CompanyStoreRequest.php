@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Company;
 
+use App\Helpers\Constants;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -17,7 +18,7 @@ class CompanyStoreRequest extends FormRequest
     {
         $rules = [
             'name' => 'required',
-            'nit' => 'required',
+            'nit' => 'required|unique:companies,nit',
             'phone' => 'required',
             'country_id' => 'required',
             'state_id' => 'required',
@@ -39,8 +40,10 @@ class CompanyStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'email.required' => 'El campo es obligatorio',
             'email.unique' => 'El Email ya existe',
             'nit.required' => 'El campo es obligatorio',
+            'nit.unique' => 'El Nit ya existe',
             'country_id.required' => 'El campo es obligatorio',
             'city_id.required' => 'El campo es obligatorio',
             'state_id.required' => 'El campo es obligatorio',
@@ -61,7 +64,7 @@ class CompanyStoreRequest extends FormRequest
 
         throw new HttpResponseException(response()->json([
             'code' => 422,
-            'message' => 'Hubo un error en la validación del formulario',
+            'message' => Constants::ERROR_MESSAGE_VALIDATION_BACK,
             'errors' => $validator->errors(),
         ], 422));
     }

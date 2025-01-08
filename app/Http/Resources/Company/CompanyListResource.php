@@ -31,6 +31,9 @@ class CompanyListResource extends JsonResource
             'start_date' => $start_date,
             'final_date' => $final_date,
             'remaining_days' => $diffInDays,
+            'country' => $this->country?->name,
+            'state' => $this->state?->name,
+            'city' => $this->city?->name,
         ];
     }
 }

@@ -60,7 +60,7 @@ class UserStoreRequest extends FormRequest
     {
         throw new HttpResponseException(response()->json([
             'code' => 422,
-            'message' => 'Se evidencia algunos errores',
+            'message' => Constants::ERROR_MESSAGE_VALIDATION_BACK,
             'errors' => $validator->errors(),
         ], 422));
     }
