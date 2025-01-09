@@ -37,7 +37,11 @@ class VehicleFormResource extends JsonResource
             'current_mileage' => $this->current_mileage,
             'have_trailer' => $this->have_trailer,
             'trailer' => $this->trailer,
-            'vehicle_structure_id' => new TypeVehicleSelectInfiniteResource($this->vehicle_structure),
+            'vehicle_structure_id' => $this->vehicle_structure_id,
+            'photo_front' => $this->photo_front,
+            'photo_rear' => $this->photo_rear,
+            'photo_right_side' => $this->photo_right_side,
+            'photo_left_side' => $this->photo_left_side,
         ];
     }
 }
