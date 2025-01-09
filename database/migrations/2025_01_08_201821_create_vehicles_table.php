@@ -36,16 +36,16 @@ return new class extends Migration
             $table->foreignUuid('vehicle_structure_id')->constrained();
 
             //Tab 2: Documentos del Vehículo
-            $table->foreignUuid('type_document_id')->nullable()->constrained();
-            $table->string('document_number')->nullable();
-            $table->date('date_issue')->nullable();
-            $table->date('expiration_date')->nullable();
+            // $table->foreignUuid('type_document_id')->nullable()->constrained();
+            // $table->string('document_number')->nullable();
+            // $table->date('date_issue')->nullable();
+            // $table->date('expiration_date')->nullable();
 
             //Tab 3: Fotografías del Vehículo
-            $table->string('front')->nullable();
-            $table->string('rear')->nullable();
-            $table->string('right_side')->nullable();
-            $table->string('left_side')->nullable();
+            $table->string('photo_front')->nullable();
+            $table->string('photo_rear')->nullable();
+            $table->string('photo_right_side')->nullable();
+            $table->string('photo_left_side')->nullable();
 
 
 

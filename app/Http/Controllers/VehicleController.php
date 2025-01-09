@@ -73,7 +73,43 @@ class VehicleController extends Controller
         try {
             DB::beginTransaction();
 
-            $vehicle = $this->vehicleRepository->store($request->all());
+            $post = $request->except(["photo_front", "photo_rear", "photo_right_side", "photo_left_side"]);
+
+            $vehicle = $this->vehicleRepository->store($post);
+
+            //PHOTOS
+            if ($request->file('photo_front')) {
+                $file = $request->file('photo_front');
+                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_front');
+                $photo_front = $file->store($ruta, 'public');
+                $vehicle->photo_front = $photo_front;
+                $vehicle->save();
+            }
+
+            if ($request->file('photo_rear')) {
+                $file = $request->file('photo_rear');
+                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_rear');
+                $photo_rear = $file->store($ruta, 'public');
+                $vehicle->photo_rear = $photo_rear;
+                $vehicle->save();
+            }
+
+            if ($request->file('photo_right_side')) {
+                $file = $request->file('photo_right_side');
+                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_right_side');
+                $photo_right_side = $file->store($ruta, 'public');
+                $vehicle->photo_right_side = $photo_right_side;
+                $vehicle->save();
+            }
+
+            if ($request->file('photo_left_side')) {
+                $file = $request->file('photo_left_side');
+                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_left_side');
+                $photo_left_side = $file->store($ruta, 'public');
+                $vehicle->photo_left_side = $photo_left_side;
+                $vehicle->save();
+            }
+
 
             DB::commit();
 
@@ -116,9 +152,43 @@ class VehicleController extends Controller
         try {
             DB::beginTransaction();
 
-            $post = $request->all();
+            $post = $request->except(["photo_front", "photo_rear", "photo_right_side", "photo_left_side"]);
 
             $vehicle = $this->vehicleRepository->store($post);
+
+            //PHOTOS
+            if ($request->file('photo_front')) {
+                $file = $request->file('photo_front');
+                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_front');
+                $photo_front = $file->store($ruta, 'public');
+                $vehicle->photo_front = $photo_front;
+                $vehicle->save();
+            }
+
+            if ($request->file('photo_rear')) {
+                $file = $request->file('photo_rear');
+                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_rear');
+                $photo_rear = $file->store($ruta, 'public');
+                $vehicle->photo_rear = $photo_rear;
+                $vehicle->save();
+            }
+
+            if ($request->file('photo_right_side')) {
+                $file = $request->file('photo_right_side');
+                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_right_side');
+                $photo_right_side = $file->store($ruta, 'public');
+                $vehicle->photo_right_side = $photo_right_side;
+                $vehicle->save();
+            }
+
+            if ($request->file('photo_left_side')) {
+                $file = $request->file('photo_left_side');
+                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_left_side');
+                $photo_left_side = $file->store($ruta, 'public');
+                $vehicle->photo_left_side = $photo_left_side;
+                $vehicle->save();
+            }
+
 
             DB::commit();
 

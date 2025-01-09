@@ -90,7 +90,9 @@ class VehicleStoreRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge([]);
+        $this->merge([
+            "have_trailer" => $this->have_trailer == 'true' ? true : false
+        ]);
     }
 
     public function failedValidation(Validator $validator)
