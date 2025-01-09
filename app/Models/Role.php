@@ -12,6 +12,10 @@ class Role extends SpatieRole
     use HasUuids;
     protected $primaryKey = 'id';
 
+    protected $casts = [
+        'operator' => 'boolean',
+    ];
+
     public function allUsers()
     {
         return $this->hasMany(User::class, 'role_id');
