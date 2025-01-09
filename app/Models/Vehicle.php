@@ -60,4 +60,9 @@ class Vehicle extends Model
     {
         return $this->hasMany(VehicleDocument::class, "vehicle_id", "id");
     }
+
+    public function emergency_elements()
+    {
+        return $this->hasMany(VehicleEmergencyElement::class, "vehicle_id", "id");
+    }
 }

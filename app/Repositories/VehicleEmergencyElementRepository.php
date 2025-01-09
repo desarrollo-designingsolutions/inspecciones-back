@@ -3,11 +3,11 @@
 namespace App\Repositories;
 
 use App\Helpers\Constants;
-use App\Models\VehicleDocument;
+use App\Models\VehicleEmergencyElement;
 
-class VehicleDocumentRepository extends BaseRepository
+class VehicleEmergencyElementRepository extends BaseRepository
 {
-    public function __construct(VehicleDocument $modelo)
+    public function __construct(VehicleEmergencyElement $modelo)
     {
         parent::__construct($modelo);
     }

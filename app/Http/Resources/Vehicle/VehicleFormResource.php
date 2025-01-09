@@ -4,6 +4,7 @@ namespace App\Http\Resources\Vehicle;
 
 use App\Http\Resources\BrandVehicle\BrandVehicleSelectInfiniteResource;
 use App\Http\Resources\Client\ClientSelectInfiniteResource;
+use App\Http\Resources\EmergencyElement\EmergencyElementSelectInfiniteResource;
 use App\Http\Resources\TypeDocument\TypeDocumentSelectInfiniteResource;
 use App\Http\Resources\TypeVehicle\TypeVehicleSelectInfiniteResource;
 use Illuminate\Http\Request;
@@ -51,6 +52,14 @@ class VehicleFormResource extends JsonResource
                     'document_number' => $item->document_number,
                     'date_issue' => $item->date_issue,
                     'expiration_date' => $item->expiration_date,
+                ];
+            }),
+            'emergency_elements' => $this->emergency_elements->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'vehicle_id' => $item->vehicle_id,
+                    'emergency_element_id' => new EmergencyElementSelectInfiniteResource($item->emergency_element),
+                    'quantity' => $item->quantity,
                 ];
             }),
 

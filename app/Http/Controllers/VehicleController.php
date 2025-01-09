@@ -8,6 +8,7 @@ use App\Http\Requests\Vehicle\VehicleStoreRequest;
 use App\Http\Resources\Vehicle\VehicleFormResource;
 use App\Http\Resources\Vehicle\VehicleListResource;
 use App\Repositories\VehicleDocumentRepository;
+use App\Repositories\VehicleEmergencyElementRepository;
 use App\Repositories\VehicleRepository;
 use App\Repositories\VehicleStructureRepository;
 use Illuminate\Http\Request;
@@ -22,6 +23,7 @@ class VehicleController extends Controller
         protected QueryController $queryController,
         protected VehicleStructureRepository $vehicleStructureRepository,
         protected VehicleDocumentRepository $vehicleDocumentRepository,
+        protected VehicleEmergencyElementRepository $vehicleEmergencyElementRepository,
     ) {}
 
     public function list(Request $request)
@@ -75,7 +77,7 @@ class VehicleController extends Controller
         try {
             DB::beginTransaction();
 
-            $post = $request->except(["photo_front", "photo_rear", "photo_right_side", "photo_left_side"]);
+            $post = $request->except(["photo_front", "photo_rear", "photo_right_side", "photo_left_side", "type_documents","emergency_elements"]);
 
             $vehicle = $this->vehicleRepository->store($post);
 
@@ -126,6 +128,20 @@ class VehicleController extends Controller
                     'expiration_date' => $value['expiration_date'],
                 ];
                 $this->vehicleDocumentRepository->store($dataSave);
+            }
+
+            $emergency_elements = json_decode($request->input("emergency_elements"), 1);
+            $arrayIds = collect($emergency_elements)->pluck('id');
+            $this->vehicleDocumentRepository->deleteArray($arrayIds, $vehicle->id);
+
+            foreach ($emergency_elements as $key => $value) {
+                $dataSave = [
+                    'id' => $value['id'],
+                    'vehicle_id' => $vehicle->id,
+                    'emergency_element_id' => $value['emergency_element_id']["value"],
+                    'quantity' => $value['quantity'],
+                ];
+                $this->vehicleEmergencyElementRepository->store($dataSave);
             }
 
 
@@ -170,9 +186,9 @@ class VehicleController extends Controller
         try {
             DB::beginTransaction();
 
-            $post = $request->except(["photo_front", "photo_rear", "photo_right_side", "photo_left_side", "type_documents"]);
+            $post = $request->except(["photo_front", "photo_rear", "photo_right_side", "photo_left_side", "type_documents","emergency_elements"]);
 
-            $vehicle = $this->vehicleRepository->store($post);
+             $vehicle = $this->vehicleRepository->store($post);
 
             //PHOTOS
             if ($request->file('photo_front')) {
@@ -223,6 +239,20 @@ class VehicleController extends Controller
                 $this->vehicleDocumentRepository->store($dataSave);
             }
 
+            $emergency_elements = json_decode($request->input("emergency_elements"), 1);
+            $arrayIds = collect($emergency_elements)->pluck('id');
+            $this->vehicleEmergencyElementRepository->deleteArray($arrayIds, $vehicle->id);
+
+            foreach ($emergency_elements as $key => $value) {
+                $dataSave = [
+                    'id' => $value['id'],
+                    'vehicle_id' => $vehicle->id,
+                    'emergency_element_id' => $value['emergency_element_id']["value"],
+                    'quantity' => $value['quantity'],
+                ];
+                  $this->vehicleEmergencyElementRepository->store($dataSave);
+            }
+
             DB::commit();
 
             return response()->json(['code' => 200, 'message' => 'Vehiculo modificado correctamente', 'data' => $vehicle]);
@@ -244,6 +274,8 @@ class VehicleController extends Controller
             DB::beginTransaction();
             $vehicle = $this->vehicleRepository->find($id);
             if ($vehicle) {
+                $vehicle->type_documents()->delete();
+                $vehicle->emergency_elements()->delete();
                 $vehicle->delete();
                 $msg = 'Registro eliminado correctamente';
             } else {

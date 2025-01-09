@@ -15,4 +15,5 @@ Route::post('/selectInfiniteTypeVehicle', [QueryController::class, 'selectInfini
 Route::post('/selectInfiniteBrandVehicle', [QueryController::class, 'selectInfiniteBrandVehicle']);
 Route::post('/selectInfiniteClient', [QueryController::class, 'selectInfiniteClient']);
 Route::post('/selectInfiniteTypeDocument', [QueryController::class, 'selectInfiniteTypeDocument']);
+Route::post('/selectInfiniteEmergencyElement', [QueryController::class, 'selectInfiniteEmergencyElement']);
 

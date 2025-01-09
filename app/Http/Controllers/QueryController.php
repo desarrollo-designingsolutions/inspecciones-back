@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Resources\BrandVehicle\BrandVehicleSelectInfiniteResource;
 use App\Http\Resources\Client\ClientSelectInfiniteResource;
 use App\Http\Resources\Country\CountrySelectResource;
+use App\Http\Resources\EmergencyElement\EmergencyElementSelectInfiniteResource;
 use App\Http\Resources\TypeDocument\TypeDocumentSelectInfiniteResource;
 use App\Http\Resources\TypeVehicle\TypeVehicleSelectInfiniteResource;
 use App\Repositories\BrandVehicleRepository;
 use App\Repositories\CityRepository;
 use App\Repositories\ClientRepository;
 use App\Repositories\CountryRepository;
+use App\Repositories\EmergencyElementRepository;
 use App\Repositories\StateRepository;
 use App\Repositories\TypeDocumentRepository;
 use App\Repositories\TypeVehicleRepository;
@@ -29,6 +31,7 @@ class QueryController extends Controller
         protected BrandVehicleRepository $brandVehicleRepository,
         protected ClientRepository $clientRepository,
         protected TypeDocumentRepository $typeDocumentRepository,
+        protected EmergencyElementRepository $emergencyElementRepository,
     ) {}
 
     public function selectInfiniteCountries(Request $request)
@@ -128,6 +131,18 @@ class QueryController extends Controller
             'code' => 200,
             'typeDocument_arrayInfo' => $dataTypeDocument,
             'typeDocument_countLinks' => $typeDocument->lastPage(),
+        ];
+    }
+    public function selectInfiniteEmergencyElement(Request $request)
+    {
+        $request['is_active'] = true;
+        $emergencyElement = $this->emergencyElementRepository->list($request->all());
+        $dataEmergencyElement = EmergencyElementSelectInfiniteResource::collection($emergencyElement);
+
+        return [
+            'code' => 200,
+            'emergencyElement_arrayInfo' => $dataEmergencyElement,
+            'emergencyElement_countLinks' => $emergencyElement->lastPage(),
         ];
     }
 
