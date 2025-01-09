@@ -56,8 +56,8 @@ class Vehicle extends Model
         return $this->hasOne(VehicleStructure::class, "id", "vehicle_structure_id");
     }
 
-    public function type_document()
+    public function type_documents()
     {
-        return $this->hasOne(TypeDocument::class, "id", "type_document_id");
+        return $this->hasMany(VehicleDocument::class, "vehicle_id", "id");
     }
 }

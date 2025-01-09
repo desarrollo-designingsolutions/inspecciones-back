@@ -7,6 +7,7 @@ use App\Helpers\Constants;
 use App\Http\Requests\Vehicle\VehicleStoreRequest;
 use App\Http\Resources\Vehicle\VehicleFormResource;
 use App\Http\Resources\Vehicle\VehicleListResource;
+use App\Repositories\VehicleDocumentRepository;
 use App\Repositories\VehicleRepository;
 use App\Repositories\VehicleStructureRepository;
 use Illuminate\Http\Request;
@@ -20,6 +21,7 @@ class VehicleController extends Controller
         protected VehicleRepository $vehicleRepository,
         protected QueryController $queryController,
         protected VehicleStructureRepository $vehicleStructureRepository,
+        protected VehicleDocumentRepository $vehicleDocumentRepository,
     ) {}
 
     public function list(Request $request)
@@ -110,6 +112,22 @@ class VehicleController extends Controller
                 $vehicle->save();
             }
 
+            $type_documents = json_decode($request->input("type_documents"), 1);
+            $arrayIds = collect($type_documents)->pluck('id');
+            $this->vehicleDocumentRepository->deleteArray($arrayIds, $vehicle->id);
+
+            foreach ($type_documents as $key => $value) {
+                $dataSave = [
+                    'id' => $value['id'],
+                    'vehicle_id' => $vehicle->id,
+                    'type_document_id' => $value['type_document_id']["value"],
+                    'document_number' => $value['document_number'],
+                    'date_issue' => $value['date_issue'],
+                    'expiration_date' => $value['expiration_date'],
+                ];
+                $this->vehicleDocumentRepository->store($dataSave);
+            }
+
 
             DB::commit();
 
@@ -152,7 +170,7 @@ class VehicleController extends Controller
         try {
             DB::beginTransaction();
 
-            $post = $request->except(["photo_front", "photo_rear", "photo_right_side", "photo_left_side"]);
+            $post = $request->except(["photo_front", "photo_rear", "photo_right_side", "photo_left_side", "type_documents"]);
 
             $vehicle = $this->vehicleRepository->store($post);
 
@@ -189,6 +207,21 @@ class VehicleController extends Controller
                 $vehicle->save();
             }
 
+            $type_documents = json_decode($request->input("type_documents"), 1);
+            $arrayIds = collect($type_documents)->pluck('id');
+            $this->vehicleDocumentRepository->deleteArray($arrayIds, $vehicle->id);
+
+            foreach ($type_documents as $key => $value) {
+                $dataSave = [
+                    'id' => $value['id'],
+                    'vehicle_id' => $vehicle->id,
+                    'type_document_id' => $value['type_document_id']["value"],
+                    'document_number' => $value['document_number'],
+                    'date_issue' => $value['date_issue'],
+                    'expiration_date' => $value['expiration_date'],
+                ];
+                $this->vehicleDocumentRepository->store($dataSave);
+            }
 
             DB::commit();
 
