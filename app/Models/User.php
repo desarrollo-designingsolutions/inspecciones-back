@@ -72,4 +72,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+
+    public function typeDocument()
+    {
+        return $this->belongsTo(UserTypeDocument::class);
+    }
+
+    public function license()
+    {
+        return $this->belongsTo(TypeLicense::class);
+    }
 }

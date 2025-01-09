@@ -8,7 +8,9 @@ use App\Http\Resources\User\UserFormResource;
 use App\Http\Resources\User\UserListResource;
 use App\Repositories\CompanyRepository;
 use App\Repositories\RoleRepository;
+use App\Repositories\TypeLicenseRepository;
 use App\Repositories\UserRepository;
+use App\Repositories\UserTypeDocumentRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -19,6 +21,8 @@ class UserController extends Controller
         protected UserRepository $userRepository,
         protected RoleRepository $roleRepository,
         protected CompanyRepository $companyRepository,
+        protected UserTypeDocumentRepository $userTypeDocumentRepository,
+        protected TypeLicenseRepository $typeLicenseRepository,
     ) {}
 
     public function list(Request $request)
@@ -49,13 +53,17 @@ class UserController extends Controller
     {
         try {
 
-            $roles = $this->roleRepository->selectList(request());
+            $roles = $this->roleRepository->selectList(request(), select: ['operator']);
             $companies = $this->companyRepository->selectList();
+            $typeDocuments = $this->userTypeDocumentRepository->selectList();
+            $typeLicenses = $this->typeLicenseRepository->selectList();
 
             return response()->json([
                 'code' => 200,
                 'roles' => $roles,
                 'companies' => $companies,
+                'typeDocuments' => $typeDocuments,
+                'typeLicenses' => $typeLicenses,
             ]);
         } catch (Throwable $th) {
             return response()->json([
@@ -98,6 +106,8 @@ class UserController extends Controller
         try {
             $roles = $this->roleRepository->selectList(request());
             $companies = $this->companyRepository->selectList();
+            $typeDocuments = $this->userTypeDocumentRepository->selectList();
+            $typeLicenses = $this->typeLicenseRepository->selectList();
 
             $user = $this->userRepository->find($id);
             $form = new UserFormResource($user);
@@ -107,6 +117,8 @@ class UserController extends Controller
                 'form' => $form,
                 'roles' => $roles,
                 'companies' => $companies,
+                'typeDocuments' => $typeDocuments,
+                'typeLicenses' => $typeLicenses,
             ]);
         } catch (Throwable $th) {
             return response()->json([
