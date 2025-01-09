@@ -2,6 +2,9 @@
 
 namespace App\Http\Resources\Vehicle;
 
+use App\Http\Resources\BrandVehicle\BrandVehicleSelectInfiniteResource;
+use App\Http\Resources\Client\ClientSelectInfiniteResource;
+use App\Http\Resources\TypeVehicle\TypeVehicleSelectInfiniteResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,8 +19,25 @@ class VehicleFormResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
             'company_id' => $this->company_id,
+            'license_plate' => $this->license_plate,
+            'type_vehicle_id' => new TypeVehicleSelectInfiniteResource($this->type_vehicle),
+            'date_registration' => $this->date_registration,
+            'brand_vehicle_id' => new BrandVehicleSelectInfiniteResource($this->brand_vehicle),
+            'engine_number' => $this->engine_number,
+            'state_id' => $this->state_id,
+            'city_id' => $this->city_id,
+            'model' => $this->model,
+            'vin_number' => $this->vin_number,
+            'load_capacity' => $this->load_capacity,
+            'client_id' => new ClientSelectInfiniteResource($this->client),
+            'gross_vehicle_weight' => $this->gross_vehicle_weight,
+            'passenger_capacity' => $this->passenger_capacity,
+            'number_axles' => $this->number_axles,
+            'current_mileage' => $this->current_mileage,
+            'have_trailer' => $this->have_trailer,
+            'trailer' => $this->trailer,
+            'vehicle_structure_id' => new TypeVehicleSelectInfiniteResource($this->vehicle_structure),
         ];
     }
 }

@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\BrandVehicle\BrandVehicleSelectInfiniteResource;
+use App\Http\Resources\Client\ClientSelectInfiniteResource;
 use App\Http\Resources\Country\CountrySelectResource;
+use App\Http\Resources\TypeVehicle\TypeVehicleSelectInfiniteResource;
+use App\Repositories\BrandVehicleRepository;
 use App\Repositories\CityRepository;
+use App\Repositories\ClientRepository;
 use App\Repositories\CountryRepository;
 use App\Repositories\StateRepository;
+use App\Repositories\TypeVehicleRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 
@@ -16,6 +22,10 @@ class QueryController extends Controller
         protected StateRepository $stateRepository,
         protected CityRepository $cityRepository,
         protected UserRepository $userRepository,
+
+        protected TypeVehicleRepository $typeVehicleRepository,
+        protected BrandVehicleRepository $brandVehicleRepository,
+        protected ClientRepository $clientRepository,
     ) {}
 
     public function selectInfiniteCountries(Request $request)
@@ -67,17 +77,43 @@ class QueryController extends Controller
         ]);
     }
 
-    // public function selectInifiniteInsurance(Request $request)
-    // {
-    //     $request['status'] = 1;
-    //     $insurance = $this->insuranceRepository->list($request->all());
-    //     $dataInsurance = SelectInsuranceResource::collection($insurance);
+    public function selectInfiniteTypeVehicle(Request $request)
+    {
+        $request['is_active'] = true;
+        $typeVehicle = $this->typeVehicleRepository->list($request->all());
+        $dataTypeVehicle = TypeVehicleSelectInfiniteResource::collection($typeVehicle);
 
-    //     return [
-    //         'code' => 200,
-    //         'insurance_arrayInfo' => $dataInsurance,
-    //         'insurance_countLinks' => $insurance->lastPage(),
-    //     ];
-    // }
+        return [
+            'code' => 200,
+            'typeVehicle_arrayInfo' => $dataTypeVehicle,
+            'typeVehicle_countLinks' => $typeVehicle->lastPage(),
+        ];
+    }
+
+    public function selectInfiniteBrandVehicle(Request $request)
+    {
+        $request['is_active'] = true;
+        $brandVehicle = $this->brandVehicleRepository->list($request->all());
+        $dataBrandVehicle = BrandVehicleSelectInfiniteResource::collection($brandVehicle);
+
+        return [
+            'code' => 200,
+            'brandVehicle_arrayInfo' => $dataBrandVehicle,
+            'brandVehicle_countLinks' => $brandVehicle->lastPage(),
+        ];
+    }
+
+    public function selectInfiniteClient(Request $request)
+    {
+        $request['is_active'] = true;
+        $client = $this->clientRepository->list($request->all());
+        $dataClient = ClientSelectInfiniteResource::collection($client);
+
+        return [
+            'code' => 200,
+            'client_arrayInfo' => $dataClient,
+            'client_countLinks' => $client->lastPage(),
+        ];
+    }
 
 }

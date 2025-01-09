@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Vehicle;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,8 +17,12 @@ class VehicleListResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'is_active' => $this->is_active,
+            'license_plate' => $this->license_plate,
+            'type_vehicle_name' => $this->type_vehicle?->name,
+            'date_registration' => Carbon::parse($this->date_registration)->format("d-m-Y"),
+            'operator' => "????????",
+            'model' => $this->model,
+            'city_name' => $this->city?->name,
         ];
     }
 }

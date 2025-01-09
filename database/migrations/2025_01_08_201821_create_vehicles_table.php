@@ -15,7 +15,6 @@ return new class extends Migration
             $table->uuid('id')->primary();
 
             //Tab 1: Información General
-
             $table->foreignUuid('company_id')->constrained();
             $table->string('license_plate');
             $table->foreignUuid('type_vehicle_id')->constrained();
@@ -27,26 +26,33 @@ return new class extends Migration
             $table->string('model');
             $table->string('vin_number');
             $table->string('load_capacity');
-            $table->foreignId('client_id')->constrained();
+            $table->foreignUuid('client_id')->constrained();
             $table->string('gross_vehicle_weight')->nullable();
             $table->string('passenger_capacity')->nullable();
             $table->string('number_axles')->nullable();
             $table->string('current_mileage')->nullable();
-            $table->boolean('have a trailer')->default(false);
+            $table->boolean('have_trailer')->default(false);
             $table->string('trailer')->nullable();
-            $table->foreignId('vehicle_structure_id')->constrained();
+            $table->foreignUuid('vehicle_structure_id')->constrained();
 
             //Tab 2: Documentos del Vehículo
-            $table->foreignId('type_document_id')->constrained();
-            $table->string('document_number');
-            $table->date('date_issue');
-            $table->date('expiration_date');
+            $table->foreignUuid('type_document_id')->nullable()->constrained();
+            $table->string('document_number')->nullable();
+            $table->date('date_issue')->nullable();
+            $table->date('expiration_date')->nullable();
 
             //Tab 3: Fotografías del Vehículo
-            $table->string('front');
-            $table->string('rear');
-            $table->string('right_side');
-            $table->string('left_side');
+            $table->string('front')->nullable();
+            $table->string('rear')->nullable();
+            $table->string('right_side')->nullable();
+            $table->string('left_side')->nullable();
+
+
+
+
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+            $table->softDeletes();
 
         });
     }

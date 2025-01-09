@@ -8,6 +8,7 @@ use App\Http\Requests\Vehicle\VehicleStoreRequest;
 use App\Http\Resources\Vehicle\VehicleFormResource;
 use App\Http\Resources\Vehicle\VehicleListResource;
 use App\Repositories\VehicleRepository;
+use App\Repositories\VehicleStructureRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -17,6 +18,8 @@ class VehicleController extends Controller
 {
     public function __construct(
         protected VehicleRepository $vehicleRepository,
+        protected QueryController $queryController,
+        protected VehicleStructureRepository $vehicleStructureRepository,
     ) {}
 
     public function list(Request $request)
@@ -46,8 +49,14 @@ class VehicleController extends Controller
     public function create()
     {
         try {
+
+            $selectStates = $this->queryController->selectStates(Constants::COUNTRY_ID);
+            $vehicle_structures = $this->vehicleStructureRepository->selectList();
+
             return response()->json([
                 'code' => 200,
+                'vehicle_structures' => $vehicle_structures,
+                ...$selectStates,
             ]);
         } catch (Throwable $th) {
             return response()->json([
@@ -163,7 +172,7 @@ class VehicleController extends Controller
 
             DB::commit();
 
-            return response()->json(['code' => 200, 'message' => 'Vehiculo '.$msg.' con éxito']);
+            return response()->json(['code' => 200, 'message' => 'Vehiculo ' . $msg . ' con éxito']);
         } catch (Throwable $th) {
             DB::rollback();
 
