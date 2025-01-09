@@ -18,8 +18,29 @@ class VehicleStoreRequest extends FormRequest
     {
         $rules = [
             'company_id' => 'required',
-            // 'name' => 'required|min:2|max:100|unique:clients,name,'.$this->id.',id,company_id,'.$this->company_id,
+            'license_plate' => 'required|max:6|unique:vehicles,license_plate,' . $this->id . ',id,company_id,' . $this->company_id,
+            'type_vehicle_id' => 'required',
+            'date_registration' => 'required|date|before_or_equal:today',
+            'brand_vehicle_id' => 'required',
+            'engine_number' => 'required|max:255',
+            'state_id' => 'required',
+            'city_id' => 'required',
+            'model' => 'required|numeric',
+            'vin_number' => 'required|max:255',
+            'load_capacity' => 'required|numeric|min:1',
+            'client_id' => 'required',
+            'gross_vehicle_weight' => 'required|numeric|min:1',
+            'passenger_capacity' => 'required|numeric|min:1',
+            'number_axles' => 'required|numeric|min:1',
+            'current_mileage' => 'required|numeric|min:1',
+            'have_trailer' => 'required',
+            'vehicle_structure_id' => 'required',
         ];
+
+        if($this->have_trailer === true)
+        {
+            $rules['trailer'] = 'required|max:255';
+        }
 
         return $rules;
     }
@@ -28,7 +49,42 @@ class VehicleStoreRequest extends FormRequest
     {
         return [
             'company_id.required' => 'El campo es obligatorio',
-            // 'name.required' => 'El campo es obligatorio',
+            'license_plate.required' => 'El campo es obligatorio',
+            'license_plate.max' => 'El campo no debe tener mas de 6 caracteres',
+            'license_plate.unique' => 'La matricula ya existe',
+            'type_vehicle_id.required' => 'El campo es obligatorio',
+            'date_registration.required' => 'El campo es obligatorio',
+            'date_registration.date' => 'El campo debe ser una fecha valida',
+            'date_registration.before_or_equal' => 'La fecha no puede ser mayor a la fecha actual',
+            'brand_vehicle_id.required' => 'El campo es obligatorio',
+            'engine_number.required' => 'El campo es obligatorio',
+            'engine_number.max' => 'El campo no debe tener mas de 255 caracteres',
+            'state_id.required' => 'El campo es obligatorio',
+            'city_id.required' => 'El campo es obligatorio',
+            'model.required' => 'El campo es obligatorio',
+            'model.numeric' => 'El campo debe ser un numero',
+            'vin_number.required' => 'El campo es obligatorio',
+            'vin_number.max' => 'El campo no debe tener mas de 255 caracteres',
+            'load_capacity.required' => 'El campo es obligatorio',
+            'load_capacity.numeric' => 'El campo debe ser un numero',
+            'load_capacity.min' => 'El campo debe ser mayor a 0',
+            'client_id.required' => 'El campo es obligatorio',
+            'gross_vehicle_weight.required' => 'El campo es obligatorio',
+            'gross_vehicle_weight.numeric' => 'El campo debe ser un numero',
+            'gross_vehicle_weight.min' => 'El campo debe ser mayor a 0',
+            'passenger_capacity.required' => 'El campo es obligatorio',
+            'passenger_capacity.numeric' => 'El campo debe ser un numero',
+            'passenger_capacity.min' => 'El campo debe ser mayor a 0',
+            'number_axles.required' => 'El campo es obligatorio',
+            'number_axles.numeric' => 'El campo debe ser un numero',
+            'number_axles.min' => 'El campo debe ser mayor a 0',
+            'current_mileage.required' => 'El campo es obligatorio',
+            'current_mileage.numeric' => 'El campo debe ser un numero',
+            'current_mileage.min' => 'El campo debe ser mayor a 0',
+            'have_trailer.required' => 'El campo es obligatorio',
+            'trailer.required' => 'El campo es obligatorio',
+            'trailer.max' => 'El campo no debe tener mas de 255 caracteres',
+            'vehicle_structure_id.required' => 'El campo es obligatorio',
         ];
     }
 
