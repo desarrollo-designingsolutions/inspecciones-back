@@ -43,7 +43,7 @@ class MenuSeeder extends Seeder
                 'to' => 'User-List',
                 'icon' => '',
                 'father' => 3,
-                'requiredPermission' => 'menu.user',
+                'requiredPermission' => 'user.list',
             ],
             [
                 'id' => 5,
@@ -52,7 +52,7 @@ class MenuSeeder extends Seeder
                 'to' => 'Role-List',
                 'icon' => '',
                 'father' => 3,
-                'requiredPermission' => 'menu.role',
+                'requiredPermission' => 'role.list',
             ],
             [
                 'id' => 6,
@@ -78,7 +78,7 @@ class MenuSeeder extends Seeder
                 'to' => 'Type-Vehicle-List',
                 'icon' => '',
                 'father' => 7,
-                'requiredPermission' => 'menu.type.vehicle',
+                'requiredPermission' => 'type.vehicle.list',
             ],
             [
                 'id' => 9,
@@ -87,7 +87,7 @@ class MenuSeeder extends Seeder
                 'to' => 'Brand-Vehicle-List',
                 'icon' => '',
                 'father' => 7,
-                'requiredPermission' => 'menu.brand.vehicle',
+                'requiredPermission' => 'brand.vehicle.list',
             ],
             [
                 'id' => 10,
@@ -96,7 +96,7 @@ class MenuSeeder extends Seeder
                 'to' => 'Type-Document-List',
                 'icon' => '',
                 'father' => 7,
-                'requiredPermission' => 'menu.type.document',
+                'requiredPermission' => 'type.document.list',
             ],
             [
                 'id' => 11,
@@ -105,7 +105,7 @@ class MenuSeeder extends Seeder
                 'to' => 'Emergency-Element-List',
                 'icon' => '',
                 'father' => 7,
-                'requiredPermission' => 'menu.emergency.element',
+                'requiredPermission' => 'emergency.element.list',
             ],
         ];
 

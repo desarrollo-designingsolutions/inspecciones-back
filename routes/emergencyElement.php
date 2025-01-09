@@ -4,7 +4,7 @@ use App\Http\Controllers\EmergencyElementController;
 use Illuminate\Support\Facades\Route;
 
 //Rutas protegidas
-Route::middleware(["check.permission:menu.emergency.element"])->group(function () {
+Route::middleware(["check.permission:emergency.element.list"])->group(function () {
 
     /*
     |--------------------------------------------------------------------------

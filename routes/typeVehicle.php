@@ -4,7 +4,7 @@ use App\Http\Controllers\TypeVehicleController;
 use Illuminate\Support\Facades\Route;
 
 //Rutas protegidas
-Route::middleware(["check.permission:menu.type.vehicle"])->group(function () {
+Route::middleware(["check.permission:type.vehicle.list"])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
