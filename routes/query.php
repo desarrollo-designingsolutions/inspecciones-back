@@ -14,4 +14,5 @@ Route::get('/selectCities/country/{country_id}', [QueryController::class, 'selec
 Route::post('/selectInfiniteTypeVehicle', [QueryController::class, 'selectInfiniteTypeVehicle']);
 Route::post('/selectInfiniteBrandVehicle', [QueryController::class, 'selectInfiniteBrandVehicle']);
 Route::post('/selectInfiniteClient', [QueryController::class, 'selectInfiniteClient']);
+Route::post('/selectInfiniteTypeDocument', [QueryController::class, 'selectInfiniteTypeDocument']);
 

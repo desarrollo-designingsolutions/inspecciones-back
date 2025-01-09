@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Resources\BrandVehicle\BrandVehicleSelectInfiniteResource;
 use App\Http\Resources\Client\ClientSelectInfiniteResource;
 use App\Http\Resources\Country\CountrySelectResource;
+use App\Http\Resources\TypeDocument\TypeDocumentSelectInfiniteResource;
 use App\Http\Resources\TypeVehicle\TypeVehicleSelectInfiniteResource;
 use App\Repositories\BrandVehicleRepository;
 use App\Repositories\CityRepository;
 use App\Repositories\ClientRepository;
 use App\Repositories\CountryRepository;
 use App\Repositories\StateRepository;
+use App\Repositories\TypeDocumentRepository;
 use App\Repositories\TypeVehicleRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
@@ -26,6 +28,7 @@ class QueryController extends Controller
         protected TypeVehicleRepository $typeVehicleRepository,
         protected BrandVehicleRepository $brandVehicleRepository,
         protected ClientRepository $clientRepository,
+        protected TypeDocumentRepository $typeDocumentRepository,
     ) {}
 
     public function selectInfiniteCountries(Request $request)
@@ -113,6 +116,18 @@ class QueryController extends Controller
             'code' => 200,
             'client_arrayInfo' => $dataClient,
             'client_countLinks' => $client->lastPage(),
+        ];
+    }
+    public function selectInfiniteTypeDocument(Request $request)
+    {
+        $request['is_active'] = true;
+        $typeDocument = $this->typeDocumentRepository->list($request->all());
+        $dataTypeDocument = TypeDocumentSelectInfiniteResource::collection($typeDocument);
+
+        return [
+            'code' => 200,
+            'typeDocument_arrayInfo' => $dataTypeDocument,
+            'typeDocument_countLinks' => $typeDocument->lastPage(),
         ];
     }
 

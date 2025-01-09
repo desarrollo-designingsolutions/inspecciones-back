@@ -4,6 +4,7 @@ namespace App\Http\Resources\Vehicle;
 
 use App\Http\Resources\BrandVehicle\BrandVehicleSelectInfiniteResource;
 use App\Http\Resources\Client\ClientSelectInfiniteResource;
+use App\Http\Resources\TypeDocument\TypeDocumentSelectInfiniteResource;
 use App\Http\Resources\TypeVehicle\TypeVehicleSelectInfiniteResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -42,6 +43,17 @@ class VehicleFormResource extends JsonResource
             'photo_rear' => $this->photo_rear,
             'photo_right_side' => $this->photo_right_side,
             'photo_left_side' => $this->photo_left_side,
+            'type_documents' => $this->type_documents->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'vehicle_id' => $item->vehicle_id,
+                    'type_document_id' => new TypeDocumentSelectInfiniteResource($item->type_document),
+                    'document_number' => $item->document_number,
+                    'date_issue' => $item->date_issue,
+                    'expiration_date' => $item->expiration_date,
+                ];
+            }),
+
         ];
     }
 }
