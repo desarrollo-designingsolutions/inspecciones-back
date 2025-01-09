@@ -17,6 +17,7 @@ class VehicleStoreRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
+            //Modulo 1
             'company_id' => 'required',
             'license_plate' => 'required|max:6|unique:vehicles,license_plate,' . $this->id . ',id,company_id,' . $this->company_id,
             'type_vehicle_id' => 'required',
@@ -35,10 +36,14 @@ class VehicleStoreRequest extends FormRequest
             'current_mileage' => 'required|numeric|min:1',
             'have_trailer' => 'required',
             'vehicle_structure_id' => 'required',
+            //Modulo 3
+            'photo_front' => 'required|mimes:jpg,png',
+            'photo_rear' => 'required|mimes:jpg,png',
+            'photo_right_side' => 'required|mimes:jpg,png',
+            'photo_left_side' => 'required|mimes:jpg,png',
         ];
 
-        if($this->have_trailer === true)
-        {
+        if ($this->have_trailer === true) {
             $rules['trailer'] = 'required|max:255';
         }
 
@@ -85,6 +90,15 @@ class VehicleStoreRequest extends FormRequest
             'trailer.required' => 'El campo es obligatorio',
             'trailer.max' => 'El campo no debe tener mas de 255 caracteres',
             'vehicle_structure_id.required' => 'El campo es obligatorio',
+
+            'photo_front.required' => 'El campo es obligatorio',
+            'photo_front.image' => 'El campo debe ser una imagen',
+            'photo_rear.required' => 'El campo es obligatorio',
+            'photo_rear.image' => 'El campo debe ser una imagen',
+            'photo_right_side.required' => 'El campo es obligatorio',
+            'photo_right_side.image' => 'El campo debe ser una imagen',
+            'photo_left_side.required' => 'El campo es obligatorio',
+            'photo_left_side.image' => 'El campo debe ser una imagen',
         ];
     }
 
