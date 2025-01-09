@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Company extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes,Searchable;
+    use HasFactory, HasUuids, Searchable,SoftDeletes;
 
     protected $casts = [
         'is_active' => 'boolean',

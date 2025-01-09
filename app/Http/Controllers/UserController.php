@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Constants;
 use App\Http\Requests\User\UserStoreRequest;
 use App\Http\Resources\User\UserFormResource;
 use App\Http\Resources\User\UserListResource;
@@ -17,7 +18,6 @@ use Throwable;
 class UserController extends Controller
 {
     public function __construct(
-        protected QueryController $queryController,
         protected UserRepository $userRepository,
         protected RoleRepository $roleRepository,
         protected CompanyRepository $companyRepository,
@@ -40,8 +40,12 @@ class UserController extends Controller
                 'currentPage' => $data->currentPage(),
             ];
         } catch (Throwable $th) {
-
-            return response()->json(['code' => 500, 'message' => 'Error Al Buscar Los Datos', $th->getMessage(), $th->getLine()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 
@@ -62,8 +66,12 @@ class UserController extends Controller
                 'typeLicenses' => $typeLicenses,
             ]);
         } catch (Throwable $th) {
-
-            return response()->json(['code' => 500, $th->getMessage(), $th->getLine()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 
@@ -76,7 +84,7 @@ class UserController extends Controller
 
             $data = $this->userRepository->store($post, withCompany: false);
 
-            $data->syncRoles($request->input("role_id"));
+            $data->syncRoles($request->input('role_id'));
 
             DB::commit();
 
@@ -86,9 +94,9 @@ class UserController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => 'Algo Ocurrio, Comunicate Con El Equipo De Desarrollo',
-                $th->getMessage(),
-                $th->getLine(),
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
             ], 500);
         }
     }
@@ -113,23 +121,25 @@ class UserController extends Controller
                 'typeLicenses' => $typeLicenses,
             ]);
         } catch (Throwable $th) {
-
-            return response()->json(['code' => 500, $th->getMessage(), $th->getLine()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
-
 
     public function update(UserStoreRequest $request, $id)
     {
         try {
             DB::beginTransaction();
 
-
             $post = $request->except(['confirmedPassword']);
 
             $data = $this->userRepository->store($post, $id, withCompany: false);
 
-            $data->syncRoles($request->input("role_id"));
+            $data->syncRoles($request->input('role_id'));
 
             DB::commit();
 
@@ -141,7 +151,7 @@ class UserController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => 'Algo Ocurrio, Comunicate Con El Equipo De Desarrollo',
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);
@@ -162,7 +172,6 @@ class UserController extends Controller
                 //     throw new \Exception('No se puede eliminar el usuario, por que tiene relación de datos en otros módulos');
                 // }
 
-
                 $user->delete();
                 $msg = 'Registro eliminado correctamente';
             } else {
@@ -176,7 +185,7 @@ class UserController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => $th->getMessage(),
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);
@@ -188,31 +197,48 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
 
-
             $model = $this->userRepository->changeState($request->input('id'), strval($request->input('value')), $request->input('field'));
 
             ($model->is_active == 1) ? $msg = 'habilitada' : $msg = 'inhabilitada';
 
             DB::commit();
 
-            return response()->json(['code' => 200, 'message' => 'User ' . $msg . ' con éxito']);
+            return response()->json(['code' => 200, 'message' => 'User '.$msg.' con éxito']);
         } catch (Throwable $th) {
             DB::rollback();
 
-            return response()->json(['code' => 500, 'message' => $th->getMessage()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 
     public function changePassword(Request $request)
     {
+        try {
+            DB::beginTransaction();
+            // Obtener el usuario autenticado
+            $user = $this->userRepository->find($request->input('id'));
 
-        // Obtener el usuario autenticado
-        $user = $this->userRepository->find($request->input("id"));
+            // Cambiar la contraseña
+            $user->password = $request->input('new_password');
+            $user->save();
 
-        // Cambiar la contraseña
-        $user->password = $request->input("new_password");
-        $user->save();
+            DB::commit();
 
-        return response()->json(["code" => 200, 'message' => 'Contraseña modificada con éxito.']);
+            return response()->json(['code' => 200, 'message' => 'Contraseña modificada con éxito.']);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
+        }
     }
 }

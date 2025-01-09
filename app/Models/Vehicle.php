@@ -1,0 +1,63 @@
+<?php
+
+namespace App\Models;
+
+use App\Traits\Searchable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Vehicle extends Model
+{
+    use HasFactory, HasUuids, Searchable, SoftDeletes;
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'have_trailer' => 'boolean',
+        'country_id' => 'integer',
+        'state_id' => 'integer',
+        'city_id' => 'integer',
+    ];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    public function type_vehicle()
+    {
+        return $this->hasOne(TypeVehicle::class, "id", "type_vehicle_id");
+    }
+
+
+    public function brand_vehicle()
+    {
+        return $this->hasOne(BrandVehicle::class, "id", "brand_vehicle_id");
+    }
+
+    public function city()
+    {
+        return $this->hasOne(City::class, "id", "city_id");
+    }
+
+    public function state()
+    {
+        return $this->hasOne(State::class, "id", "state_id");
+    }
+
+    public function client()
+    {
+        return $this->hasOne(Client::class, "id", "client_id");
+    }
+
+    public function vehicle_structure()
+    {
+        return $this->hasOne(VehicleStructure::class, "id", "vehicle_structure_id");
+    }
+
+    public function type_document()
+    {
+        return $this->hasOne(TypeDocument::class, "id", "type_document_id");
+    }
+}

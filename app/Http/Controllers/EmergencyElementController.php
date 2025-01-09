@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Exports\EmergencyElementListExport;
+use App\Helpers\Constants;
 use App\Http\Requests\EmergencyElement\EmergencyElementStoreRequest;
 use App\Http\Resources\EmergencyElement\EmergencyElementFormResource;
 use App\Http\Resources\EmergencyElement\EmergencyElementListResource;
 use App\Repositories\EmergencyElementRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Throwable;
 use Maatwebsite\Excel\Facades\Excel;
+use Throwable;
 
 class EmergencyElementController extends Controller
 {
     public function __construct(
         protected EmergencyElementRepository $emergencyElementRepository,
-        protected QueryController $queryController,
     ) {}
 
     public function list(Request $request)
@@ -34,8 +34,12 @@ class EmergencyElementController extends Controller
                 'currentPage' => $data->currentPage(),
             ];
         } catch (Throwable $th) {
-
-            return response()->json(['code' => 500, 'message' => 'Error Al Buscar Los Datos', $th->getMessage(), $th->getLine()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 
@@ -47,7 +51,12 @@ class EmergencyElementController extends Controller
             ]);
         } catch (Throwable $th) {
 
-            return response()->json(['code' => 500, $th->getMessage(), $th->getLine()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 
@@ -66,7 +75,7 @@ class EmergencyElementController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => 'Algo Ocurrio, Comunicate Con El Equipo De Desarrollo',
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);
@@ -84,8 +93,12 @@ class EmergencyElementController extends Controller
                 'form' => $form,
             ]);
         } catch (Throwable $th) {
-
-            return response()->json(['code' => 500, $th->getMessage(), $th->getLine()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 
@@ -106,7 +119,7 @@ class EmergencyElementController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => 'Algo Ocurrio, Comunicate Con El Equipo De Desarrollo',
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);
@@ -132,7 +145,7 @@ class EmergencyElementController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => $th->getMessage(),
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);
@@ -154,7 +167,12 @@ class EmergencyElementController extends Controller
         } catch (Throwable $th) {
             DB::rollback();
 
-            return response()->json(['code' => 500, 'message' => $th->getMessage()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 
@@ -166,7 +184,7 @@ class EmergencyElementController extends Controller
                 'typeData' => 'all',
             ];
 
-             $data = $this->emergencyElementRepository->list([
+            $data = $this->emergencyElementRepository->list([
                 ...$filter,
                 ...$request->all(),
             ]);
@@ -177,7 +195,12 @@ class EmergencyElementController extends Controller
 
             return response()->json(['code' => 200, 'excel' => $excelBase64]);
         } catch (Throwable $th) {
-            return response()->json(['code' => 500, 'message' => $th->getMessage()]);
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
         }
     }
 }
