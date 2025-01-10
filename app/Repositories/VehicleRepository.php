@@ -27,13 +27,13 @@ class VehicleRepository extends BaseRepository
             }
         })->where(function ($query) use ($request) {
             if (isset($request['searchQueryGeneral']) && ! empty($request['searchQueryGeneral'])) {
-                $query->Where('name', 'like', '%' . $request['searchQueryGeneral'] . '%');
+                $query->Where('name', 'like', '%'.$request['searchQueryGeneral'].'%');
             }
             if (isset($request['searchQueryArray']) && ! empty($request['searchQueryArray'])) {
                 $query->where(function ($subQuery) use ($request) {
                     foreach ($request['searchQueryArray'] as $item) {
                         if (isset($item['search'])) {
-                            $subQuery->orWhere('is_active', 'like', '%' . $item['search'] . '%');
+                            $subQuery->orWhere('is_active', 'like', '%'.$item['search'].'%');
                         }
                     }
                 });
@@ -131,17 +131,17 @@ class VehicleRepository extends BaseRepository
     }
 
     public function validateLicense($request = []): bool
-{
-    $data = $this->model
-        ->where(function ($query) use ($request) {
-            if (! empty($request['company_id'])) {
-                $query->where('company_id', $request['company_id']);
-            }
-            if (! empty($request['license_plate'])) {
-                $query->where('license_plate', $request['license_plate']);
-            }
-        })->first();
+    {
+        $data = $this->model
+            ->where(function ($query) use ($request) {
+                if (! empty($request['company_id'])) {
+                    $query->where('company_id', $request['company_id']);
+                }
+                if (! empty($request['license_plate'])) {
+                    $query->where('license_plate', $request['license_plate']);
+                }
+            })->first();
 
-    return $data !== null; // Retorna true si la licencia cumple con ambas condiciones
-}
+        return $data !== null; // Retorna true si la licencia cumple con ambas condiciones
+    }
 }

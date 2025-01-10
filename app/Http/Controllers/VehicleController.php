@@ -77,14 +77,14 @@ class VehicleController extends Controller
         try {
             DB::beginTransaction();
 
-            $post = $request->except(["photo_front", "photo_rear", "photo_right_side", "photo_left_side", "type_documents","emergency_elements"]);
+            $post = $request->except(['photo_front', 'photo_rear', 'photo_right_side', 'photo_left_side', 'type_documents', 'emergency_elements']);
 
             $vehicle = $this->vehicleRepository->store($post);
 
             //PHOTOS
             if ($request->file('photo_front')) {
                 $file = $request->file('photo_front');
-                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_front');
+                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_front');
                 $photo_front = $file->store($ruta, 'public');
                 $vehicle->photo_front = $photo_front;
                 $vehicle->save();
@@ -92,7 +92,7 @@ class VehicleController extends Controller
 
             if ($request->file('photo_rear')) {
                 $file = $request->file('photo_rear');
-                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_rear');
+                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_rear');
                 $photo_rear = $file->store($ruta, 'public');
                 $vehicle->photo_rear = $photo_rear;
                 $vehicle->save();
@@ -100,7 +100,7 @@ class VehicleController extends Controller
 
             if ($request->file('photo_right_side')) {
                 $file = $request->file('photo_right_side');
-                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_right_side');
+                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_right_side');
                 $photo_right_side = $file->store($ruta, 'public');
                 $vehicle->photo_right_side = $photo_right_side;
                 $vehicle->save();
@@ -108,13 +108,13 @@ class VehicleController extends Controller
 
             if ($request->file('photo_left_side')) {
                 $file = $request->file('photo_left_side');
-                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_left_side');
+                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_left_side');
                 $photo_left_side = $file->store($ruta, 'public');
                 $vehicle->photo_left_side = $photo_left_side;
                 $vehicle->save();
             }
 
-            $type_documents = json_decode($request->input("type_documents"), 1);
+            $type_documents = json_decode($request->input('type_documents'), 1);
             $arrayIds = collect($type_documents)->pluck('id');
             $this->vehicleDocumentRepository->deleteArray($arrayIds, $vehicle->id);
 
@@ -122,7 +122,7 @@ class VehicleController extends Controller
                 $dataSave = [
                     'id' => $value['id'],
                     'vehicle_id' => $vehicle->id,
-                    'type_document_id' => $value['type_document_id']["value"],
+                    'type_document_id' => $value['type_document_id']['value'],
                     'document_number' => $value['document_number'],
                     'date_issue' => $value['date_issue'],
                     'expiration_date' => $value['expiration_date'],
@@ -130,7 +130,7 @@ class VehicleController extends Controller
                 $this->vehicleDocumentRepository->store($dataSave);
             }
 
-            $emergency_elements = json_decode($request->input("emergency_elements"), 1);
+            $emergency_elements = json_decode($request->input('emergency_elements'), 1);
             $arrayIds = collect($emergency_elements)->pluck('id');
             $this->vehicleDocumentRepository->deleteArray($arrayIds, $vehicle->id);
 
@@ -138,12 +138,11 @@ class VehicleController extends Controller
                 $dataSave = [
                     'id' => $value['id'],
                     'vehicle_id' => $vehicle->id,
-                    'emergency_element_id' => $value['emergency_element_id']["value"],
+                    'emergency_element_id' => $value['emergency_element_id']['value'],
                     'quantity' => $value['quantity'],
                 ];
                 $this->vehicleEmergencyElementRepository->store($dataSave);
             }
-
 
             DB::commit();
 
@@ -186,14 +185,14 @@ class VehicleController extends Controller
         try {
             DB::beginTransaction();
 
-            $post = $request->except(["photo_front", "photo_rear", "photo_right_side", "photo_left_side", "type_documents","emergency_elements"]);
+            $post = $request->except(['photo_front', 'photo_rear', 'photo_right_side', 'photo_left_side', 'type_documents', 'emergency_elements']);
 
-             $vehicle = $this->vehicleRepository->store($post);
+            $vehicle = $this->vehicleRepository->store($post);
 
             //PHOTOS
             if ($request->file('photo_front')) {
                 $file = $request->file('photo_front');
-                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_front');
+                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_front');
                 $photo_front = $file->store($ruta, 'public');
                 $vehicle->photo_front = $photo_front;
                 $vehicle->save();
@@ -201,7 +200,7 @@ class VehicleController extends Controller
 
             if ($request->file('photo_rear')) {
                 $file = $request->file('photo_rear');
-                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_rear');
+                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_rear');
                 $photo_rear = $file->store($ruta, 'public');
                 $vehicle->photo_rear = $photo_rear;
                 $vehicle->save();
@@ -209,7 +208,7 @@ class VehicleController extends Controller
 
             if ($request->file('photo_right_side')) {
                 $file = $request->file('photo_right_side');
-                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_right_side');
+                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_right_side');
                 $photo_right_side = $file->store($ruta, 'public');
                 $vehicle->photo_right_side = $photo_right_side;
                 $vehicle->save();
@@ -217,13 +216,13 @@ class VehicleController extends Controller
 
             if ($request->file('photo_left_side')) {
                 $file = $request->file('photo_left_side');
-                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_left_side');
+                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_left_side');
                 $photo_left_side = $file->store($ruta, 'public');
                 $vehicle->photo_left_side = $photo_left_side;
                 $vehicle->save();
             }
 
-            $type_documents = json_decode($request->input("type_documents"), 1);
+            $type_documents = json_decode($request->input('type_documents'), 1);
             $arrayIds = collect($type_documents)->pluck('id');
             $this->vehicleDocumentRepository->deleteArray($arrayIds, $vehicle->id);
 
@@ -231,7 +230,7 @@ class VehicleController extends Controller
                 $dataSave = [
                     'id' => $value['id'],
                     'vehicle_id' => $vehicle->id,
-                    'type_document_id' => $value['type_document_id']["value"],
+                    'type_document_id' => $value['type_document_id']['value'],
                     'document_number' => $value['document_number'],
                     'date_issue' => $value['date_issue'],
                     'expiration_date' => $value['expiration_date'],
@@ -239,7 +238,7 @@ class VehicleController extends Controller
                 $this->vehicleDocumentRepository->store($dataSave);
             }
 
-            $emergency_elements = json_decode($request->input("emergency_elements"), 1);
+            $emergency_elements = json_decode($request->input('emergency_elements'), 1);
             $arrayIds = collect($emergency_elements)->pluck('id');
             $this->vehicleEmergencyElementRepository->deleteArray($arrayIds, $vehicle->id);
 
@@ -247,10 +246,10 @@ class VehicleController extends Controller
                 $dataSave = [
                     'id' => $value['id'],
                     'vehicle_id' => $vehicle->id,
-                    'emergency_element_id' => $value['emergency_element_id']["value"],
+                    'emergency_element_id' => $value['emergency_element_id']['value'],
                     'quantity' => $value['quantity'],
                 ];
-                  $this->vehicleEmergencyElementRepository->store($dataSave);
+                $this->vehicleEmergencyElementRepository->store($dataSave);
             }
 
             DB::commit();
@@ -307,7 +306,7 @@ class VehicleController extends Controller
 
             DB::commit();
 
-            return response()->json(['code' => 200, 'message' => 'Vehiculo ' . $msg . ' con éxito']);
+            return response()->json(['code' => 200, 'message' => 'Vehiculo '.$msg.' con éxito']);
         } catch (Throwable $th) {
             DB::rollback();
 
@@ -354,9 +353,9 @@ class VehicleController extends Controller
             $request->validate([
                 'license_plate' => 'required|string',
             ]);
-    
+
             $exists = $this->vehicleRepository->validateLicense($request->all());
-    
+
             return [
                 'message_licences' => 'La Licencia ya existe.',
                 'exists' => $exists,

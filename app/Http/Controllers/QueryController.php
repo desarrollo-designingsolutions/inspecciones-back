@@ -121,6 +121,7 @@ class QueryController extends Controller
             'client_countLinks' => $client->lastPage(),
         ];
     }
+
     public function selectInfiniteTypeDocument(Request $request)
     {
         $request['is_active'] = true;
@@ -133,6 +134,7 @@ class QueryController extends Controller
             'typeDocument_countLinks' => $typeDocument->lastPage(),
         ];
     }
+
     public function selectInfiniteEmergencyElement(Request $request)
     {
         $request['is_active'] = true;
@@ -145,5 +147,4 @@ class QueryController extends Controller
             'emergencyElement_countLinks' => $emergencyElement->lastPage(),
         ];
     }
-
 }

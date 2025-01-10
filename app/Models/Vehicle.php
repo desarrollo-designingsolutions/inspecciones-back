@@ -27,42 +27,41 @@ class Vehicle extends Model
 
     public function type_vehicle()
     {
-        return $this->hasOne(TypeVehicle::class, "id", "type_vehicle_id");
+        return $this->hasOne(TypeVehicle::class, 'id', 'type_vehicle_id');
     }
-
 
     public function brand_vehicle()
     {
-        return $this->hasOne(BrandVehicle::class, "id", "brand_vehicle_id");
+        return $this->hasOne(BrandVehicle::class, 'id', 'brand_vehicle_id');
     }
 
     public function city()
     {
-        return $this->hasOne(City::class, "id", "city_id");
+        return $this->hasOne(City::class, 'id', 'city_id');
     }
 
     public function state()
     {
-        return $this->hasOne(State::class, "id", "state_id");
+        return $this->hasOne(State::class, 'id', 'state_id');
     }
 
     public function client()
     {
-        return $this->hasOne(Client::class, "id", "client_id");
+        return $this->hasOne(Client::class, 'id', 'client_id');
     }
 
     public function vehicle_structure()
     {
-        return $this->hasOne(VehicleStructure::class, "id", "vehicle_structure_id");
+        return $this->hasOne(VehicleStructure::class, 'id', 'vehicle_structure_id');
     }
 
     public function type_documents()
     {
-        return $this->hasMany(VehicleDocument::class, "vehicle_id", "id");
+        return $this->hasMany(VehicleDocument::class, 'vehicle_id', 'id');
     }
 
     public function emergency_elements()
     {
-        return $this->hasMany(VehicleEmergencyElement::class, "vehicle_id", "id");
+        return $this->hasMany(VehicleEmergencyElement::class, 'vehicle_id', 'id');
     }
 }

@@ -29,12 +29,12 @@ class UserStoreRequest extends FormRequest
         $rules = [
             'name' => 'required',
             'surname' => 'required',
-            'email' => 'email|regex:"^[^@]+@[^@]+\.[a-zA-Z]{2,}$"|required|unique:users,email,' . $this->id . ',id,company_id,' . $this->company_id,
+            'email' => 'email|regex:"^[^@]+@[^@]+\.[a-zA-Z]{2,}$"|required|unique:users,email,'.$this->id.',id,company_id,'.$this->company_id,
             'company_id' => 'required',
             'role_id' => 'required',
         ];
 
-        $operator =(bool) DB::table('roles')
+        $operator = (bool) DB::table('roles')
             ->where('id', $this->role_id)
             ->value('operator');
 
@@ -42,7 +42,7 @@ class UserStoreRequest extends FormRequest
             $rules['type_document_id'] = 'required';
             $rules['type_document_name'] = 'required';
             $rules['type_license_id'] = 'required';
-            $rules['type_license_name'] = 'required|unique:users,type_license_name,' . $this->id . ',id,company_id,' . $this->company_id;
+            $rules['type_license_name'] = 'required|unique:users,type_license_name,'.$this->id.',id,company_id,'.$this->company_id;
             $rules['expiration_date'] = 'required|date';
         }
 

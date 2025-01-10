@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\TypeLicense;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class TypeLicenseSeeder extends Seeder
@@ -30,8 +29,8 @@ class TypeLicenseSeeder extends Seeder
 
         foreach ($arrayData as $key => $value) {
             $data = TypeLicense::find($value['id']);
-            if (!$data) {
-                $data = new TypeLicense();
+            if (! $data) {
+                $data = new TypeLicense;
             }
             $data->id = $value['id'];
             $data->name = $value['name'];

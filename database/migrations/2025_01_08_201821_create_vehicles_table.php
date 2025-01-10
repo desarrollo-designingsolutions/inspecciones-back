@@ -41,9 +41,6 @@ return new class extends Migration
             $table->string('photo_right_side')->nullable();
             $table->string('photo_left_side')->nullable();
 
-
-
-
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();

@@ -19,7 +19,7 @@ class VehicleListResource extends JsonResource
             'id' => $this->id,
             'license_plate' => $this->license_plate,
             'type_vehicle_name' => $this->type_vehicle?->name,
-            'date_registration' => Carbon::parse($this->date_registration)->format("d-m-Y"),
+            'date_registration' => Carbon::parse($this->date_registration)->format('d-m-Y'),
             'model' => $this->model,
             'city_name' => $this->city?->name,
         ];

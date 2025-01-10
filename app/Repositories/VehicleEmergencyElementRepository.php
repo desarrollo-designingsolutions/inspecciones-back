@@ -27,13 +27,13 @@ class VehicleEmergencyElementRepository extends BaseRepository
             }
         })->where(function ($query) use ($request) {
             if (isset($request['searchQueryGeneral']) && ! empty($request['searchQueryGeneral'])) {
-                $query->Where('name', 'like', '%' . $request['searchQueryGeneral'] . '%');
+                $query->Where('name', 'like', '%'.$request['searchQueryGeneral'].'%');
             }
             if (isset($request['searchQueryArray']) && ! empty($request['searchQueryArray'])) {
                 $query->where(function ($subQuery) use ($request) {
                     foreach ($request['searchQueryArray'] as $item) {
                         if (isset($item['search'])) {
-                            $subQuery->orWhere('is_active', 'like', '%' . $item['search'] . '%');
+                            $subQuery->orWhere('is_active', 'like', '%'.$item['search'].'%');
                         }
                     }
                 });

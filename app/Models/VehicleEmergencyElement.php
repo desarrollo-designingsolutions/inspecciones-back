@@ -12,9 +12,8 @@ class VehicleEmergencyElement extends Model
 {
     use HasFactory, HasUuids, Searchable, SoftDeletes;
 
-
     public function emergency_element()
     {
-        return $this->hasOne(EmergencyElement::class, "id", "emergency_element_id");
+        return $this->hasOne(EmergencyElement::class, 'id', 'emergency_element_id');
     }
 }

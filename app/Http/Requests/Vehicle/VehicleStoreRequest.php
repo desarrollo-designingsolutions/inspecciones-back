@@ -19,7 +19,7 @@ class VehicleStoreRequest extends FormRequest
         $rules = [
             //Modulo 1
             'company_id' => 'required',
-            'license_plate' => 'required|max:6|unique:vehicles,license_plate,' . $this->id . ',id,company_id,' . $this->company_id,
+            'license_plate' => 'required|max:6|unique:vehicles,license_plate,'.$this->id.',id,company_id,'.$this->company_id,
             'type_vehicle_id' => 'required',
             'date_registration' => 'required|date|before_or_equal:today',
             'brand_vehicle_id' => 'required',
@@ -105,7 +105,7 @@ class VehicleStoreRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            "have_trailer" => $this->have_trailer == 'true' ? true : false
+            'have_trailer' => $this->have_trailer == 'true' ? true : false,
         ]);
     }
 

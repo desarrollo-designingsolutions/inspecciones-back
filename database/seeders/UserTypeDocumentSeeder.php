@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\UserTypeDocument;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class UserTypeDocumentSeeder extends Seeder
@@ -34,8 +33,8 @@ class UserTypeDocumentSeeder extends Seeder
 
         foreach ($arrayData as $key => $value) {
             $data = UserTypeDocument::find($value['id']);
-            if (!$data) {
-                $data = new UserTypeDocument();
+            if (! $data) {
+                $data = new UserTypeDocument;
             }
             $data->id = $value['id'];
             $data->name = $value['name'];

@@ -28,11 +28,11 @@ class UserTypeDocumentRepository extends BaseRepository
             if (isset($request['searchQueryGeneral']) && ! empty($request['searchQueryGeneral'])) {
                 $query->Where('name', 'like', '%'.$request['searchQueryGeneral'].'%');
             }
-            if (isset($request['searchQueryArray']) && !empty($request['searchQueryArray'])) {
+            if (isset($request['searchQueryArray']) && ! empty($request['searchQueryArray'])) {
                 $query->where(function ($subQuery) use ($request) {
                     foreach ($request['searchQueryArray'] as $item) {
                         if (isset($item['search'])) {
-                            $subQuery->orWhere('is_active', 'like', '%' . $item['search'] . '%');
+                            $subQuery->orWhere('is_active', 'like', '%'.$item['search'].'%');
                         }
                     }
                 });
@@ -79,7 +79,7 @@ class UserTypeDocumentRepository extends BaseRepository
             if (! empty($request['idsAllowed'])) {
                 $query->whereIn('id', $request['idsAllowed']);
             }
-            if (!empty($request['company_id'])) {
+            if (! empty($request['company_id'])) {
                 $query->where('company_id', $request['company_id']);
             }
         })->get()->map(function ($value) use ($with, $select, $fieldValue, $fieldTitle) {
@@ -108,7 +108,7 @@ class UserTypeDocumentRepository extends BaseRepository
 
     public function searchOne($request = [], $with = [], $select = ['*'])
     {
-        $data = $this->model->select($select)->with($with)->where(function ($query) use ($request) {});
+        $data = $this->model->select($select)->with($with)->where(function ($query) {});
 
         $data = $data->first();
 
@@ -117,7 +117,7 @@ class UserTypeDocumentRepository extends BaseRepository
 
     public function countData($request = [])
     {
-        $data = $this->model->where(function ($query) use ($request) {});
+        $data = $this->model->where(function ($query) {});
 
         $data = $data->count();
 
