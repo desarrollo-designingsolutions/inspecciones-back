@@ -28,4 +28,6 @@ Route::middleware(['check.permission:vehicle.list'])->group(function () {
 
     Route::post('/vehicle/excelExport', [VehicleController::class, 'excelExport']);
 
+    Route::post('/vehicle/validate-license-plate', [VehicleController::class, 'validateLicense']);
+
 });

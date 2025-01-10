@@ -347,4 +347,27 @@ class VehicleController extends Controller
             ], 500);
         }
     }
+
+    public function validateLicense(Request $request)
+    {
+        try {
+            $request->validate([
+                'license_plate' => 'required|string',
+            ]);
+    
+            $exists = $this->vehicleRepository->validateLicense($request->all());
+    
+            return [
+                'message_licences' => 'La Licencia ya existe.',
+                'exists' => $exists,
+            ];
+        } catch (Throwable $th) {
+            return response()->json([
+                'code' => 500,
+                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+            ], 500);
+        }
+    }
 }
