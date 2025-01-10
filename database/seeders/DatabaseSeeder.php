@@ -23,8 +23,11 @@ class DatabaseSeeder extends Seeder
             MenuSeeder::class,
             PermissionSeeder::class,
             RoleSeeder::class,
-            // CompanySeeder::class,
+            CompanySeeder::class,
             UserSeeder::class,
+            TypeLicenseSeeder::class,
+            UserTypeDocumentSeeder::class,
+            VehicleStructureSeeder::class,
         ]);
 
         $client = new ClientRepository;
