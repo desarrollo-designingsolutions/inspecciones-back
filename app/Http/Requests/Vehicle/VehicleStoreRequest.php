@@ -37,10 +37,10 @@ class VehicleStoreRequest extends FormRequest
             'have_trailer' => 'required',
             'vehicle_structure_id' => 'required',
             //Modulo 3
-            'photo_front' => 'required|mimes:jpg,png',
-            'photo_rear' => 'required|mimes:jpg,png',
-            'photo_right_side' => 'required|mimes:jpg,png',
-            'photo_left_side' => 'required|mimes:jpg,png',
+            'photo_front' => 'required|extensions:jpg,png',
+            'photo_rear' => 'required|extensions:jpg,png',
+            'photo_right_side' => 'required|extensions:jpg,png',
+            'photo_left_side' => 'required|extensions:jpg,png',
         ];
 
         if ($this->have_trailer === true) {
@@ -92,13 +92,13 @@ class VehicleStoreRequest extends FormRequest
             'vehicle_structure_id.required' => 'El campo es obligatorio',
 
             'photo_front.required' => 'El campo es obligatorio',
-            'photo_front.image' => 'El campo debe ser una imagen',
+            'photo_front.extensions' => 'El archivo debe ser de tipo PNG, JPG.',
             'photo_rear.required' => 'El campo es obligatorio',
-            'photo_rear.image' => 'El campo debe ser una imagen',
+            'photo_rear.extensions' => 'El archivo debe ser de tipo PNG, JPG.',
             'photo_right_side.required' => 'El campo es obligatorio',
-            'photo_right_side.image' => 'El campo debe ser una imagen',
+            'photo_right_side.extensions' => 'El archivo debe ser de tipo PNG, JPG.',
             'photo_left_side.required' => 'El campo es obligatorio',
-            'photo_left_side.image' => 'El campo debe ser una imagen',
+            'photo_left_side.extensions' => 'El archivo debe ser de tipo PNG, JPG.',
         ];
     }
 

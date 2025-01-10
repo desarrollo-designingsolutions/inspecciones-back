@@ -347,17 +347,17 @@ class VehicleController extends Controller
         }
     }
 
-    public function validateLicense(Request $request)
+    public function validateLicensePlate(Request $request)
     {
         try {
             $request->validate([
                 'license_plate' => 'required|string',
             ]);
 
-            $exists = $this->vehicleRepository->validateLicense($request->all());
+            $exists = $this->vehicleRepository->validateLicensePlate($request->all());
 
             return [
-                'message_licences' => 'La Licencia ya existe.',
+                'message_licences' => 'La número de placa ya existe.',
                 'exists' => $exists,
             ];
         } catch (Throwable $th) {

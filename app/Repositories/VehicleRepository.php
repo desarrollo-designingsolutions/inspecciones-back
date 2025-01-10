@@ -130,7 +130,7 @@ class VehicleRepository extends BaseRepository
         return $data;
     }
 
-    public function validateLicense($request = []): bool
+    public function validateLicensePlate($request = []): bool
     {
         $data = $this->model
             ->where(function ($query) use ($request) {
