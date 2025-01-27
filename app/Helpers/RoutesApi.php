@@ -21,5 +21,6 @@ class RoutesApi
         'routes/typeDocument.php',
         'routes/emergencyElement.php',
         'routes/vehicle.php',
+        'routes/inspection.php',
     ];
 }

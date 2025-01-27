@@ -55,12 +55,15 @@ class UserTypeDocumentRepository extends BaseRepository
         return $data;
     }
 
-    public function store($request)
+    public function store(array $request, $id = null)
     {
         $request = $this->clearNull($request);
 
-        if (! empty($request['id'])) {
-            $data = $this->model->find($request['id']);
+        // Determinar el ID a utilizar para buscar o crear el modelo
+        $idToUse = ($id === null || $id === 'null') && ! empty($request['id']) && $request['id'] !== 'null' ? $request['id'] : $id;
+
+        if (! empty($idToUse)) {
+            $data = $this->model->find($idToUse);
         } else {
             $data = $this->model::newModelInstance();
         }
@@ -68,6 +71,7 @@ class UserTypeDocumentRepository extends BaseRepository
         foreach ($request as $key => $value) {
             $data[$key] = is_array($request[$key]) ? $request[$key]['value'] : $request[$key];
         }
+
         $data->save();
 
         return $data;

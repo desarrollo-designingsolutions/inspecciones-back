@@ -3,11 +3,11 @@
 namespace App\Repositories;
 
 use App\Helpers\Constants;
-use App\Models\TypeVehicle;
+use App\Models\Inspection;
 
-class TypeVehicleRepository extends BaseRepository
+class InspectionRepository extends BaseRepository
 {
-    public function __construct(TypeVehicle $modelo)
+    public function __construct(Inspection $modelo)
     {
         parent::__construct($modelo);
     }
@@ -26,13 +26,13 @@ class TypeVehicleRepository extends BaseRepository
             }
         })->where(function ($query) use ($request) {
             if (isset($request['searchQueryGeneral']) && ! empty($request['searchQueryGeneral'])) {
-                $query->Where('name', 'like', '%'.$request['searchQueryGeneral'].'%');
+                $query->Where('name', 'like', '%' . $request['searchQueryGeneral'] . '%');
             }
             if (isset($request['searchQueryArray']) && ! empty($request['searchQueryArray'])) {
                 $query->where(function ($subQuery) use ($request) {
                     foreach ($request['searchQueryArray'] as $item) {
                         if (isset($item['search'])) {
-                            $subQuery->orWhere('is_active', 'like', '%'.$item['search'].'%');
+                            $subQuery->orWhere('is_active', 'like', '%' . $item['search'] . '%');
                         }
                     }
                 });
@@ -76,6 +76,7 @@ class TypeVehicleRepository extends BaseRepository
 
         return $data;
     }
+
 
     public function selectList($request = [], $with = [], $select = [], $fieldValue = 'id', $fieldTitle = 'name')
     {
@@ -131,5 +132,20 @@ class TypeVehicleRepository extends BaseRepository
         $data = $data->count();
 
         return $data;
+    }
+
+    public function validateLicensePlate($request = []): bool
+    {
+        $data = $this->model
+            ->where(function ($query) use ($request) {
+                if (! empty($request['company_id'])) {
+                    $query->where('company_id', $request['company_id']);
+                }
+                if (! empty($request['license_plate'])) {
+                    $query->where('license_plate', $request['license_plate']);
+                }
+            })->first();
+
+        return $data !== null; // Retorna true si la licencia cumple con ambas condiciones
     }
 }

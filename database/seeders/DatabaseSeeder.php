@@ -28,6 +28,10 @@ class DatabaseSeeder extends Seeder
             TypeLicenseSeeder::class,
             UserTypeDocumentSeeder::class,
             VehicleStructureSeeder::class,
+
+            InspectionTypeSeeder::class,
+            InspectionTypeGroupSeeder::class,
+            InspectionTypeInputSeeder::class,
         ]);
 
         $client = new ClientRepository;

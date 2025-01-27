@@ -116,6 +116,15 @@ class MenuSeeder extends Seeder
                 'father' => null,
                 'requiredPermission' => 'vehicle.list',
             ],
+            [
+                'id' => 12,
+                'order' => 120,
+                'title' => 'Inspecciones',
+                'to' => 'Inspection-List',
+                'icon' => 'tabler-list-check',
+                'father' => null,
+                'requiredPermission' => 'inspection.list',
+            ],
         ];
 
         // Inicializar la barra de progreso

@@ -7,7 +7,6 @@ function filterComponent($query, $request, $model = null)
 {
     if (isset($request['searchQuery']) && is_string($request['searchQuery'])) {
         $request['searchQuery'] = json_decode($request['searchQuery'], 1);
-        // var_dump($request["searchQuery"]);
     }
 
     // Aplicar búsqueda global si existe el término de búsqueda
