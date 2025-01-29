@@ -21,7 +21,7 @@ class UserRepository extends BaseRepository
                 filterComponent($query, $request);
 
                 if (! empty($request['name'])) {
-                    $query->where('name', 'like', '%'.$request['name'].'%');
+                    $query->where('name', 'like', '%' . $request['name'] . '%');
                 }
 
                 //idsAllowed
@@ -37,7 +37,10 @@ class UserRepository extends BaseRepository
                 if (! empty($request['company_id'])) {
                     $query->where('company_id', $request['company_id']);
                 }
-
+            })->where(function ($query) use ($request) {
+                if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
+                    $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
+                }
             });
 
         if (count($order) > 0) {
@@ -152,6 +155,36 @@ class UserRepository extends BaseRepository
             $query->where('company_id', Auth::user()->company_id);
             $query->where('role_id', '!=', 1);
         })->count();
+
+        return $data;
+    }
+
+    public function getOperators($request = [])
+    {
+        $data = $this->model->whereHas('role', function ($query) {
+            $query->where('operator', true);
+        })->where(function ($query) use ($request) {
+            filterComponent($query, $request);
+
+            if (! empty($request['is_active'])) {
+                $query->where('is_active', $request['is_active']);
+            }
+
+            if (! empty($request['company_id'])) {
+                $query->where('company_id', $request['company_id']);
+            }
+        })->where(function ($query) use ($request) {
+            if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
+                $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
+                $query->orWhere('surname', 'like', '%' . $request['searchQueryInfinite'] . '%');
+            }
+        });
+
+        if (empty($request['typeData'])) {
+            $data = $data->paginate($request['perPage'] ?? Constants::ITEMS_PER_PAGE);
+        } else {
+            $data = $data->get();
+        }
 
         return $data;
     }

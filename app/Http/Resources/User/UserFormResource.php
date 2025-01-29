@@ -22,9 +22,9 @@ class UserFormResource extends JsonResource
             'role_id' => $this->role_id,
             'company_id' => $this->company_id,
             'type_document_id' => $this->type_document_id,
-            'type_document_name' => $this->type_document_number,
+            'document' => $this->document,
             'type_license_id' => $this->type_license_id,
-            'type_license_name' => $this->type_license_number,
+            'license' => $this->license,
             'expiration_date' => $this->expiration_date,
         ];
     }

@@ -40,9 +40,9 @@ class UserStoreRequest extends FormRequest
 
         if ($operator === true) {
             $rules['type_document_id'] = 'required';
-            $rules['type_document_name'] = 'required';
+            $rules['document'] = 'required';
             $rules['type_license_id'] = 'required';
-            $rules['type_license_name'] = 'required|unique:users,type_license_name,'.$this->id.',id,company_id,'.$this->company_id;
+            $rules['license'] = 'required|unique:users,license,'.$this->id.',id,company_id,'.$this->company_id;
             $rules['expiration_date'] = 'required|date';
         }
 
@@ -66,10 +66,10 @@ class UserStoreRequest extends FormRequest
             'company_id.required' => 'El campo es obligatorio',
             'role_id.required' => 'El campo es obligatorio',
             'type_document_id.required' => 'El campo es obligatorio',
-            'type_document_name.required' => 'El campo es obligatorio',
+            'document.required' => 'El campo es obligatorio',
             'type_license_id.required' => 'El campo es obligatorio',
-            'type_license_name.required' => 'El campo es obligatorio',
-            'type_license_name.unique' => 'La licencia ya existe',
+            'license.required' => 'El campo es obligatorio',
+            'license.unique' => 'La licencia ya existe',
             'expiration_date.required' => 'El campo es obligatorio',
             'expiration_date.date' => 'El campo debe ser una fecha',
         ];

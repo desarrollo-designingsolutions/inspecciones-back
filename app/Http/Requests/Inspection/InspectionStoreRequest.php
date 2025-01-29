@@ -3,12 +3,14 @@
 namespace App\Http\Requests\Inspection;
 
 use App\Helpers\Constants;
+use App\Models\InspectionTypeGroup;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class InspectionStoreRequest extends FormRequest
 {
+    private $tabs;
     /**
      * Get the validation rules that apply to the request.
      *
@@ -17,28 +19,58 @@ class InspectionStoreRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            //Modulo 1
             'company_id' => 'required',
+            'city_id' => 'required',
+            'state_id' => 'required',
+            'user_id' => 'required',
+            'vehicle_id' => 'required',
+            'inspection_date' => 'required',
         ];
 
-        if ($this->have_trailer === true) {
-            $rules['trailer'] = 'required|max:255';
-        }
+
+        // foreach ($this->tabs as $tab) {
+        //     if (isset($tab['inspectionTypeInputs']) && count($tab['inspectionTypeInputs']) > 0) {
+        //         foreach ($tab['inspectionTypeInputs'] as $input) {
+        //             $rules[$input['id']] = 'required';
+        //         }
+        //     }
+        // }
+
+
 
         return $rules;
     }
 
     public function messages(): array
     {
-        return [
+        $messages = [
             'company_id.required' => 'El campo es obligatorio',
+            'city_id.required' => 'El campo es obligatorio',
+            'state_id.required' => 'El campo es obligatorio',
+            'user_id.required' => 'El campo es obligatorio',
+            'vehicle_id.required' => 'El campo es obligatorio',
+            'inspection_date.required' => 'El campo es obligatorio',
         ];
+
+        foreach ($this->tabs as $tab) {
+            if (isset($tab['inspectionTypeInputs']) && count($tab['inspectionTypeInputs']) > 0) {
+                foreach ($tab['inspectionTypeInputs'] as $input) {
+                    $messages[$input['id'] . '.required'] = 'El campo es obligatorio';
+                }
+            }
+        }
+
+        return $messages;
     }
 
     protected function prepareForValidation(): void
     {
+        $this->tabs = InspectionTypeGroup::select(['id'])->with(['inspectionTypeInputs:id,inspection_type_group_id'])->where('inspection_type_id', $this->inspection_type_id)->get();
+
         $this->merge([
-            'have_trailer' => $this->have_trailer == 'true' ? true : false,
+            'user_id' => is_array($this->user_id) && isset($this->user_id['value']) ? $this->user_id['value'] : $this->user_id,
+            'vehicle_id' => is_array($this->vehicle_id) && isset($this->vehicle_id['value']) ? $this->vehicle_id['value'] : $this->vehicle_id,
+
         ]);
     }
 

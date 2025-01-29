@@ -56,6 +56,14 @@ class BaseRepository
         return $model;
     }
 
+    public function updateOrCreate($attributes, $data)
+    {
+        return $this->model::updateOrCreate(
+            $attributes,
+            $data
+        );
+    }
+
     public function make(Model $model) //esto es para simular un registro
     {
         $model->make();
@@ -121,7 +129,7 @@ class BaseRepository
         }
         // dd('pasí');
 
-        $nombre = $nombre.'.pdf';
+        $nombre = $nombre . '.pdf';
         if ($is_stream) {
             return $pdf->stream($nombre);
         } else {

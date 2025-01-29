@@ -6,8 +6,10 @@ use App\Http\Resources\BrandVehicle\BrandVehicleSelectInfiniteResource;
 use App\Http\Resources\Client\ClientSelectInfiniteResource;
 use App\Http\Resources\Country\CountrySelectResource;
 use App\Http\Resources\EmergencyElement\EmergencyElementSelectInfiniteResource;
+use App\Http\Resources\PlateVehicle\PlateVehicleSelectInfiniteResource;
 use App\Http\Resources\TypeDocument\TypeDocumentSelectInfiniteResource;
 use App\Http\Resources\TypeVehicle\TypeVehicleSelectInfiniteResource;
+use App\Http\Resources\User\UserOperatorsSelectInfiniteResource;
 use App\Repositories\BrandVehicleRepository;
 use App\Repositories\CityRepository;
 use App\Repositories\ClientRepository;
@@ -17,6 +19,7 @@ use App\Repositories\StateRepository;
 use App\Repositories\TypeDocumentRepository;
 use App\Repositories\TypeVehicleRepository;
 use App\Repositories\UserRepository;
+use App\Repositories\VehicleRepository;
 use Illuminate\Http\Request;
 
 class QueryController extends Controller
@@ -32,6 +35,7 @@ class QueryController extends Controller
         protected ClientRepository $clientRepository,
         protected TypeDocumentRepository $typeDocumentRepository,
         protected EmergencyElementRepository $emergencyElementRepository,
+        protected VehicleRepository $vehicleRepository,
     ) {}
 
     public function selectInfiniteCountries(Request $request)
@@ -145,6 +149,32 @@ class QueryController extends Controller
             'code' => 200,
             'emergencyElement_arrayInfo' => $dataEmergencyElement,
             'emergencyElement_countLinks' => $emergencyElement->lastPage(),
+        ];
+    }
+
+    public function selectInfinitePlateVehicle(Request $request)
+    {
+        $request['is_active'] = true;
+        $plateVehicle = $this->vehicleRepository->list($request->all());
+        $dataPlateVehicle = PlateVehicleSelectInfiniteResource::collection($plateVehicle);
+
+        return [
+            'code' => 200,
+            'plateVehicle_arrayInfo' => $dataPlateVehicle,
+            'plateVehicle_countLinks' => $plateVehicle->lastPage(),
+        ];
+    }
+
+    public function selectInfiniteUserOperator(Request $request)
+    {
+        $request['is_active'] = true;
+        $userOperator = $this->userRepository->getOperators($request->all());
+        $dataUserOperator = UserOperatorsSelectInfiniteResource::collection($userOperator);
+
+        return [
+            'code' => 200,
+            'userOperator_arrayInfo' => $dataUserOperator,
+            'userOperator_countLinks' => $userOperator->lastPage(),
         ];
     }
 }

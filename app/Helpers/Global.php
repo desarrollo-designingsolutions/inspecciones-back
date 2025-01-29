@@ -202,3 +202,75 @@ function formattedElement($element)
 
     return $element;
 }
+
+function getStatus($value = null, $types = [], $compareByKey = 'value', $returnByKey = 'title', $typeSearch = '===')
+{
+    if ($value !== null) {
+        // Convierte el valor a minúsculas para comparación insensible
+        $inputValue = strtolower($value);
+
+        foreach ($types as $state) {
+            // Convierte el valor de la base a minúsculas para comparación insensible
+            $stateValue = strtolower($state[$compareByKey]);
+
+            // Compara de acuerdo con el tipo de búsqueda
+            switch ($typeSearch) {
+                case '===': // Compara estrictamente
+                    if ($stateValue === $inputValue) {
+                        return $state[$returnByKey];
+                    }
+                    break;
+
+                case '==': // Compara con igualdad
+                    if ($stateValue == $inputValue) {
+                        return $state[$returnByKey];
+                    }
+                    break;
+
+                case '!=': // Compara desigualdad
+                    if ($stateValue != $inputValue) {
+                        return $state[$returnByKey];
+                    }
+                    break;
+
+                case 'LIKE': // Compara con LIKE (útil para búsquedas parciales)
+                    if (strpos($stateValue, $inputValue) !== false) {
+                        return $state[$returnByKey];
+                    }
+                    break;
+
+                default:
+                    // Si el tipo de comparación no es reconocido, usa estrictamente
+                    if ($stateValue === $inputValue) {
+                        return $state[$returnByKey];
+                    }
+                    break;
+            }
+        }
+    }
+
+    return $types; // Retornar el array si no se encuentra el valor
+}
+
+
+function getResponseDocument($value = null, $compareByKey = 'value', $returnByKey = 'title', $typeSearch = '===')
+{
+    $types = [
+        ['value' => 1, 'title' => 'Original'],
+        ['value' => 0, 'title' => 'Copia'],
+    ];
+
+    return getStatus($value, $types, $compareByKey, $returnByKey, $typeSearch);
+}
+
+function getResponseVehicle($value = null, $compareByKey = 'value', $returnByKey = 'title', $typeSearch = '===')
+{
+    $types = [
+        ['value' => 'good', 'title' => 'bueno'],
+        ['value' => 'regular', 'title' => 'regular'],
+        ['value' => 'bad', 'title' => 'malo'],
+        ['value' => 'not applicable', 'title' => 'no aplica'],
+    ];
+
+    return getStatus($value, $types, $compareByKey, $returnByKey, $typeSearch);
+}

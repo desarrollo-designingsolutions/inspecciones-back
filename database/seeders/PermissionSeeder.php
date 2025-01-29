@@ -90,10 +90,10 @@ class PermissionSeeder extends Seeder
                 'menu_id' => 12,
             ],
             [
-                'id' => 12,
+                'id' => 13,
                 'name' => 'inspection.list',
                 'description' => 'Visualizar Menú Inspecciones',
-                'menu_id' => 12,
+                'menu_id' => 13,
             ],
         ];
 

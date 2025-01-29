@@ -28,8 +28,8 @@ class CityRepository extends BaseRepository
                 }
             })
             ->where(function ($query) use ($request) {
-                if (! empty($request['searchQuery'])) {
-                    $query->orWhere('name', 'like', '%'.$request['searchQuery'].'%');
+                if (! empty($request['searchQueryInfinite'])) {
+                    $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
                 }
             });
         if (empty($request['typeData'])) {

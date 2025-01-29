@@ -3,11 +3,11 @@
 namespace App\Repositories;
 
 use App\Helpers\Constants;
-use App\Models\UserTypeDocument;
+use App\Models\InspectionDocumentVerification;
 
-class UserTypeDocumentRepository extends BaseRepository
+class InspectionDocumentVerificationRepository extends BaseRepository
 {
-    public function __construct(UserTypeDocument $modelo)
+    public function __construct(InspectionDocumentVerification $modelo)
     {
         parent::__construct($modelo);
     }
@@ -17,9 +17,6 @@ class UserTypeDocumentRepository extends BaseRepository
         $data = $this->model->select($select)->with($with)->where(function ($query) use ($request) {
             filterComponent($query, $request);
 
-            if (! empty($request['is_active'])) {
-                $query->where('is_active', $request['is_active']);
-            }
         })->where(function ($query) use ($request) {
             if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
                 $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
@@ -64,14 +61,12 @@ class UserTypeDocumentRepository extends BaseRepository
         return $data;
     }
 
+
     public function selectList($request = [], $with = [], $select = [], $fieldValue = 'id', $fieldTitle = 'name')
     {
         $data = $this->model->with($with)->where(function ($query) use ($request) {
             if (! empty($request['idsAllowed'])) {
                 $query->whereIn('id', $request['idsAllowed']);
-            }
-            if (! empty($request['company_id'])) {
-                $query->where('company_id', $request['company_id']);
             }
         })->get()->map(function ($value) use ($with, $select, $fieldValue, $fieldTitle) {
             $data = [
@@ -99,7 +94,11 @@ class UserTypeDocumentRepository extends BaseRepository
 
     public function searchOne($request = [], $with = [], $select = ['*'])
     {
-        $data = $this->model->select($select)->with($with)->where(function ($query) {});
+        $data = $this->model->select($select)->with($with)->where(function ($query) use ($request) {
+            if (! empty($request['company_id'])) {
+                $query->where('company_id', $request['company_id']);
+            }
+        });
 
         $data = $data->first();
 
@@ -108,10 +107,29 @@ class UserTypeDocumentRepository extends BaseRepository
 
     public function countData($request = [])
     {
-        $data = $this->model->where(function ($query) {});
+        $data = $this->model->where(function ($query) use ($request) {
+            if (! empty($request['company_id'])) {
+                $query->where('company_id', $request['company_id']);
+            }
+        });
 
         $data = $data->count();
 
         return $data;
+    }
+
+    public function validateLicensePlate($request = []): bool
+    {
+        $data = $this->model
+            ->where(function ($query) use ($request) {
+                if (! empty($request['company_id'])) {
+                    $query->where('company_id', $request['company_id']);
+                }
+                if (! empty($request['license_plate'])) {
+                    $query->where('license_plate', $request['license_plate']);
+                }
+            })->first();
+
+        return $data !== null; // Retorna true si la licencia cumple con ambas condiciones
     }
 }

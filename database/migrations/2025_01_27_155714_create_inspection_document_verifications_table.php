@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('inspection_document_verifications', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignUuid('inspection_id');
             $table->foreignUuid('vehicle_document_id');
             $table->boolean('original')->default(false);

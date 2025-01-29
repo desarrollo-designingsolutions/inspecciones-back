@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class InspectionDocumentVerification extends Model
 {
-    use HasUuids, SoftDeletes;
+    use HasUuids;
+
+    protected $guarded = [];
 
     protected $casts = [
         'original' => 'boolean',

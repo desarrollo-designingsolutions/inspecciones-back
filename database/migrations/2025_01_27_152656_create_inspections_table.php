@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('inspections', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->foreignUuid('company_id')->constrained();
             $table->foreignUuid('vehicle_id');
             $table->foreignUuid('inspection_type_id');
             $table->foreignUuid('user_id');

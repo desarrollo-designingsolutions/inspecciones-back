@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->foreignUuid('type_document_id')->nullable()->constrained('user_type_documents');
-            $table->string('type_document_name')->nullable();
+            $table->string('document')->nullable();
             $table->foreignUuid('type_license_id')->nullable()->constrained('type_licenses');
-            $table->string('type_license_name')->nullable();
+            $table->string('license')->nullable();
             $table->date('expiration_date')->nullable();
         });
     }
@@ -27,9 +27,9 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropConstrainedForeignId('type_document_id');
-            $table->dropColumn('type_document_name');
+            $table->dropColumn('document');
             $table->dropConstrainedForeignId('type_license_id');
-            $table->dropColumn('type_license_name');
+            $table->dropColumn('license');
             $table->dropColumn('expiration_date');
         });
     }

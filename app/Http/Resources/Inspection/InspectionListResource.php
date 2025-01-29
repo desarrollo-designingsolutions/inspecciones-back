@@ -17,11 +17,13 @@ class InspectionListResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'license_plate' => $this->license_plate,
-            'type_vehicle_name' => $this->type_vehicle?->name,
-            'date_registration' => Carbon::parse($this->date_registration)->format('d-m-Y'),
-            'model' => $this->model,
-            'city_name' => $this->city?->name,
+            'vehicle_license_plate' => $this->vehicle?->license_plate,
+            'inspection_date' => Carbon::parse($this->inspection_date)->format('d-m-Y'),
+            'vehicle_brand_name' =>  $this->vehicle?->brand_vehicle?->name,
+            'vehicle_model' => $this->vehicle?->model,
+            'inspection_type_id' => $this->inspection_type_id,
+            'inspection_type_name' => $this->inspectionType?->name,
+            'user_full_name' => $this->user?->full_name,
         ];
     }
 }

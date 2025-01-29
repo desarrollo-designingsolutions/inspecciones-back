@@ -635,7 +635,7 @@ class InspectionTypeInputSeeder extends Seeder
             $data = new InspectionTypeInput;
             $data->inspection_type_group_id = $value["inspection_type_group_id"];
             $data->name = $value["name"];
-            $data->order = $key + 1;
+            $data->order = $key + 10;
             $data->save();
         }
 

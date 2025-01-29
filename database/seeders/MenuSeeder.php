@@ -117,8 +117,8 @@ class MenuSeeder extends Seeder
                 'requiredPermission' => 'vehicle.list',
             ],
             [
-                'id' => 12,
-                'order' => 120,
+                'id' => 13,
+                'order' => 130,
                 'title' => 'Inspecciones',
                 'to' => 'Inspection-List',
                 'icon' => 'tabler-list-check',
