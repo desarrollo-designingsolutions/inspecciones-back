@@ -17,12 +17,12 @@ class InspectionTypeSeeder extends Seeder
             [
                 'id' => 1,
                 'name' => 'Pre-Operacional',
-                'order' => 1,
+                'order' => 10,
             ],
             [
                 'id' => 2,
                 'name' => 'HSEQ',
-                'order' => 2,
+                'order' => 20,
             ],
         ]);
     }
