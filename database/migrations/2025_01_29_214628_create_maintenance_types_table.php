@@ -12,8 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('maintenance_types', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
+            $table->string('name');
+            $table->integer('order');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
