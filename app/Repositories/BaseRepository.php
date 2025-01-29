@@ -129,7 +129,7 @@ class BaseRepository
         }
         // dd('pasí');
 
-        $nombre = $nombre . '.pdf';
+        $nombre = $nombre.'.pdf';
         if ($is_stream) {
             return $pdf->stream($nombre);
         } else {

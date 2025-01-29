@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Helpers\Constants;
 use App\Models\BrandVehicle;
 
 class BrandVehicleRepository extends BaseRepository

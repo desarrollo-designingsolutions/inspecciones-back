@@ -68,7 +68,6 @@ class InspectionTypeRepository extends BaseRepository
         return $data;
     }
 
-
     public function selectList($request = [], $with = [], $select = [], $fieldValue = 'id', $fieldTitle = 'name')
     {
         $data = $this->model->with($with)->where(function ($query) use ($request) {

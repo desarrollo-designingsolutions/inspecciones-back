@@ -3,11 +3,11 @@
 namespace App\Repositories;
 
 use App\Helpers\Constants;
-use App\Models\Inspection;
+use App\Models\Maintenance;
 
-class InspectionRepository extends BaseRepository
+class MaintenanceRepository extends BaseRepository
 {
-    public function __construct(Inspection $modelo)
+    public function __construct(Maintenance $modelo)
     {
         parent::__construct($modelo);
     }

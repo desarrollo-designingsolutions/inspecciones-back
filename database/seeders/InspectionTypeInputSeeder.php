@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\InspectionTypeInput;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class InspectionTypeInputSeeder extends Seeder
@@ -633,8 +632,8 @@ class InspectionTypeInputSeeder extends Seeder
 
         foreach ($arrayData as $key => $value) {
             $data = new InspectionTypeInput;
-            $data->inspection_type_group_id = $value["inspection_type_group_id"];
-            $data->name = $value["name"];
+            $data->inspection_type_group_id = $value['inspection_type_group_id'];
+            $data->name = $value['name'];
             $data->order = $key + 10;
             $data->save();
         }

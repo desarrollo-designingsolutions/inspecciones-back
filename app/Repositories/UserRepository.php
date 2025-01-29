@@ -21,7 +21,7 @@ class UserRepository extends BaseRepository
                 filterComponent($query, $request);
 
                 if (! empty($request['name'])) {
-                    $query->where('name', 'like', '%' . $request['name'] . '%');
+                    $query->where('name', 'like', '%'.$request['name'].'%');
                 }
 
                 //idsAllowed
@@ -39,7 +39,7 @@ class UserRepository extends BaseRepository
                 }
             })->where(function ($query) use ($request) {
                 if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
-                    $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
+                    $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
                 }
             });
 
@@ -175,8 +175,8 @@ class UserRepository extends BaseRepository
             }
         })->where(function ($query) use ($request) {
             if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
-                $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
-                $query->orWhere('surname', 'like', '%' . $request['searchQueryInfinite'] . '%');
+                $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
+                $query->orWhere('surname', 'like', '%'.$request['searchQueryInfinite'].'%');
             }
         });
 

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class InspectionInputResponse extends Model
 {
     use HasUuids, SoftDeletes;
+
     protected $guarded = [];
 
     public function inspection(): BelongsTo

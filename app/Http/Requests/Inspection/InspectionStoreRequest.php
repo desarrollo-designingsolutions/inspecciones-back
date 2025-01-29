@@ -11,6 +11,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 class InspectionStoreRequest extends FormRequest
 {
     private $tabs;
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -27,7 +28,6 @@ class InspectionStoreRequest extends FormRequest
             'inspection_date' => 'required',
         ];
 
-
         // foreach ($this->tabs as $tab) {
         //     if (isset($tab['inspectionTypeInputs']) && count($tab['inspectionTypeInputs']) > 0) {
         //         foreach ($tab['inspectionTypeInputs'] as $input) {
@@ -35,8 +35,6 @@ class InspectionStoreRequest extends FormRequest
         //         }
         //     }
         // }
-
-
 
         return $rules;
     }
@@ -55,7 +53,7 @@ class InspectionStoreRequest extends FormRequest
         foreach ($this->tabs as $tab) {
             if (isset($tab['inspectionTypeInputs']) && count($tab['inspectionTypeInputs']) > 0) {
                 foreach ($tab['inspectionTypeInputs'] as $input) {
-                    $messages[$input['id'] . '.required'] = 'El campo es obligatorio';
+                    $messages[$input['id'].'.required'] = 'El campo es obligatorio';
                 }
             }
         }

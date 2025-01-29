@@ -19,7 +19,7 @@ class InspectionListResource extends JsonResource
             'id' => $this->id,
             'vehicle_license_plate' => $this->vehicle?->license_plate,
             'inspection_date' => Carbon::parse($this->inspection_date)->format('d-m-Y'),
-            'vehicle_brand_name' =>  $this->vehicle?->brand_vehicle?->name,
+            'vehicle_brand_name' => $this->vehicle?->brand_vehicle?->name,
             'vehicle_model' => $this->vehicle?->model,
             'inspection_type_id' => $this->inspection_type_id,
             'inspection_type_name' => $this->inspectionType?->name,

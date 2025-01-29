@@ -252,7 +252,6 @@ function getStatus($value = null, $types = [], $compareByKey = 'value', $returnB
     return $types; // Retornar el array si no se encuentra el valor
 }
 
-
 function getResponseDocument($value = null, $compareByKey = 'value', $returnByKey = 'title', $typeSearch = '===')
 {
     $types = [

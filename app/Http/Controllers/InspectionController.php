@@ -7,8 +7,6 @@ use App\Http\Requests\Inspection\InspectionStoreRequest;
 use App\Http\Resources\Inspection\InspectionFormResource;
 use App\Http\Resources\Inspection\InspectionGetVehicleDataResource;
 use App\Http\Resources\Inspection\InspectionListResource;
-use App\Models\InspectionInputResponse;
-use App\Models\InspectionTypeGroup;
 use App\Repositories\InspectionDocumentVerificationRepository;
 use App\Repositories\InspectionInputResponseRepository;
 use App\Repositories\InspectionRepository;
@@ -17,8 +15,6 @@ use App\Repositories\InspectionTypeRepository;
 use App\Repositories\VehicleRepository;
 use App\Traits\HttpTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Throwable;
 
 class InspectionController extends Controller
 {
@@ -53,7 +49,6 @@ class InspectionController extends Controller
         });
     }
 
-
     public function create($inspection_type_id)
     {
         return $this->execute(function () use ($inspection_type_id) {
@@ -71,31 +66,42 @@ class InspectionController extends Controller
     {
         return $this->runTransaction(function () use ($request) {
 
-            return $request;
-            $fields = ["vehicle_id", "inspection_type_id", "user_id", "state_id", "city_id", "general_comment", "inspection_date", "company_id"];
+            $fields = ['vehicle_id', 'inspection_type_id', 'user_id', 'state_id', 'city_id', 'general_comment', 'inspection_date', 'company_id'];
 
             $post1 = $request->only($fields);
 
             $inspection = $this->inspectionRepository->store($post1);
 
-            $inspection = $this->inspectionDocumentVerificationRepository->store($post1);
-
-
-            $post2 = $request->except($fields);
-
-            foreach ($post2 as $key => $value) {
-                $this->inspectionInputResponseRepository->store([
+            $post2 = $request->only(['type_documents']);
+            foreach ($post2['type_documents'] as $key => $value) {
+                $inspectionDocumentVerification = $this->inspectionDocumentVerificationRepository->updateOrCreate([
                     'inspection_id' => $inspection->id,
-                    'inspection_type_input_id' => $key,
-                    'user_id' => $post1['user_id'],
-                    'response' => $value,
+                    'vehicle_document_id' => $value['id'],
+                ], [
+                    'original' => $value['response'],
                 ]);
+            }
+            $post3 = $request->except([...$fields, ...['type_documents']]);
+
+            foreach ($post3 as $key => $value) {
+
+                $this->inspectionInputResponseRepository->updateOrCreate(
+                    [
+                        'inspection_id' => $inspection->id,
+                        'inspection_type_input_id' => $key,
+                    ],
+                    [
+                        'user_id' => $post1['user_id'],
+                        'response' => $value,
+
+                    ]
+                );
             }
 
             return [
                 'code' => 200,
                 'message' => 'Inspección agregado correctamente',
-                'data' => $inspection
+                'data' => $inspection,
             ];
         });
     }
@@ -122,7 +128,7 @@ class InspectionController extends Controller
     {
         return $this->runTransaction(function () use ($request, $id) {
 
-            $fields = ["id", "vehicle_id", "inspection_type_id", "user_id", "state_id", "city_id", "general_comment", "inspection_date", "company_id"];
+            $fields = ['id', 'vehicle_id', 'inspection_type_id', 'user_id', 'state_id', 'city_id', 'general_comment', 'inspection_date', 'company_id'];
 
             $post1 = $request->only($fields);
 
@@ -157,7 +163,7 @@ class InspectionController extends Controller
             return [
                 'code' => 200,
                 'message' => 'Inspección modificada correctamente',
-                'data' => $inspection
+                'data' => $inspection,
             ];
         });
     }
@@ -173,10 +179,11 @@ class InspectionController extends Controller
             } else {
                 $msg = 'El registro no existe';
             }
+
             return response()->json(
                 [
                     'code' => 200,
-                    'message' => $msg
+                    'message' => $msg,
                 ]
             );
         });
@@ -193,8 +200,8 @@ class InspectionController extends Controller
                         [
                             'key' => 'order',
                             'order' => 'asc',
-                        ]
-                    ])
+                        ],
+                    ]),
                 ],
                 select: ['id', 'name']
             );
@@ -209,7 +216,6 @@ class InspectionController extends Controller
     public function loadTabs($inspection_type_id)
     {
 
-
         $tabs = $this->inspectionTypeGroupRepository->list(
             [
                 'typeData' => 'all',
@@ -218,8 +224,8 @@ class InspectionController extends Controller
                     [
                         'key' => 'order',
                         'order' => 'asc',
-                    ]
-                ])
+                    ],
+                ]),
             ],
             with: ['inspectionTypeInputs'],
             select: ['id', 'name']
@@ -248,6 +254,7 @@ class InspectionController extends Controller
 
         $responseDocument = getResponseDocument();
         $responseVehicle = getResponseVehicle();
+
         return [
             'tabs' => $tabs,
             'responseDocument' => $responseDocument,

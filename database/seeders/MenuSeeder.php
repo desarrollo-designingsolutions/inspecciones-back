@@ -125,6 +125,15 @@ class MenuSeeder extends Seeder
                 'father' => null,
                 'requiredPermission' => 'inspection.list',
             ],
+            [
+                'id' => 14,
+                'order' => 140,
+                'title' => 'Mantenimiento',
+                'to' => 'Maintenance-List',
+                'icon' => 'tabler-list-check',
+                'father' => null,
+                'requiredPermission' => 'maintenance.list',
+            ],
         ];
 
         // Inicializar la barra de progreso

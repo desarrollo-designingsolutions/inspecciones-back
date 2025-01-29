@@ -83,9 +83,9 @@ class User extends Authenticatable
         return $this->belongsTo(TypeLicense::class);
     }
 
-     // Accesor para verificar si el usuario es operador
-     public function getIsOperatorAttribute()
-     {
-         return $this->role ? $this->role->operator : false;
-     }
+    // Accesor para verificar si el usuario es operador
+    public function getIsOperatorAttribute()
+    {
+        return $this->role ? $this->role->operator : false;
+    }
 }

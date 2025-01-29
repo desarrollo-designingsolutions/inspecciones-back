@@ -26,7 +26,7 @@ class InspectionFormResource extends JsonResource
             'vehicle_id' => new PlateVehicleSelectInfiniteResource($this->vehicle),
             'inspection_date' => $this->inspection_date,
             'general_comment' => $this->general_comment,
-            'type_documents' => $this->inspectionDocumentVerifications->map(function($item) {
+            'type_documents' => $this->inspectionDocumentVerifications->map(function ($item) {
                 return [
                     'id' => $item->id,
                     'inspection_id' => $item->inspection_id,
@@ -37,14 +37,14 @@ class InspectionFormResource extends JsonResource
         ];
 
         $tabs = InspectionTypeGroup::select(['id'])
-        ->with([
-            'inspectionTypeInputs:id,inspection_type_group_id',
-            'inspectionTypeInputs.inspectionInputResponses:id,inspection_type_input_id,response,inspection_id',
-            'inspectionTypeInputs.inspectionInputResponses' => function($query) {
-                $query->where('inspection_id', $this->id);
-            },
-        ])
-        ->where('inspection_type_id', $this->inspection_type_id)->get();
+            ->with([
+                'inspectionTypeInputs:id,inspection_type_group_id',
+                'inspectionTypeInputs.inspectionInputResponses:id,inspection_type_input_id,response,inspection_id',
+                'inspectionTypeInputs.inspectionInputResponses' => function ($query) {
+                    $query->where('inspection_id', $this->id);
+                },
+            ])
+            ->where('inspection_type_id', $this->inspection_type_id)->get();
 
         foreach ($tabs as $tab) {
             if (isset($tab['inspectionTypeInputs']) && count($tab['inspectionTypeInputs']) > 0) {

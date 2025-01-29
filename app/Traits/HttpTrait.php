@@ -3,26 +3,23 @@
 namespace App\Traits;
 
 use App\Helpers\Constants;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 trait HttpTrait
 {
     /**
      * Ejecuta una operación dentro de una transacción de base de datos.
-     *
-     * @param callable $callback
-     * @return JsonResponse
      */
-    public function runTransaction(callable $callback, $responseStatus = 200): JsonResponse|null
+    public function runTransaction(callable $callback, $responseStatus = 200): ?JsonResponse
     {
         DB::beginTransaction();
         try {
             $result = $callback();
             DB::commit();
 
-            if (!$result) {
+            if (! $result) {
                 return null;
             }
 
@@ -34,13 +31,13 @@ trait HttpTrait
             $errorData = json_decode($th->getMessage(), true);
 
             // Verificar si contiene 'message' y si es true
-            if (isset($errorData['message']) && !empty($errorData['message'])) {
+            if (isset($errorData['message']) && ! empty($errorData['message'])) {
                 $errorMessage = $errorData['message'] ?? Constants::ERROR_MESSAGE_TRYCATCH;
             } else {
                 $errorMessage = Constants::ERROR_MESSAGE_TRYCATCH;
             }
 
-            if(env("APP_DEBUG")){
+            if (env('APP_DEBUG')) {
                 return response()->json([
                     'code' => 500,
                     'message' => $errorMessage,
@@ -58,16 +55,13 @@ trait HttpTrait
 
     /**
      * Ejecuta una operación sin transacción.
-     *
-     * @param callable $callback
-     * @return JsonResponse
      */
-    public function execute(callable $callback, $responseStatus = 200): JsonResponse|null
+    public function execute(callable $callback, $responseStatus = 200): ?JsonResponse
     {
         try {
             $result = $callback();
 
-            if (!$result) {
+            if (! $result) {
                 return null;
             }
 
@@ -77,13 +71,13 @@ trait HttpTrait
             $errorData = json_decode($th->getMessage(), true);
 
             // Verificar si contiene 'message' y si es true
-            if (isset($errorData['message']) && !empty($errorData['message'])) {
+            if (isset($errorData['message']) && ! empty($errorData['message'])) {
                 $errorMessage = $errorData['message'] ?? Constants::ERROR_MESSAGE_TRYCATCH;
             } else {
                 $errorMessage = Constants::ERROR_MESSAGE_TRYCATCH;
             }
 
-            if(env("APP_DEBUG")){
+            if (env('APP_DEBUG')) {
                 return response()->json([
                     'code' => 500,
                     'message' => $errorMessage,

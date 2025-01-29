@@ -21,7 +21,7 @@ class InspectionGetVehicleDataResource extends JsonResource
             'brand_vehicle_name' => $this->brand_vehicle?->name,
             'model' => $this->model,
             'vehicle_structure_name' => $this->vehicle_structure?->name,
-            'type_documents' => $this->type_documents->map(function($item) {
+            'type_documents' => $this->type_documents->map(function ($item) {
                 return [
                     'id' => $item->id,
                     'type_document_name' => $item->type_document?->name,

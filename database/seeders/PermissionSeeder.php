@@ -95,6 +95,12 @@ class PermissionSeeder extends Seeder
                 'description' => 'Visualizar Menú Inspecciones',
                 'menu_id' => 13,
             ],
+            [
+                'id' => 14,
+                'name' => 'maintenance.list',
+                'description' => 'Visualizar Menú Mantenimiento',
+                'menu_id' => 14,
+            ],
         ];
 
         // Inicializar la barra de progreso

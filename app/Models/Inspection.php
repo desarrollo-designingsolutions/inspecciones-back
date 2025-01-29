@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Inspection extends Model
 {
-    use HasUuids, SoftDeletes, Searchable;
+    use HasUuids, Searchable, SoftDeletes;
 
     protected $casts = [
         'order' => 'integer',
@@ -46,5 +46,4 @@ class Inspection extends Model
     {
         return $this->hasMany(InspectionDocumentVerification::class);
     }
-
 }

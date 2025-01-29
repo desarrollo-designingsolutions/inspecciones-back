@@ -32,6 +32,10 @@ class DatabaseSeeder extends Seeder
             InspectionTypeSeeder::class,
             InspectionTypeGroupSeeder::class,
             InspectionTypeInputSeeder::class,
+
+            MaintenanceTypeSeeder::class,
+            MaintenanceTypeGroupSeeder::class,
+            MaintenanceTypeInputSeeder::class,
         ]);
 
         $client = new ClientRepository;
