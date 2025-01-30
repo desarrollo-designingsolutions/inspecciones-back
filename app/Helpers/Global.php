@@ -273,3 +273,15 @@ function getResponseVehicle($value = null, $compareByKey = 'value', $returnByKey
 
     return getStatus($value, $types, $compareByKey, $returnByKey, $typeSearch);
 }
+
+function getResponseStatus($value = null, $compareByKey = 'value', $returnByKey = 'title', $typeSearch = '===')
+{
+    $types = [
+        ['value' => 'unassigned', 'title' => 'sin asignar'],
+        ['value' => 'assigned', 'title' => 'asignado'],
+        ['value' => 'canceled', 'title' => 'cancelado'],
+        ['value' => 'completed', 'title' => 'completado'],
+    ];
+
+    return getStatus($value, $types, $compareByKey, $returnByKey, $typeSearch);
+}

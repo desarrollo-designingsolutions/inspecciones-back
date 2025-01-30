@@ -3,10 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Exports\MaintenanceListExport;
+use App\Helpers\Constants;
 use App\Http\Requests\Maintenance\MaintenanceStoreRequest;
 use App\Http\Resources\Maintenance\MaintenanceFormResource;
+use App\Http\Resources\Maintenance\MaintenanceGetVehicleDataResource;
 use App\Http\Resources\Maintenance\MaintenanceListResource;
+use App\Repositories\MaintenanceInputResponseRepository;
 use App\Repositories\MaintenanceRepository;
+use App\Repositories\MaintenanceTypeGroupRepository;
+use App\Repositories\MaintenanceTypeRepository;
+use App\Repositories\VehicleRepository;
 use App\Traits\HttpTrait;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -17,6 +23,10 @@ class MaintenanceController extends Controller
 
     public function __construct(
         protected MaintenanceRepository $maintenanceRepository,
+        protected MaintenanceTypeRepository $maintenanceTypeRepository,
+        protected MaintenanceTypeGroupRepository $maintenanceTypeGroupRepository,
+        protected MaintenanceInputResponseRepository $maintenanceInputResponseRepository,
+        protected VehicleRepository $vehicleRepository,
         protected QueryController $queryController,
     ) {}
 
@@ -37,12 +47,15 @@ class MaintenanceController extends Controller
         });
     }
 
-    public function create()
+    public function create($maintenance_type_id)
     {
-        return $this->execute(function () {
+        return $this->execute(function () use ($maintenance_type_id) {
+
+            $data = $this->loadTabs($maintenance_type_id);
 
             return [
                 'code' => 200,
+                ...$data,
             ];
         });
     }
@@ -50,11 +63,35 @@ class MaintenanceController extends Controller
     public function store(MaintenanceStoreRequest $request)
     {
         return $this->runTransaction(function () use ($request) {
-            $post = $request->all();
+            return $request;
+            $fields = ['vehicle_id', 'maintenance_type_id', 'user_mechanic_id', 'state_id', 'city_id', 'general_comment', 'maintenance_date', 'company_id', 'mileage', 'status'];
 
-            $maintenance = $this->maintenanceRepository->store($post);
+            $post1 = $request->only($fields);
 
-            return ['code' => 200, 'message' => 'Vehiculo agregado correctamente', 'data' => $maintenance];
+            $maintenance = $this->maintenanceRepository->store($post1);
+
+            return $post2 = $request->except([...$fields]);
+
+            foreach ($post2 as $key => $value) {
+
+                $this->maintenanceInputResponseRepository->updateOrCreate(
+                    [
+                        'maintenance_id' => $maintenance->id,
+                        'maintenance_type_input_id' => $key,
+                    ],
+                    [
+                        // 'user_id' => $post1['user_id'],
+                        'comment' => $value,
+
+                    ]
+                );
+            }
+
+            return [
+                'code' => 200,
+                'message' => 'Mantenimiento agregado correctamente',
+                'data' => $maintenance,
+            ];
         });
     }
 
@@ -97,6 +134,96 @@ class MaintenanceController extends Controller
         });
     }
 
+    public function loadBtnCreate()
+    {
+        return $this->execute(function () {
+
+            $maintenance_type = $this->maintenanceTypeRepository->list(
+                [
+                    'typeData' => 'all',
+                    'sortBy' => json_encode([
+                        [
+                            'key' => 'order',
+                            'order' => 'asc',
+                        ],
+                    ]),
+                ],
+                select: ['id', 'name']
+            );
+
+            return [
+                'code' => 200,
+                'maintenance_type' => $maintenance_type,
+            ];
+        });
+    }
+
+    public function loadTabs($maintenance_type_id)
+    {
+
+        $tabs = $this->maintenanceTypeGroupRepository->list(
+            [
+                'typeData' => 'all',
+                'maintenance_type_id' => $maintenance_type_id,
+                'sortBy' => json_encode([
+                    [
+                        'key' => 'order',
+                        'order' => 'asc',
+                    ],
+                ]),
+            ],
+            with: ['maintenanceTypeInputs'],
+            select: ['id', 'name']
+        );
+        $order = 1;
+
+        foreach ($tabs as $key => $value) {
+            $value['show'] = true;
+            $value['errorsValidations'] = false;
+            $value['order'] = $order;
+            $order++;
+        }
+
+        $tabs = collect($tabs);
+
+        // Usar prepend() para agregar al inicio
+        $tabs->prepend([
+            'id' => 0,
+            'name' => 'Informacion General',
+            'show' => true,
+            'errorsValidations' => false,
+            'order' => 0,
+        ]);
+
+        $selectStates = $this->queryController->selectStates(Constants::COUNTRY_ID);
+
+        $responseDocument = getResponseDocument();
+        $responseVehicle = getResponseVehicle();
+
+        return [
+            'tabs' => $tabs,
+            'responseDocument' => $responseDocument,
+            'responseVehicle' => $responseVehicle,
+            'responseStatus' => getResponseStatus(),
+            ...$selectStates,
+        ];
+    }
+
+    public function getVehicleInfo($vehicle_id)
+    {
+        return $this->execute(function () use ($vehicle_id) {
+
+            $vehicle = $this->vehicleRepository->find($vehicle_id);
+
+            $vehicle = new MaintenanceGetVehicleDataResource($vehicle);
+
+            return [
+                'code' => 200,
+                'vehicle' => $vehicle,
+            ];
+        });
+    }
+
     public function changeStatus(Request $request)
     {
         return $this->runTransaction(function () use ($request) {
@@ -104,7 +231,7 @@ class MaintenanceController extends Controller
 
             ($model->is_active == 1) ? $msg = 'habilitado(a)' : $msg = 'inhabilitado(a)';
 
-            return ['code' => 200, 'message' => 'Vehiculo '.$msg.' con éxito'];
+            return ['code' => 200, 'message' => 'Vehiculo ' . $msg . ' con éxito'];
         });
     }
 

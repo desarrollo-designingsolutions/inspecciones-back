@@ -88,4 +88,9 @@ class User extends Authenticatable
     {
         return $this->role ? $this->role->operator : false;
     }
+    
+    public function getIsMechanicAttribute()
+    {
+        return $this->role ? $this->role->mechanic : false;
+    }
 }

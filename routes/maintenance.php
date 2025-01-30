@@ -14,7 +14,11 @@ Route::middleware(['check.permission:maintenance.list'])->group(function () {
 
     Route::get('/maintenance/list', [MaintenanceController::class, 'list']);
 
-    Route::get('/maintenance/create', [MaintenanceController::class, 'create']);
+    Route::get('/maintenance/loadBtnCreate', [MaintenanceController::class, 'loadBtnCreate']);
+
+    Route::get('/maintenance/getVehicleInfo/{vehicle_id}', [MaintenanceController::class, 'getVehicleInfo']);
+
+    Route::get('/maintenance/create/{maintenance_type_id}', [MaintenanceController::class, 'create']);
 
     Route::post('/maintenance/store', [MaintenanceController::class, 'store']);
 

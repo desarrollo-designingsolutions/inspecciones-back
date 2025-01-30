@@ -12,13 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('maintenances', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('vehicle_id');
-            $table->foreignId('user_id');
-            $table->foreignId('city_id');
+            $table->uuid('id')->primary();
+            $table->foreignUuid('company_id')->constrained();
+            $table->foreignUuid('vehicle_id');
+            $table->foreignUuid('maintenance_type_id');
+            $table->foreignUuid('user_mechanic_id')->nullable();
+            $table->foreignId('state_id')->nullable()->constrained();
+            $table->foreignId('city_id')->nullable()->constrained();
             $table->date('maintenance_date');
             $table->integer('mileage');
             $table->text('general_comment')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

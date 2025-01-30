@@ -9,6 +9,7 @@ use App\Http\Resources\EmergencyElement\EmergencyElementSelectInfiniteResource;
 use App\Http\Resources\PlateVehicle\PlateVehicleSelectInfiniteResource;
 use App\Http\Resources\TypeDocument\TypeDocumentSelectInfiniteResource;
 use App\Http\Resources\TypeVehicle\TypeVehicleSelectInfiniteResource;
+use App\Http\Resources\User\UserMechanicsSelectInfiniteResource;
 use App\Http\Resources\User\UserOperatorsSelectInfiniteResource;
 use App\Repositories\BrandVehicleRepository;
 use App\Repositories\CityRepository;
@@ -175,6 +176,19 @@ class QueryController extends Controller
             'code' => 200,
             'userOperator_arrayInfo' => $dataUserOperator,
             'userOperator_countLinks' => $userOperator->lastPage(),
+        ];
+    }
+
+    public function selectInfiniteUserMechanic(Request $request)
+    {
+        $request['is_active'] = true;
+        $userMechanic = $this->userRepository->getMechanics($request->all());
+        $dataUserMechanic = UserMechanicsSelectInfiniteResource::collection($userMechanic);
+
+        return [
+            'code' => 200,
+            'userMechanic_arrayInfo' => $dataUserMechanic,
+            'userMechanic_countLinks' => $userMechanic->lastPage(),
         ];
     }
 }

@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('maintenance_type_input_responses', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignId('maintenance_id');
-            $table->foreignId('maintenance_type_input_id');
-            $table->foreignId('user_id');
-            $table->string('type');
-            $table->string('type_maintenance');
+            $table->foreignUuid('maintenance_id');
+            $table->foreignUuid('maintenance_type_input_id');
+            $table->foreignUuid('user_id')->nullable();
+            $table->string('type')->nullable();
+            $table->string('type_maintenance')->nullable();
             $table->text('comment')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
