@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\InspectionListExport;
 use App\Helpers\Constants;
 use App\Http\Requests\Inspection\InspectionStoreRequest;
 use App\Http\Resources\Inspection\InspectionFormResource;
@@ -18,6 +19,7 @@ use App\Repositories\VehicleRepository;
 use App\Traits\HttpTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
 
 class InspectionController extends Controller
@@ -71,27 +73,37 @@ class InspectionController extends Controller
     {
         return $this->runTransaction(function () use ($request) {
 
-            return $request;
-            $fields = ["vehicle_id", "inspection_type_id", "user_id", "state_id", "city_id", "general_comment", "inspection_date", "company_id"];
+            $fields = ["id", "vehicle_id", "inspection_type_id", "user_id", "state_id", "city_id", "general_comment", "inspection_date", "company_id"];
 
             $post1 = $request->only($fields);
 
             $inspection = $this->inspectionRepository->store($post1);
 
-            $inspection = $this->inspectionDocumentVerificationRepository->store($post1);
-
-
-            $post2 = $request->except($fields);
-
-            foreach ($post2 as $key => $value) {
-                $this->inspectionInputResponseRepository->store([
+            $post2 = $request->only(['type_documents']);
+            foreach ($post2['type_documents'] as $key => $value) {
+                $this->inspectionDocumentVerificationRepository->updateOrCreate([
                     'inspection_id' => $inspection->id,
-                    'inspection_type_input_id' => $key,
-                    'user_id' => $post1['user_id'],
-                    'response' => $value,
+                    'vehicle_document_id' => $value['id'],
+                ], [
+                    'original' => $value['response'],
                 ]);
             }
+            $post3 = $request->except([...$fields, ...['type_documents']]);
 
+            foreach ($post3 as $key => $value) {
+
+                $this->inspectionInputResponseRepository->updateOrCreate(
+                    [
+                        'inspection_id' => $inspection->id,
+                        'inspection_type_input_id' => $key,
+                    ],
+                    [
+                        'user_id' => $post1['user_id'],
+                        'response' => $value,
+
+                    ]
+                );
+            }
             return [
                 'code' => 200,
                 'message' => 'Inspección agregado correctamente',
@@ -130,7 +142,7 @@ class InspectionController extends Controller
 
             $post2 = $request->only(['type_documents']);
             foreach ($post2['type_documents'] as $key => $value) {
-                $inspectionDocumentVerification = $this->inspectionDocumentVerificationRepository->updateOrCreate([
+                $this->inspectionDocumentVerificationRepository->updateOrCreate([
                     'inspection_id' => $inspection->id,
                     'vehicle_document_id' => $value['id'],
                 ], [
@@ -267,6 +279,29 @@ class InspectionController extends Controller
             return [
                 'code' => 200,
                 'vehicle' => $vehicle,
+            ];
+        });
+    }
+
+    public function excelExport(Request $request)
+    {
+        return $this->execute(function () use ($request) {
+
+            $filter = [
+                'typeData' => 'all',
+            ];
+
+            $data = $this->inspectionRepository->list([
+                ...$filter,
+                ...$request->all(),
+            ]);
+
+            $excel = Excel::raw(new InspectionListExport($data), \Maatwebsite\Excel\Excel::XLSX);
+
+            $excelBase64 = base64_encode($excel);
+            return [
+                'code' => 200,
+                'excel' => $excelBase64
             ];
         });
     }

@@ -55,12 +55,19 @@ function filterComponent($query, $request, $model = null)
                         $query->whereDate($value['search_key'], $value['search']);
                     } elseif ($value['input_type'] == 'dateRange') {
                         $dates = explode(' to ', $value['search']);
-                        $query->whereDate($value['search_key'], '>=', $dates[0])->whereDate($value['search_key'], '<=', $dates[1]);
+                        // Si solo se pasa una fecha, usamos esa misma fecha para ambos límites
+                        if (count($dates) === 1) {
+                            $query->whereDate($value['search_key'], '=', $dates[0]);
+                        } else {
+                            // Si se pasa un rango, hacemos la comparación de rango
+                            $query->whereDate($value['search_key'], '>=', $dates[0])
+                                ->whereDate($value['search_key'], '<=', $dates[1] ?? $dates[0]);  // Usamos la primera fecha si no hay segunda
+                        }
                     } else {
                         $search = $value['search'];
 
                         if ($value['type'] == 'LIKE' && ! is_array($search)) {
-                            $search = '%'.$value['search'].'%';
+                            $search = '%' . $value['search'] . '%';
                         }
                         if (isset($value['relation'])) {
                             foreach ($value['relation'] as $key => $relation) {
@@ -168,7 +175,7 @@ function generatePastelColor($opacity = 1.0)
 function truncate_text($text, $maxLength = 15)
 {
     if (strlen($text) > $maxLength) {
-        return substr($text, 0, $maxLength).'...';
+        return substr($text, 0, $maxLength) . '...';
     }
 
     return $text;
