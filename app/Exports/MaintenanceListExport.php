@@ -2,7 +2,9 @@
 
 namespace App\Exports;
 
+use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Carbon;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -23,10 +25,23 @@ class MaintenanceListExport implements FromView, ShouldAutoSize, WithEvents
     public function view(): View
     {
         $data = collect($this->data)->map(function ($value) {
+            $mechanic_name = User::find($value->user_mechanic_id);
+            $mechanic_name = $mechanic_name?->full_name;
+    
+            $inspector_name = User::find($value->user_inspector_id);
+            $inspector_name = $inspector_name?->full_name;
+    
             return [
                 'id' => $value->id,
-                'name' => $value->name,
-                'is_active' => $value->is_active ? 'Activo' : 'Inactivo',
+                'vehicle_license_plate' => $value->vehicle?->license_plate,
+                'maintenance_date' => Carbon::parse($value->maintenance_date)->format('d-m-Y'),
+                'vehicle_brand_name' => $value->vehicle?->brand_vehicle?->name,
+                'vehicle_model' => $value->vehicle?->model,
+                'maintenance_type_id' => $value->maintenance_type_id,
+                'maintenance_type_name' => $value->maintenanceType?->name,
+                'user_inspector_full_name' => $inspector_name,
+                'user_mechanic_full_name' => $mechanic_name,
+                'status' => getResponseStatus($value->status),
             ];
         });
 

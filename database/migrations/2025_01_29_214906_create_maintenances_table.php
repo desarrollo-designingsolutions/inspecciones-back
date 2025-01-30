@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignUuid('vehicle_id');
             $table->foreignUuid('maintenance_type_id');
             $table->foreignUuid('user_mechanic_id')->nullable();
+            $table->foreignUuid('user_operator_id')->nullable();
+            $table->foreignUuid('user_inspector_id')->nullable();
             $table->foreignId('state_id')->nullable()->constrained();
             $table->foreignId('city_id')->nullable()->constrained();
             $table->date('maintenance_date');
@@ -24,6 +26,7 @@ return new class extends Migration
             $table->text('general_comment')->nullable();
             $table->string('status')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -63,14 +63,14 @@ class MaintenanceController extends Controller
     public function store(MaintenanceStoreRequest $request)
     {
         return $this->runTransaction(function () use ($request) {
-            return $request;
-            $fields = ['vehicle_id', 'maintenance_type_id', 'user_mechanic_id', 'state_id', 'city_id', 'general_comment', 'maintenance_date', 'company_id', 'mileage', 'status'];
+
+            $fields = ['id', 'company_id', 'vehicle_id', 'maintenance_type_id', 'user_mechanic_id', 'user_operator_id', 'user_inspector_id', 'state_id', 'city_id', 'maintenance_date', 'mileage', 'general_comment', 'status'];
 
             $post1 = $request->only($fields);
 
             $maintenance = $this->maintenanceRepository->store($post1);
 
-            return $post2 = $request->except([...$fields]);
+            $post2 = $request->except([...$fields, 'have_trailer', 'user_operator_id']);
 
             foreach ($post2 as $key => $value) {
 
@@ -81,7 +81,9 @@ class MaintenanceController extends Controller
                     ],
                     [
                         // 'user_id' => $post1['user_id'],
-                        'comment' => $value,
+                        'type' => $value['type'],
+                        'type_maintenance' => $value['type_maintenance'],
+                        'comment' => $value['comment'],
 
                     ]
                 );
@@ -99,11 +101,16 @@ class MaintenanceController extends Controller
     {
         return $this->execute(function () use ($id) {
             $maintenance = $this->maintenanceRepository->find($id);
+
             $form = new MaintenanceFormResource($maintenance);
+
+            $data = $this->loadTabs($maintenance->maintenance_type_id);
+
 
             return [
                 'code' => 200,
                 'form' => $form,
+                ...$data,
             ];
         });
     }
@@ -111,11 +118,37 @@ class MaintenanceController extends Controller
     public function update(MaintenanceStoreRequest $request, $id)
     {
         return $this->runTransaction(function () use ($request) {
-            $post = $request->all();
 
-            $maintenance = $this->maintenanceRepository->store($post);
+            $fields = ['id', 'company_id', 'vehicle_id', 'maintenance_type_id', 'user_mechanic_id', 'user_operator_id', 'user_inspector_id', 'state_id', 'city_id', 'maintenance_date', 'mileage', 'general_comment', 'status'];
 
-            return ['code' => 200, 'message' => 'Vehiculo modificado correctamente', 'data' => $maintenance];
+            $post1 = $request->only($fields);
+
+            $maintenance = $this->maintenanceRepository->store($post1);
+
+            $post2 = $request->except([...$fields, 'have_trailer', 'user_operator_id']);
+
+            foreach ($post2 as $key => $value) {
+
+                $this->maintenanceInputResponseRepository->updateOrCreate(
+                    [
+                        'maintenance_id' => $maintenance->id,
+                        'maintenance_type_input_id' => $key,
+                    ],
+                    [
+                        // 'user_id' => $post1['user_id'],
+                        'type' => $value['type'],
+                        'type_maintenance' => $value['type_maintenance'],
+                        'comment' => $value['comment'],
+
+                    ]
+                );
+            }
+
+            return [
+                'code' => 200,
+                'message' => 'Mantenimiento agregado correctamente',
+                'data' => $maintenance,
+            ];
         });
     }
 
@@ -198,12 +231,14 @@ class MaintenanceController extends Controller
         $selectStates = $this->queryController->selectStates(Constants::COUNTRY_ID);
 
         $responseDocument = getResponseDocument();
-        $responseVehicle = getResponseVehicle();
+        $responseMaintenanceInput = getResponseMaintenanceInput();
+        $responseTypeMaintenance = getResponseTypeMaintenance();
 
         return [
             'tabs' => $tabs,
             'responseDocument' => $responseDocument,
-            'responseVehicle' => $responseVehicle,
+            'responseMaintenanceInput' => $responseMaintenanceInput,
+            'responseTypeMaintenance' => $responseTypeMaintenance,
             'responseStatus' => getResponseStatus(),
             ...$selectStates,
         ];

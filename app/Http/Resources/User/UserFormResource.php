@@ -19,7 +19,11 @@ class UserFormResource extends JsonResource
             'name' => $this->name,
             'surname' => $this->surname,
             'email' => $this->email,
-            'role_id' => $this->role_id,
+            'role_id' => [
+                'value' => $this->role_id,
+                'title' => $this->role?->description,
+                'operator' => $this->role?->operator,
+            ],
             'company_id' => $this->company_id,
             'type_document_id' => $this->type_document_id,
             'document' => $this->document,

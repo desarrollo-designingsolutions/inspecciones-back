@@ -27,9 +27,17 @@ class Maintenance extends Model
         return $this->belongsTo(MaintenanceType::class);
     }
 
-    public function user(): BelongsTo
+    public function user_mechanic(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_mechanic_id', 'id');
+    }
+    public function user_operator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_operator_id', 'id');
+    }
+    public function user_inspector(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_inspector_id', 'id');
     }
 
     public function city(): BelongsTo

@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
-function filterComponent($query, $request, $model = null)
+function filterComponent($query, &$request, $model = null)
 {
     if (isset($request['searchQuery']) && is_string($request['searchQuery'])) {
         $request['searchQuery'] = json_decode($request['searchQuery'], 1);
@@ -276,6 +276,25 @@ function getResponseVehicle($value = null, $compareByKey = 'value', $returnByKey
         ['value' => 'regular', 'title' => 'regular'],
         ['value' => 'bad', 'title' => 'malo'],
         ['value' => 'not applicable', 'title' => 'no aplica'],
+    ];
+
+    return getStatus($value, $types, $compareByKey, $returnByKey, $typeSearch);
+}
+
+function getResponseMaintenanceInput($value = null, $compareByKey = 'value', $returnByKey = 'title', $typeSearch = '===')
+{
+    $types = [
+        ['value' => 'inspection', 'title' => 'Inspección'],
+    ];
+
+    return getStatus($value, $types, $compareByKey, $returnByKey, $typeSearch);
+}
+
+function getResponseTypeMaintenance($value = null, $compareByKey = 'value', $returnByKey = 'title', $typeSearch = '===')
+{
+    $types = [
+        ['value' => 'corrective', 'title' => 'Correctivo'],
+        ['value' => 'preventive', 'title' => 'Preventivo'],
     ];
 
     return getStatus($value, $types, $compareByKey, $returnByKey, $typeSearch);

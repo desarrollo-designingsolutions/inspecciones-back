@@ -104,7 +104,7 @@ class UserController extends Controller
     public function edit($id)
     {
         try {
-            $roles = $this->roleRepository->selectList(request());
+            $roles = $this->roleRepository->selectList(request(), select: ['operator']);
             $companies = $this->companyRepository->selectList();
             $typeDocuments = $this->userTypeDocumentRepository->selectList();
             $typeLicenses = $this->typeLicenseRepository->selectList();

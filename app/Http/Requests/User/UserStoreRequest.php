@@ -77,7 +77,9 @@ class UserStoreRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge([]);
+        $this->merge([
+            'role_id' => is_array($this->role_id) && isset($this->role_id['value']) ? $this->role_id['value'] : $this->role_id,
+        ]);
     }
 
     public function failedValidation(Validator $validator)

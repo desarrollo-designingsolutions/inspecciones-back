@@ -130,7 +130,7 @@ class MenuSeeder extends Seeder
                 'order' => 140,
                 'title' => 'Mantenimiento',
                 'to' => 'Maintenance-List',
-                'icon' => 'tabler-list-check',
+                'icon' => 'tabler-traffic-cone',
                 'father' => null,
                 'requiredPermission' => 'maintenance.list',
             ],

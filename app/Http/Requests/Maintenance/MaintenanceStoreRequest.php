@@ -32,9 +32,7 @@ class MaintenanceStoreRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge([
-            'have_trailer' => $this->have_trailer == 'true' ? true : false,
-        ]);
+        $this->merge([]);
     }
 
     public function failedValidation(Validator $validator)

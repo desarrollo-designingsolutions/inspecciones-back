@@ -16,6 +16,7 @@ class Role extends SpatieRole
     protected $casts = [
         'operator' => 'boolean',
         'mechanic' => 'boolean',
+        'inspector' => 'boolean',
     ];
 
     public function allUsers()
