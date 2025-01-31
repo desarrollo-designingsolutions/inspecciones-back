@@ -25,7 +25,6 @@ class VehicleStoreRequest extends FormRequest
             'brand_vehicle_id' => 'required',
             'engine_number' => 'required|max:255',
             'state_id' => 'required',
-            'city_id' => 'required',
             'model' => 'required|numeric',
             'vin_number' => 'required|max:255',
             'load_capacity' => 'required|numeric|min:1',

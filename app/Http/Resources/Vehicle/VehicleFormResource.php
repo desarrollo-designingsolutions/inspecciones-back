@@ -27,14 +27,8 @@ class VehicleFormResource extends JsonResource
             'date_registration' => $this->date_registration,
             'brand_vehicle_id' => new BrandVehicleSelectInfiniteResource($this->brand_vehicle),
             'engine_number' => $this->engine_number,
-            'state_id' => [
-                'value' => $this->state_id,
-                'title' => $this->state?->name,
-            ],
-            'city_id' => [
-                'value' => $this->city_id,
-                'title' => $this->city?->name,
-            ],
+            'state_id' => $this->state_id,
+            'city_id' => $this->city_id,
             'model' => $this->model,
             'vin_number' => $this->vin_number,
             'load_capacity' => $this->load_capacity,
