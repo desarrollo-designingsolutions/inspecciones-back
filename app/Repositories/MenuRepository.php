@@ -33,6 +33,10 @@ class MenuRepository extends BaseRepository
             if (! empty($request['withPermissions'])) {
                 $query->whereHas('permissions');
             }
+            
+            if (! empty($request['id'])) {
+                $query->whereNot('id', 2);
+            }
 
             //idsAllowed
             if (count($idsAllowed) > 0) {

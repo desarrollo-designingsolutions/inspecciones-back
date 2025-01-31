@@ -84,7 +84,7 @@ class VehicleController extends Controller
             //PHOTOS
             if ($request->file('photo_front')) {
                 $file = $request->file('photo_front');
-                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_front');
+                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_front');
                 $photo_front = $file->store($ruta, 'public');
                 $vehicle->photo_front = $photo_front;
                 $vehicle->save();
@@ -92,7 +92,7 @@ class VehicleController extends Controller
 
             if ($request->file('photo_rear')) {
                 $file = $request->file('photo_rear');
-                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_rear');
+                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_rear');
                 $photo_rear = $file->store($ruta, 'public');
                 $vehicle->photo_rear = $photo_rear;
                 $vehicle->save();
@@ -100,7 +100,7 @@ class VehicleController extends Controller
 
             if ($request->file('photo_right_side')) {
                 $file = $request->file('photo_right_side');
-                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_right_side');
+                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_right_side');
                 $photo_right_side = $file->store($ruta, 'public');
                 $vehicle->photo_right_side = $photo_right_side;
                 $vehicle->save();
@@ -108,7 +108,7 @@ class VehicleController extends Controller
 
             if ($request->file('photo_left_side')) {
                 $file = $request->file('photo_left_side');
-                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_left_side');
+                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_left_side');
                 $photo_left_side = $file->store($ruta, 'public');
                 $vehicle->photo_left_side = $photo_left_side;
                 $vehicle->save();
@@ -162,12 +162,16 @@ class VehicleController extends Controller
     public function edit($id)
     {
         try {
+            $selectStates = $this->queryController->selectStates(Constants::COUNTRY_ID);
+            $vehicle_structures = $this->vehicleStructureRepository->selectList();
             $vehicle = $this->vehicleRepository->find($id);
             $form = new VehicleFormResource($vehicle);
 
             return response()->json([
                 'code' => 200,
                 'form' => $form,
+                'vehicle_structures' => $vehicle_structures,
+                ...$selectStates,
             ]);
         } catch (Throwable $th) {
 
@@ -192,7 +196,7 @@ class VehicleController extends Controller
             //PHOTOS
             if ($request->file('photo_front')) {
                 $file = $request->file('photo_front');
-                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_front');
+                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_front');
                 $photo_front = $file->store($ruta, 'public');
                 $vehicle->photo_front = $photo_front;
                 $vehicle->save();
@@ -200,7 +204,7 @@ class VehicleController extends Controller
 
             if ($request->file('photo_rear')) {
                 $file = $request->file('photo_rear');
-                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_rear');
+                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_rear');
                 $photo_rear = $file->store($ruta, 'public');
                 $vehicle->photo_rear = $photo_rear;
                 $vehicle->save();
@@ -208,7 +212,7 @@ class VehicleController extends Controller
 
             if ($request->file('photo_right_side')) {
                 $file = $request->file('photo_right_side');
-                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_right_side');
+                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_right_side');
                 $photo_right_side = $file->store($ruta, 'public');
                 $vehicle->photo_right_side = $photo_right_side;
                 $vehicle->save();
@@ -216,7 +220,7 @@ class VehicleController extends Controller
 
             if ($request->file('photo_left_side')) {
                 $file = $request->file('photo_left_side');
-                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_left_side');
+                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_left_side');
                 $photo_left_side = $file->store($ruta, 'public');
                 $vehicle->photo_left_side = $photo_left_side;
                 $vehicle->save();
@@ -306,7 +310,7 @@ class VehicleController extends Controller
 
             DB::commit();
 
-            return response()->json(['code' => 200, 'message' => 'Vehiculo '.$msg.' con éxito']);
+            return response()->json(['code' => 200, 'message' => 'Vehiculo ' . $msg . ' con éxito']);
         } catch (Throwable $th) {
             DB::rollback();
 

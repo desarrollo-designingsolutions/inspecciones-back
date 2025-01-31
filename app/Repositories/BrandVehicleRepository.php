@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Helpers\Constants;
 use App\Models\BrandVehicle;
 
 class BrandVehicleRepository extends BaseRepository
@@ -37,7 +38,7 @@ class BrandVehicleRepository extends BaseRepository
         }
 
         if (empty($request['typeData'])) {
-            $data = $data->paginate($request['perPage'] ?? 1);
+            $data = $data->paginate($request['perPage'] ?? Constants::ITEMS_PER_PAGE);
         } else {
             $data = $data->get();
         }

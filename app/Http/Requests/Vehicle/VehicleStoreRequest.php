@@ -19,7 +19,7 @@ class VehicleStoreRequest extends FormRequest
         $rules = [
             //Modulo 1
             'company_id' => 'required',
-            'license_plate' => 'required|max:6|unique:vehicles,license_plate,'.$this->id.',id,company_id,'.$this->company_id,
+            'license_plate' => 'required|max:6|unique:vehicles,license_plate,' . $this->id . ',id,company_id,' . $this->company_id,
             'type_vehicle_id' => 'required',
             'date_registration' => 'required|date|before_or_equal:today',
             'brand_vehicle_id' => 'required',
@@ -37,10 +37,46 @@ class VehicleStoreRequest extends FormRequest
             'have_trailer' => 'required',
             'vehicle_structure_id' => 'required',
             //Modulo 3
-            'photo_front' => 'required|extensions:jpg,png',
-            'photo_rear' => 'required|extensions:jpg,png',
-            'photo_right_side' => 'required|extensions:jpg,png',
-            'photo_left_side' => 'required|extensions:jpg,png',
+            'photo_front' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    if (!is_string($value) || !preg_match('/\.(jpg|png)$/i', $value)) {
+                        if (!$value instanceof \Illuminate\Http\UploadedFile || !in_array($value->getClientOriginalExtension(), ['jpg', 'png'])) {
+                            $fail('El archivo debe ser una imagen válida (JPG o PNG) o una ruta válida.');
+                        }
+                    }
+                },
+            ],
+            'photo_rear' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    if (!is_string($value) || !preg_match('/\.(jpg|png)$/i', $value)) {
+                        if (!$value instanceof \Illuminate\Http\UploadedFile || !in_array($value->getClientOriginalExtension(), ['jpg', 'png'])) {
+                            $fail('El archivo debe ser una imagen válida (JPG o PNG) o una ruta válida.');
+                        }
+                    }
+                },
+            ],
+            'photo_right_side' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    if (!is_string($value) || !preg_match('/\.(jpg|png)$/i', $value)) {
+                        if (!$value instanceof \Illuminate\Http\UploadedFile || !in_array($value->getClientOriginalExtension(), ['jpg', 'png'])) {
+                            $fail('El archivo debe ser una imagen válida (JPG o PNG) o una ruta válida.');
+                        }
+                    }
+                },
+            ],
+            'photo_left_side' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    if (!is_string($value) || !preg_match('/\.(jpg|png)$/i', $value)) {
+                        if (!$value instanceof \Illuminate\Http\UploadedFile || !in_array($value->getClientOriginalExtension(), ['jpg', 'png'])) {
+                            $fail('El archivo debe ser una imagen válida (JPG o PNG) o una ruta válida.');
+                        }
+                    }
+                },
+            ],
         ];
 
         if ($this->have_trailer === true) {
