@@ -6,6 +6,7 @@ use App\Helpers\Constants;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class CompanyStoreRequest extends FormRequest
 {
@@ -18,7 +19,12 @@ class CompanyStoreRequest extends FormRequest
     {
         $rules = [
             'name' => 'required',
-            'nit' => 'required|unique:companies,nit',
+            'nit' => [
+                'required',
+                Rule::unique('companies', 'nit')
+                    ->whereNot('id', $this->id)
+                    ->whereNull('deleted_at'), // Ignorar registros eliminados
+            ],
             'phone' => 'required',
             'country_id' => 'required',
             'state_id' => 'required',
@@ -28,7 +34,7 @@ class CompanyStoreRequest extends FormRequest
         ];
 
         if (! empty($this->email) || $this->email != 'null' || $this->email != null) {
-            $rules['email'] = 'required|unique:companies,email,'.$this->id.',id';
+            $rules['email'] = 'required|unique:companies,email,' . $this->id . ',id';
         }
         if (! empty($this->final_date) && $this->final_date != 'null' && $this->final_date != null) {
             $rules['final_date'] = 'required|date|after:start_date';
@@ -52,7 +58,7 @@ class CompanyStoreRequest extends FormRequest
             'email.email' => 'El campo debe contener un correo valido',
             'start_date.required' => 'El campo es obligatorio',
             'final_date.required' => 'El campo es obligatorio',
-            'final_date.after' => 'La fecha debe ser posterior a '.$this->start_date,
+            'final_date.after' => 'La fecha debe ser posterior a ' . $this->start_date,
         ];
     }
 

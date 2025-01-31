@@ -88,6 +88,8 @@ class RoleController extends Controller
 
             $menus = MenuCheckBoxResource::collection($menus);
 
+            unset($menus[1]);
+
             return response()->json([
                 'code' => 200,
                 'role' => new RoleFormResource($role),

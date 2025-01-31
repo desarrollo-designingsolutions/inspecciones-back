@@ -134,6 +134,9 @@ class VehicleRepository extends BaseRepository
                 if (! empty($request['license_plate'])) {
                     $query->where('license_plate', $request['license_plate']);
                 }
+                if (! empty($request['id'])) {
+                    $query->whereNot('id', $request['id']);
+                }
             })->first();
 
         return $data !== null; // Retorna true si la licencia cumple con ambas condiciones
