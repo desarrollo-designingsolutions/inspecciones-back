@@ -272,10 +272,10 @@ function getResponseDocument($value = null, $compareByKey = 'value', $returnByKe
 function getResponseVehicle($value = null, $compareByKey = 'value', $returnByKey = 'title', $typeSearch = '===')
 {
     $types = [
-        ['value' => 'good', 'title' => 'bueno'],
-        ['value' => 'regular', 'title' => 'regular'],
-        ['value' => 'bad', 'title' => 'malo'],
-        ['value' => 'not applicable', 'title' => 'no aplica'],
+        ['value' => 'good', 'title' => 'Bueno'],
+        ['value' => 'regular', 'title' => 'Regular'],
+        ['value' => 'bad', 'title' => 'Malo'],
+        ['value' => 'not applicable', 'title' => 'No aplica'],
     ];
 
     return getStatus($value, $types, $compareByKey, $returnByKey, $typeSearch);
