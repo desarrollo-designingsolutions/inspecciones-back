@@ -23,19 +23,19 @@ class InspectionStoreRequest extends FormRequest
             'company_id' => 'required',
             'city_id' => 'required',
             'state_id' => 'required',
-            'user_id' => 'required',
+            'user_operator_id' => 'required',
             'vehicle_id' => 'required',
             'inspection_date' => 'required',
         ];
 
 
-        // foreach ($this->tabs as $tab) {
-        //     if (isset($tab['inspectionTypeInputs']) && count($tab['inspectionTypeInputs']) > 0) {
-        //         foreach ($tab['inspectionTypeInputs'] as $input) {
-        //             $rules[$input['id']] = 'required';
-        //         }
-        //     }
-        // }
+        foreach ($this->tabs as $tab) {
+            if (isset($tab['inspectionTypeInputs']) && count($tab['inspectionTypeInputs']) > 0) {
+                foreach ($tab['inspectionTypeInputs'] as $input) {
+                    $rules[$input['id']] = 'required';
+                }
+            }
+        }
 
         return $rules;
     }
@@ -46,7 +46,7 @@ class InspectionStoreRequest extends FormRequest
             'company_id.required' => 'El campo es obligatorio',
             'city_id.required' => 'El campo es obligatorio',
             'state_id.required' => 'El campo es obligatorio',
-            'user_id.required' => 'El campo es obligatorio',
+            'user_operator_id.required' => 'El campo es obligatorio',
             'vehicle_id.required' => 'El campo es obligatorio',
             'inspection_date.required' => 'El campo es obligatorio',
         ];
@@ -67,7 +67,7 @@ class InspectionStoreRequest extends FormRequest
         $this->tabs = InspectionTypeGroup::select(['id'])->with(['inspectionTypeInputs:id,inspection_type_group_id'])->where('inspection_type_id', $this->inspection_type_id)->get();
 
         $this->merge([
-            'user_id' => is_array($this->user_id) && isset($this->user_id['value']) ? $this->user_id['value'] : $this->user_id,
+            'user_operator_id' => is_array($this->user_operator_id) && isset($this->user_operator_id['value']) ? $this->user_operator_id['value'] : $this->user_operator_id,
             'vehicle_id' => is_array($this->vehicle_id) && isset($this->vehicle_id['value']) ? $this->vehicle_id['value'] : $this->vehicle_id,
 
         ]);
