@@ -110,7 +110,7 @@ class MenuSeeder extends Seeder
             [
                 'id' => 12,
                 'order' => 120,
-                'title' => 'Vehiculo',
+                'title' => 'Vehículo',
                 'to' => 'Vehicle-List',
                 'icon' => 'tabler-car',
                 'father' => null,

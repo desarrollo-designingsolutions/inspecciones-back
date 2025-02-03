@@ -26,7 +26,7 @@ class VehicleStructureSeeder extends Seeder
         $this->command->info('Starting Seed Data ...');
         $bar = $this->command->getOutput()->createProgressBar(count($arrayData));
 
-        // Insertar o actualizar estructuras de vehiculos
+        // Insertar o actualizar estructuras de vehículos
         foreach ($arrayData as $value) {
             VehicleStructure::updateOrCreate(
                 ['name' => $value['name']],

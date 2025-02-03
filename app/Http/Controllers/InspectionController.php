@@ -245,7 +245,7 @@ class InspectionController extends Controller
         // Usar prepend() para agregar al inicio
         $tabs->prepend([
             'id' => 0,
-            'name' => 'Informacion General',
+            'name' => 'Información General',
             'show' => true,
             'errorsValidations' => false,
             'order' => 0,

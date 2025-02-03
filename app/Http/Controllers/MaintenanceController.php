@@ -222,7 +222,7 @@ class MaintenanceController extends Controller
         // Usar prepend() para agregar al inicio
         $tabs->prepend([
             'id' => 0,
-            'name' => 'Informacion General',
+            'name' => 'Información General',
             'show' => true,
             'errorsValidations' => false,
             'order' => 0,
@@ -266,7 +266,7 @@ class MaintenanceController extends Controller
 
             ($model->is_active == 1) ? $msg = 'habilitado(a)' : $msg = 'inhabilitado(a)';
 
-            return ['code' => 200, 'message' => 'Vehiculo ' . $msg . ' con éxito'];
+            return ['code' => 200, 'message' => 'Vehículo ' . $msg . ' con éxito'];
         });
     }
 

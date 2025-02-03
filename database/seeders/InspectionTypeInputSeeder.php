@@ -406,7 +406,7 @@ class InspectionTypeInputSeeder extends Seeder
             ],
             [
                 'inspection_type_group_id' => 8,
-                'name' => 'Monógafas de Seguridad',
+                'name' => 'Monogafas de Seguridad',
             ],
             [
                 'inspection_type_group_id' => 8,

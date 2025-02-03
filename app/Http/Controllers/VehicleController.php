@@ -146,7 +146,7 @@ class VehicleController extends Controller
 
             DB::commit();
 
-            return response()->json(['code' => 200, 'message' => 'Vehiculo agregado correctamente', 'data' => $vehicle]);
+            return response()->json(['code' => 200, 'message' => 'Vehículo agregado correctamente', 'data' => $vehicle]);
         } catch (Throwable $th) {
             DB::rollBack();
 
@@ -258,7 +258,7 @@ class VehicleController extends Controller
 
             DB::commit();
 
-            return response()->json(['code' => 200, 'message' => 'Vehiculo modificado correctamente', 'data' => $vehicle]);
+            return response()->json(['code' => 200, 'message' => 'Vehículo modificado correctamente', 'data' => $vehicle]);
         } catch (Throwable $th) {
             DB::rollBack();
 
@@ -310,7 +310,7 @@ class VehicleController extends Controller
 
             DB::commit();
 
-            return response()->json(['code' => 200, 'message' => 'Vehiculo ' . $msg . ' con éxito']);
+            return response()->json(['code' => 200, 'message' => 'Vehículo ' . $msg . ' con éxito']);
         } catch (Throwable $th) {
             DB::rollback();
 

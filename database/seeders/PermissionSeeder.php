@@ -86,7 +86,7 @@ class PermissionSeeder extends Seeder
             [
                 'id' => 12,
                 'name' => 'vehicle.list',
-                'description' => 'Visualizar Menú Vehiculos',
+                'description' => 'Visualizar Menú Vehículos',
                 'menu_id' => 12,
             ],
             [

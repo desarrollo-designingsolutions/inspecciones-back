@@ -28,7 +28,7 @@ class InspectionTypeGroupSeeder extends Seeder
             [
                 'id' => 3,
                 'inspection_type_id' => 1,
-                'name' => 'Inspección Bomba/Unidad de vacio',
+                'name' => 'Inspección Bomba/Unidad de vacío',
                 'order' => 30,
             ],
             [
