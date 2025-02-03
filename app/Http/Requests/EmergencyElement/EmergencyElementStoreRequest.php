@@ -18,7 +18,7 @@ class EmergencyElementStoreRequest extends FormRequest
     {
         $rules = [
             'company_id' => 'required',
-            'name' => 'required|unique:clients,name,'.$this->id.',id,company_id,'.$this->company_id,
+            'name' => 'required|unique:emergency_elements,name,'.$this->id.',id,company_id,'.$this->company_id,
         ];
 
         return $rules;

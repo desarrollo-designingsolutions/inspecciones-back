@@ -40,7 +40,7 @@ class UserStoreRequest extends FormRequest
 
         if ($operator === true) {
             $rules['type_document_id'] = 'required';
-            $rules['document'] = 'required';
+            $rules['document'] = 'required|unique:users,document,'.$this->id.',id,company_id,'.$this->company_id;
             $rules['type_license_id'] = 'required';
             $rules['license'] = 'required|unique:users,license,'.$this->id.',id,company_id,'.$this->company_id;
             $rules['expiration_date'] = 'required|date';
@@ -67,6 +67,7 @@ class UserStoreRequest extends FormRequest
             'role_id.required' => 'El campo es obligatorio',
             'type_document_id.required' => 'El campo es obligatorio',
             'document.required' => 'El campo es obligatorio',
+            'document.unique' => 'El documento ya existe',
             'type_license_id.required' => 'El campo es obligatorio',
             'license.required' => 'El campo es obligatorio',
             'license.unique' => 'La licencia ya existe',

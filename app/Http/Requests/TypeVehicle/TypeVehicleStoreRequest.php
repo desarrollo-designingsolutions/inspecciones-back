@@ -18,7 +18,7 @@ class TypeVehicleStoreRequest extends FormRequest
     {
         $rules = [
             'company_id' => 'required',
-            'name' => 'required|unique:clients,name,'.$this->id.',id,company_id,'.$this->company_id,
+            'name' => 'required|unique:type_vehicles,name,'.$this->id.',id,company_id,'.$this->company_id,
         ];
 
         return $rules;
