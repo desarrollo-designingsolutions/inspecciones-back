@@ -23,7 +23,7 @@ class CompanyStoreRequest extends FormRequest
                 'required',
                 Rule::unique('companies', 'nit')
                     ->whereNot('id', $this->id)
-                    ->whereNull('deleted_at'), // Ignorar registros eliminados
+                    ->whereNull('deleted_at'),
             ],
             'phone' => 'required',
             'country_id' => 'required',
