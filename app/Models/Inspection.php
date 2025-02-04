@@ -27,7 +27,12 @@ class Inspection extends Model
         return $this->belongsTo(InspectionType::class);
     }
 
-    public function user(): BelongsTo
+    public function user_inspector(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function user_operator(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

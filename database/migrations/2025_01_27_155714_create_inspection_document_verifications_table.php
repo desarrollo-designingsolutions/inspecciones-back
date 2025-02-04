@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('inspection_document_verifications', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('inspection_id');
-            $table->foreignUuid('vehicle_document_id');
+            $table->foreignUuid('inspection_id')->constrained();
+            $table->foreignUuid('vehicle_document_id')->constrained();
             $table->boolean('original')->default(false);
             $table->timestamps();
         });

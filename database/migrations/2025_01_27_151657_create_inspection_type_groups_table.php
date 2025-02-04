@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('inspection_type_groups', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignId('inspection_type_id');
+            $table->foreignUuid('inspection_type_id')->constrained();
             $table->string('name');
             $table->integer('order');
             $table->timestamps();

@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('maintenances', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('company_id')->constrained();
-            $table->foreignUuid('vehicle_id');
-            $table->foreignUuid('maintenance_type_id');
-            $table->foreignUuid('user_mechanic_id')->nullable();
-            $table->foreignUuid('user_operator_id')->nullable();
-            $table->foreignUuid('user_inspector_id')->nullable();
+            $table->foreignUuid('vehicle_id')->constrained();
+            $table->foreignUuid('maintenance_type_id')->constrained();
+            $table->foreignUuid('user_mechanic_id')->constrained('users');
+            $table->foreignUuid('user_operator_id')->constrained('users');
+            $table->foreignUuid('user_inspector_id')->constrained('users');
             $table->foreignId('state_id')->nullable()->constrained();
             $table->foreignId('city_id')->nullable()->constrained();
             $table->date('maintenance_date');

@@ -68,7 +68,7 @@ class InspectionController extends Controller
     {
         return $this->runTransaction(function () use ($request) {
 
-            $fields = ["id", "vehicle_id", "inspection_type_id", "user_id", "state_id", "city_id", "general_comment", "inspection_date", "company_id"];
+            $fields = ["id", "vehicle_id", "inspection_type_id", "user_inspector_id", "user_operator_id", "state_id", "city_id", "general_comment", "inspection_date", "company_id"];
 
             $post1 = $request->only($fields);
 
@@ -93,7 +93,7 @@ class InspectionController extends Controller
                         'inspection_type_input_id' => $key,
                     ],
                     [
-                        'user_id' => $post1['user_id'],
+                        'user_inspector_id' => $post1['user_inspector_id'],
                         'response' => $value,
 
                     ]

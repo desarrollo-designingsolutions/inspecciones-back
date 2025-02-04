@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('maintenance_type_input_responses', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('maintenance_id');
-            $table->foreignUuid('maintenance_type_input_id');
-            $table->foreignUuid('user_id')->nullable();
+            $table->foreignUuid('maintenance_id')->constrained();
+            $table->foreignUuid('maintenance_type_input_id')->constrained()->name('mti_id_maintenance_type_input');
+            $table->foreignUuid('user_inspector_id')->constrained('users');
             $table->string('type')->nullable();
             $table->string('type_maintenance')->nullable();
             $table->text('comment')->nullable();

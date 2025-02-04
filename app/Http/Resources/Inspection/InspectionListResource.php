@@ -23,7 +23,7 @@ class InspectionListResource extends JsonResource
             'vehicle_model' => $this->vehicle?->model,
             'inspection_type_id' => $this->inspection_type_id,
             'inspection_type_name' => $this->inspectionType?->name,
-            'user_full_name' => $this->user?->full_name,
+            'user_inspector_full_name' => $this->user_inspector?->full_name,
         ];
     }
 }

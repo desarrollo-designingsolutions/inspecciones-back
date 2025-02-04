@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('inspections', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('company_id')->constrained();
-            $table->foreignUuid('vehicle_id');
-            $table->foreignUuid('inspection_type_id');
-            $table->foreignUuid('user_id');
+            $table->foreignUuid('vehicle_id')->constrained();
+            $table->foreignUuid('inspection_type_id')->constrained();
+            $table->foreignUuid('user_inspector_id')->constrained('users');
+            $table->foreignUuid('user_operator_id')->constrained('users');
             $table->foreignId('state_id')->nullable()->constrained();
             $table->foreignId('city_id')->nullable()->constrained();
             $table->text('general_comment')->nullable();

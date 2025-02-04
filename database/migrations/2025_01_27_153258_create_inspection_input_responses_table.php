@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('inspection_input_responses', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('inspection_id');
-            $table->foreignUuid('inspection_type_input_id');
-            $table->foreignUuid('user_id');
+            $table->foreignUuid('inspection_id')->constrained();
+            $table->foreignUuid('inspection_type_input_id')->constrained();
+            $table->foreignUuid('user_inspector_id')->constrained('users');
             $table->string('response');
-            $table->text('comment')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

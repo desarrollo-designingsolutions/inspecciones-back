@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('vehicle_documents', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('vehicle_id')->nullable()->constrained();
-            $table->foreignUuid('type_document_id')->nullable()->constrained();
+            $table->foreignUuid('vehicle_id')->constrained();
+            $table->foreignUuid('type_document_id')->constrained();
             $table->string('document_number')->nullable();
             $table->date('date_issue')->nullable();
             $table->date('expiration_date')->nullable();

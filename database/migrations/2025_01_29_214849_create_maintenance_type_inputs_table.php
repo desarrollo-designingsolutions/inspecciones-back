@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('maintenance_type_inputs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignId('maintenance_type_group_id');
+            $table->foreignUuid('maintenance_type_group_id')->constrained();
             $table->string('name');
             $table->integer('order');
             $table->timestamps();
