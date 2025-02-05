@@ -30,13 +30,13 @@ class InspectionStoreRequest extends FormRequest
         ];
 
 
-        foreach ($this->tabs as $tab) {
-            if (isset($tab['inspectionTypeInputs']) && count($tab['inspectionTypeInputs']) > 0) {
-                foreach ($tab['inspectionTypeInputs'] as $input) {
-                    $rules[$input['id']] = 'required';
-                }
-            }
-        }
+        // foreach ($this->tabs as $tab) {
+        //     if (isset($tab['inspectionTypeInputs']) && count($tab['inspectionTypeInputs']) > 0) {
+        //         foreach ($tab['inspectionTypeInputs'] as $input) {
+        //             $rules[$input['id']] = 'required';
+        //         }
+        //     }
+        // }
 
         return $rules;
     }
@@ -53,13 +53,13 @@ class InspectionStoreRequest extends FormRequest
             'inspection_date.required' => 'El campo es obligatorio',
         ];
 
-        foreach ($this->tabs as $tab) {
-            if (isset($tab['inspectionTypeInputs']) && count($tab['inspectionTypeInputs']) > 0) {
-                foreach ($tab['inspectionTypeInputs'] as $input) {
-                    $messages[$input['id'].'.required'] = 'El campo es obligatorio';
-                }
-            }
-        }
+        // foreach ($this->tabs as $tab) {
+        //     if (isset($tab['inspectionTypeInputs']) && count($tab['inspectionTypeInputs']) > 0) {
+        //         foreach ($tab['inspectionTypeInputs'] as $input) {
+        //             $messages[$input['id'].'.required'] = 'El campo es obligatorio';
+        //         }
+        //     }
+        // }
 
         return $messages;
     }

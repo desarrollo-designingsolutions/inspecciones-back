@@ -88,7 +88,6 @@ class InspectionController extends Controller
             $post3 = $request->except([...$fields, ...['type_documents']]);
 
             foreach ($post3 as $key => $value) {
-
                 $this->inspectionInputResponseRepository->updateOrCreate(
                     [
                         'inspection_id' => $inspection->id,
@@ -96,8 +95,8 @@ class InspectionController extends Controller
                     ],
                     [
                         'user_inspector_id' => $post1['user_inspector_id'],
-                        'response' => $value,
-
+                        'response' => $value['value'],
+                        'observation' => $value['observation'],
                     ]
                 );
             }
@@ -255,7 +254,7 @@ class InspectionController extends Controller
         $selectStates = $this->queryController->selectStates(Constants::COUNTRY_ID);
 
         $responseDocument = getResponseDocument();
-        $responseVehicle = getResponseVehicle();
+        $responseVehicle = getResponseTypeInspection($inspection_type_id);
 
         return [
             'tabs' => $tabs,
@@ -313,8 +312,8 @@ class InspectionController extends Controller
             $tabs = InspectionTypeGroup::select(['id', 'name'])
                 ->with([
                     'inspectionTypeInputs:id,inspection_type_group_id,name',
-                    'inspectionTypeInputs.inspectionInputResponses:id,inspection_type_input_id,response,inspection_id',
-                    'inspectionTypeInputs.inspectionInputResponses' => function ($query) use($inspection) {
+                    'inspectionTypeInputs.inspectionInputResponses:id,inspection_type_input_id,response,observation,inspection_id',
+                    'inspectionTypeInputs.inspectionInputResponses' => function ($query) use ($inspection) {
                         $query->where('inspection_id', $inspection->id);
                     },
                 ])
@@ -351,19 +350,28 @@ class InspectionController extends Controller
                     ];
                 }),
                 'general_comment' => $inspection->general_comment,
-                'getResponseVehicle' => getResponseVehicle(),
-                'inspectionInputResponses' => $tabs->map(function ($item) {
+                'getResponseTypeInspection' => getResponseTypeInspection($inspection['inspection_type_id']),
+                'inspectionInputResponses' => $tabs->map(function ($item) use ($inspection) {
                     return [
+                        'id' => $item->id,
                         'name' => $item->name,
-                        'inspectionTypeInputs' => $item->inspectionTypeInputs->map(function ($input) {
-
-                            $getResponseVehicle = getResponseVehicle();
+                        'inspectionTypeInputs' => $item->inspectionTypeInputs->map(function ($input) use ($inspection) {
+                            $getResponseTypeInspection = getResponseTypeInspection($inspection->inspection_type_id);
 
                             $responses = [];
                             $response = $input->inspectionInputResponses->first();
+
                             logMessage($response);
-                            foreach ($getResponseVehicle as $key => $value) {
+                            if ($inspection->inspection_type_id == 1 && isset($response->response['value'])) {
+                                $decodedResponse = json_decode(json_encode($response->response), true);
+
+                                $response['response'] = $decodedResponse['value'];
+                            }
+
+
+                            foreach ($getResponseTypeInspection as $key => $value) {
                                 $responses[$key] = '';
+
                                 if ($value['value'] == $response['response']) {
                                     $responses[$key] = 'X';
                                 }
@@ -372,6 +380,7 @@ class InspectionController extends Controller
                             return [
                                 'name' => $input->name,
                                 'responses' => $responses,
+                                'observation' => $response['observation'],
                             ];
                         }),
                     ];

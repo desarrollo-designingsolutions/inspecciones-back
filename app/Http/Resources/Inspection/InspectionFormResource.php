@@ -39,18 +39,29 @@ class InspectionFormResource extends JsonResource
         $tabs = InspectionTypeGroup::select(['id'])
             ->with([
                 'inspectionTypeInputs:id,inspection_type_group_id',
-                'inspectionTypeInputs.inspectionInputResponses:id,inspection_type_input_id,response,inspection_id',
+                'inspectionTypeInputs.inspectionInputResponses:id,inspection_type_input_id,response,observation,inspection_id',
                 'inspectionTypeInputs.inspectionInputResponses' => function ($query) {
                     $query->where('inspection_id', $this->id);
                 },
             ])
             ->where('inspection_type_id', $this->inspection_type_id)->get();
 
+            logMessage($this->id);
+            logMessage($this->inspection_type_id);
+
         foreach ($tabs as $tab) {
             if (isset($tab['inspectionTypeInputs']) && count($tab['inspectionTypeInputs']) > 0) {
                 foreach ($tab['inspectionTypeInputs'] as $input) {
                     $inspection_input_responses = $input['inspectionInputResponses']->first();
-                    $info[$input['id']] = $inspection_input_responses->response;
+                    logMessage($inspection_input_responses);
+                    if ($this->inspection_type_id == 1 && isset($response->response['value'])) {
+                        $decodedResponse = json_decode($inspection_input_responses->response, true);
+
+                        $info[$input['id']]['value'] = $decodedResponse['value'];
+                    } else {
+                        $info[$input['id']]['value'] = $inspection_input_responses->response;
+                        $info[$input['id']]['observation'] = $inspection_input_responses?->observation;
+                    }
                 }
             }
         }

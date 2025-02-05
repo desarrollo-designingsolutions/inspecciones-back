@@ -269,14 +269,24 @@ function getResponseDocument($value = null, $compareByKey = 'value', $returnByKe
     return getStatus($value, $types, $compareByKey, $returnByKey, $typeSearch);
 }
 
-function getResponseVehicle($value = null, $compareByKey = 'value', $returnByKey = 'title', $typeSearch = '===')
+function getResponseTypeInspection($value = null, $compareByKey = 'value', $returnByKey = 'title', $typeSearch = '===')
 {
-    $types = [
-        ['value' => 'good', 'title' => 'Bueno'],
-        ['value' => 'regular', 'title' => 'Regular'],
-        ['value' => 'bad', 'title' => 'Malo'],
-        ['value' => 'not applicable', 'title' => 'No aplica'],
-    ];
+    if($value == 1) {
+        $types = [
+            ['value' => 'good', 'title' => 'Bueno'],
+            ['value' => 'regular', 'title' => 'Regular'],
+            ['value' => 'bad', 'title' => 'Malo'],
+            ['value' => 'not applicable', 'title' => 'No aplica'],
+        ];
+    }
+    else if($value == 2)
+    {
+        $types = [
+            ['value' => 'complies', 'title' => 'Cumple'],
+            ['value' => 'does not comply', 'title' => 'No cumple'],
+            ['value' => 'not applicable', 'title' => 'No aplica'],
+        ];
+    }
 
     return getStatus($value, $types, $compareByKey, $returnByKey, $typeSearch);
 }

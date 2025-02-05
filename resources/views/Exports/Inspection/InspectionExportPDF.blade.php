@@ -144,7 +144,7 @@
                     <tr>
                         <th>{{ $group['name'] }}</th>
 
-                        @foreach ($data['getResponseVehicle'] as $resp)
+                        @foreach ($data['getResponseTypeInspection'] as $resp)
                             <th>{{ $resp['title'] }}</th>
                         @endforeach
                     </tr>
@@ -163,9 +163,10 @@
                     <tr>
                         <th>{{ $group['name'] }}</th>
 
-                        @foreach ($data['getResponseVehicle'] as $resp)
+                        @foreach ($data['getResponseTypeInspection'] as $resp)
                             <th>{{ $resp['title'] }}</th>
                         @endforeach
+                        <th>Observacion</th>
                     </tr>
 
                     @foreach ($group['inspectionTypeInputs'] as $input)
@@ -174,6 +175,7 @@
                             @foreach ($input['responses'] as $response)
                                 <td style="text-align: center">{{ $response }}</td>
                             @endforeach
+                            <td style="text-align: center">{{ $input['observation'] }}</td>
                         </tr>
                     @endforeach
                 @endforeach
