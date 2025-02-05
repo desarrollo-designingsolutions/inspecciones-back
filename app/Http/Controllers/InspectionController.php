@@ -8,6 +8,7 @@ use App\Http\Requests\Inspection\InspectionStoreRequest;
 use App\Http\Resources\Inspection\InspectionFormResource;
 use App\Http\Resources\Inspection\InspectionGetVehicleDataResource;
 use App\Http\Resources\Inspection\InspectionListResource;
+use App\Models\InspectionTypeGroup;
 use App\Repositories\InspectionDocumentVerificationRepository;
 use App\Repositories\InspectionInputResponseRepository;
 use App\Repositories\InspectionRepository;
@@ -16,6 +17,7 @@ use App\Repositories\InspectionTypeRepository;
 use App\Repositories\VehicleRepository;
 use App\Traits\HttpTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 
 class InspectionController extends Controller
@@ -129,7 +131,7 @@ class InspectionController extends Controller
     {
         return $this->runTransaction(function () use ($request, $id) {
 
-            $fields = ['id', 'vehicle_id', 'inspection_type_id', 'user_id', 'state_id', 'city_id', 'general_comment', 'inspection_date', 'company_id'];
+            $fields = ['id', 'vehicle_id', 'inspection_type_id', 'user_inspector_id', 'user_operator_id', 'state_id', 'city_id', 'general_comment', 'inspection_date', 'company_id'];
 
             $post1 = $request->only($fields);
 
@@ -154,9 +156,8 @@ class InspectionController extends Controller
                         'inspection_type_input_id' => $key,
                     ],
                     [
-                        'user_id' => $post1['user_id'],
+                        'user_inspector_id' => $post1['user_inspector_id'],
                         'response' => $value,
-
                     ]
                 );
             }
@@ -298,6 +299,91 @@ class InspectionController extends Controller
             return [
                 'code' => 200,
                 'excel' => $excelBase64
+            ];
+        });
+    }
+
+    public function pdfExport(Request $request)
+    {
+        return $this->execute(function () use ($request) {
+
+            $inspection = $this->inspectionRepository->find($request->input('id'));
+            $vehicle = $this->vehicleRepository->find($inspection->vehicle->id);
+
+            $tabs = InspectionTypeGroup::select(['id', 'name'])
+                ->with([
+                    'inspectionTypeInputs:id,inspection_type_group_id,name',
+                    'inspectionTypeInputs.inspectionInputResponses:id,inspection_type_input_id,response,inspection_id',
+                    'inspectionTypeInputs.inspectionInputResponses' => function ($query) use($inspection) {
+                        $query->where('inspection_id', $inspection->id);
+                    },
+                ])
+                ->where('inspection_type_id', $inspection['inspection_type_id'])->get();
+
+            $data = [
+                'inspection_type_id' => $inspection['inspection_type_id'],
+                'inspection_date' => Carbon::parse($inspection['inspection_date'])->format('d-m-Y'),
+                'city' => ucfirst($inspection->city->name),
+                'operator' => [
+                    'name' => $inspection->user_operator->name,
+                    'document' => $inspection->user_operator->document,
+                    'license' => $inspection->user_operator->license,
+                ],
+                'vehicle' => [
+                    'id' => $vehicle->id,
+                    'license_plate' => $vehicle->license_plate,
+                    'brand_vehicle_name' => $vehicle->brand_vehicle?->name,
+                    'model' => $vehicle->model,
+                    'vehicle_structure_name' => $vehicle->vehicle_structure?->name,
+                ],
+                'documents' => $vehicle->type_documents->map(function ($item) use ($inspection) {
+                    $inspectionDocumentVerification = $inspection->inspectionDocumentVerifications->where('vehicle_document_id', $item->id)->first();
+                    $original = 'N/A';
+                    if ($inspectionDocumentVerification) {
+                        $original = $inspectionDocumentVerification->original ? 'S' : 'N';
+                    }
+                    return [
+                        'name' => $item->type_document?->name,
+                        'document' => $item->document_number,
+                        'expiration_date' => Carbon::parse($item->expiration_date)->format('d-m-Y'),
+                        'original' => $original,
+
+                    ];
+                }),
+                'general_comment' => $inspection->general_comment,
+                'getResponseVehicle' => getResponseVehicle(),
+                'inspectionInputResponses' => $tabs->map(function ($item) {
+                    return [
+                        'name' => $item->name,
+                        'inspectionTypeInputs' => $item->inspectionTypeInputs->map(function ($input) {
+
+                            $getResponseVehicle = getResponseVehicle();
+
+                            $responses = [];
+                            $response = $input->inspectionInputResponses->first();
+                            logMessage($response);
+                            foreach ($getResponseVehicle as $key => $value) {
+                                $responses[$key] = '';
+                                if ($value['value'] == $response['response']) {
+                                    $responses[$key] = 'X';
+                                }
+                            }
+
+                            return [
+                                'name' => $input->name,
+                                'responses' => $responses,
+                            ];
+                        }),
+                    ];
+                }),
+            ];
+
+            $pdf = $this->inspectionRepository->pdf('Exports.Inspection.InspectionExportPDF', $data);
+
+            $pdfBase64 = base64_encode($pdf);
+            return [
+                'code' => 200,
+                'pdf' => $pdfBase64
             ];
         });
     }

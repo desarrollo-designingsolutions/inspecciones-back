@@ -22,7 +22,7 @@ class InspectionFormResource extends JsonResource
             'company_id' => $this->company_id,
             'city_id' => $this->city_id,
             'state_id' => $this->state_id,
-            'user_id' => new UserOperatorsSelectInfiniteResource($this->user_operator),
+            'user_operator_id' => new UserOperatorsSelectInfiniteResource($this->user_operator),
             'vehicle_id' => new PlateVehicleSelectInfiniteResource($this->vehicle),
             'inspection_date' => $this->inspection_date,
             'general_comment' => $this->general_comment,
