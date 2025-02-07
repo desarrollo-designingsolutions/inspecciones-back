@@ -80,7 +80,7 @@ class MaintenanceController extends Controller
                         'maintenance_type_input_id' => $key,
                     ],
                     [
-                        // 'user_id' => $post1['user_id'],
+                        'user_inspector_id' => $post1['user_inspector_id'],
                         'type' => $value['type'],
                         'type_maintenance' => $value['type_maintenance'],
                         'comment' => $value['comment'],
@@ -135,7 +135,7 @@ class MaintenanceController extends Controller
                         'maintenance_type_input_id' => $key,
                     ],
                     [
-                        // 'user_id' => $post1['user_id'],
+                        'user_inspector_id' => $post1['user_inspector_id'],
                         'type' => $value['type'],
                         'type_maintenance' => $value['type_maintenance'],
                         'comment' => $value['comment'],

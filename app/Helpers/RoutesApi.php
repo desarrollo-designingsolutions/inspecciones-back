@@ -23,5 +23,6 @@ class RoutesApi
         'routes/vehicle.php',
         'routes/inspection.php',
         'routes/maintenance.php',
+        'routes/dashboard.php',
     ];
 }

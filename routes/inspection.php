@@ -28,6 +28,8 @@ Route::middleware(['check.permission:inspection.list'])->group(function () {
 
     Route::delete('/inspection/delete/{id}', [InspectionController::class, 'delete']);
 
+    Route::post('/inspection/changeStatus', [InspectionController::class, 'changeStatus']);
+
     Route::post('/inspection/excelExport', [InspectionController::class, 'excelExport']);
 
     Route::post('/inspection/pdfExport', [InspectionController::class, 'pdfExport']);

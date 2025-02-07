@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Helpers\Constants;
 use App\Models\Vehicle;
+use Illuminate\Support\Facades\DB;
 
 class VehicleRepository extends BaseRepository
 {
@@ -26,7 +27,7 @@ class VehicleRepository extends BaseRepository
             }
         })->where(function ($query) use ($request) {
             if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
-                $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
+                $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
             }
         });
 
@@ -116,6 +117,7 @@ class VehicleRepository extends BaseRepository
         $data = $this->model->where(function ($query) use ($request) {
             if (! empty($request['company_id'])) {
                 $query->where('company_id', $request['company_id']);
+                $query->where('is_active', true);
             }
         });
 
@@ -140,5 +142,72 @@ class VehicleRepository extends BaseRepository
             })->first();
 
         return $data !== null; // Retorna true si la licencia cumple con ambas condiciones
+    }
+
+    public function vehicleInfoForCompany($request)
+    {
+        // Validar las fechas de inicio y fin en la solicitud
+        $startDate = isset($request['start_date']) ? $request['start_date'] : null;
+        $endDate = isset($request['end_date']) ? $request['end_date'] : null;
+
+        $today = now()->toDateString();
+
+        // Obtener el tiempo total invertido en todas las tareas completadas de la empresa
+        $query = $this->model
+            ->where(function ($query) use ($request) {
+                if (! empty($request['company_id'])) {
+                    $query->where('company_id', $request['company_id']);
+                    $query->where('is_active', 1);
+                }
+            })
+            ->withCount([
+                'inspection',
+                'maintenance',
+                'type_documents'  => function ($q) use ($today) {
+                    $q->where('expiration_date', '>=', $today);
+                },
+                'emergency_elements' => function ($q) use ($today) {
+                    $q->where('expiration_date', '>=', $today);
+                },
+            ])
+            ->get();
+
+
+
+        return $query;
+    }
+
+    public function vehicleInspectionsComparison($request)
+    {
+        $request['month'] = 'February';
+        // Por ejemplo, el request debe tener company_id, y opcionalmente vehicle_id y month.
+        // Si no se envía un mes, se podría decidir un valor por defecto o no filtrar por mes.
+        // En este ejemplo, usamos el mes enviado (en inglés, ej. "February") para la comparación.
+        // Convertimos el nombre del mes a número (por ejemplo, "February" a 02)
+        $monthNumber = date('m', strtotime($request['month']));
+
+        // Consulta: obtener todos los vehículos de la compañía
+        // y, para cada uno, contar las inspecciones en el mes indicado y las inspecciones en otros meses.
+        $vehicles = DB::table('vehicles as v')
+            ->leftJoin('inspections as i', 'v.id', '=', 'i.vehicle_id')
+            ->select(
+                'v.id as vehicle_id',
+                'v.license_plate as vehicle_license_plate',
+                // Cuenta de inspecciones en el mes especificado
+                DB::raw("SUM(CASE WHEN MONTH(i.created_at) = {$monthNumber} THEN 1 ELSE 0 END) as inspections_in_month"),
+                // Cuenta de inspecciones fuera del mes especificado
+                DB::raw("SUM(CASE WHEN i.id IS NOT NULL AND MONTH(i.created_at) <> {$monthNumber} THEN 1 ELSE 0 END) as inspections_other"),
+                // Total de inspecciones (opcional)
+                DB::raw("COUNT(i.id) as total_inspections")
+            )
+            ->where('v.company_id', $request['company_id'])
+            ->when(!empty($request['vehicle_id']), function ($query) use ($request) {
+                // Si se especifica un vehículo, filtrar por ese vehículo.
+                return $query->where('v.id', $request['vehicle_id']);
+            })
+            ->groupBy('v.id', 'v.license_plate')
+            ->get();
+
+        return $vehicles;
     }
 }

@@ -116,6 +116,7 @@ class ClientRepository extends BaseRepository
         $data = $this->model->where(function ($query) use ($request) {
             if (! empty($request['company_id'])) {
                 $query->where('company_id', $request['company_id']);
+                $query->where('is_active', true);
             }
         });
 

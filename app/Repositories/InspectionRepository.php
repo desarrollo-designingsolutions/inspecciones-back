@@ -116,6 +116,10 @@ class InspectionRepository extends BaseRepository
         $data = $this->model->where(function ($query) use ($request) {
             if (! empty($request['company_id'])) {
                 $query->where('company_id', $request['company_id']);
+                $query->where('is_active', true);
+            }
+            if (! empty($request['inspection_type_id'])) {
+                $query->where('inspection_type_id', $request['inspection_type_id']);
             }
         });
 

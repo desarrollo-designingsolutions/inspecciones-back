@@ -24,6 +24,7 @@ class InspectionListResource extends JsonResource
             'inspection_type_id' => $this->inspection_type_id,
             'inspection_type_name' => $this->inspectionType?->name,
             'user_inspector_full_name' => $this->user_inspector?->full_name,
+            'is_active' => $this->is_active,
         ];
     }
 }

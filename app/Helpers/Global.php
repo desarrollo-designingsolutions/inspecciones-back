@@ -313,10 +313,10 @@ function getResponseTypeMaintenance($value = null, $compareByKey = 'value', $ret
 function getResponseStatus($value = null, $compareByKey = 'value', $returnByKey = 'title', $typeSearch = '===')
 {
     $types = [
-        ['value' => 'unassigned', 'title' => 'sin asignar'],
-        ['value' => 'assigned', 'title' => 'asignado'],
-        ['value' => 'canceled', 'title' => 'cancelado'],
-        ['value' => 'completed', 'title' => 'completado'],
+        ['value' => 'unassigned', 'title' => 'Sin asignar'],
+        ['value' => 'assigned', 'title' => 'Asignado'],
+        ['value' => 'canceled', 'title' => 'Cancelado'],
+        ['value' => 'completed', 'title' => 'Completado'],
     ];
 
     return getStatus($value, $types, $compareByKey, $returnByKey, $typeSearch);

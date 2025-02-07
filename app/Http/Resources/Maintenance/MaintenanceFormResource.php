@@ -48,9 +48,9 @@ class MaintenanceFormResource extends JsonResource
                 foreach ($tab['maintenanceTypeInputs'] as $input) {
                     $maintenance_input_responses = $input['maintenanceInputResponses']->first();
                     $info[$input['id']] = [
-                        'type' => $maintenance_input_responses->type,
-                        'type_maintenance' => $maintenance_input_responses->type_maintenance,
-                        'comment' => $maintenance_input_responses->comment,
+                        'type' => $maintenance_input_responses ? $maintenance_input_responses?->type : null,
+                        'type_maintenance' => $maintenance_input_responses ? $maintenance_input_responses->type_maintenance : null,
+                        'comment' => $maintenance_input_responses ? $maintenance_input_responses->comment : null,
                     ];
                 }
             }

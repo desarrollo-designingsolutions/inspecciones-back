@@ -143,6 +143,9 @@ class MaintenanceRepository extends BaseRepository
             if (! empty($request['company_id'])) {
                 $query->where('company_id', $request['company_id']);
             }
+            if (! empty($request['status'])) {
+                $query->where('status', $request['status']);
+            }
         });
 
         $data = $data->count();

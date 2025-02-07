@@ -190,6 +190,18 @@ class InspectionController extends Controller
         });
     }
 
+    public function changeStatus(Request $request)
+    {
+        return $this->runTransaction(function () use ($request) {
+
+            $model = $this->inspectionRepository->changeState($request->input('id'), strval($request->input('value')), $request->input('field'));
+    
+            ($model->is_active == 1) ? $msg = 'habilitado(a)' : $msg = 'inhabilitado(a)';
+    
+            return response()->json(['code' => 200, 'message' => 'Vehículo ' . $msg . ' con éxito']);
+        });
+    }
+
     public function loadBtnCreate()
     {
         return $this->execute(function () {

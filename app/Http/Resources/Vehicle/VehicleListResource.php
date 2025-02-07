@@ -22,6 +22,7 @@ class VehicleListResource extends JsonResource
             'date_registration' => Carbon::parse($this->date_registration)->format('d-m-Y'),
             'model' => $this->model,
             'city_name' => $this->city?->name,
+            'is_active' => $this->is_active,
         ];
     }
 }
