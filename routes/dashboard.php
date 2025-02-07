@@ -15,3 +15,5 @@ Route::get('/dashboard/vehicleInfoForCompany', [DashboardController::class, 'veh
 
 Route::get('/dashboard/vehicleInspectionsComparison', [DashboardController::class, 'vehicleInspectionsComparison']);
 
+Route::get('/dashboard/vehicleMaintenanceComparison', [DashboardController::class, 'vehicleMaintenanceComparison']);
+

@@ -66,11 +66,24 @@ class DashboardController extends Controller
     public function vehicleInspectionsComparison(Request $request)
     {
         try {
-            $inspection_count = $this->vehicleRepository->vehicleInspectionsComparison($request->all());
+            $data = $this->vehicleRepository->vehicleInspectionsComparison($request->all());
 
+            $inspection_count = $data['vehicles'];
 
+            return response()->json(['code' => 200, 'inspection_count' => $inspection_count, 'available_months' => $data['available_months']]);
+        } catch (Throwable $th) {
+            return response()->json(['code' => 500, 'message' => $th->getMessage()]);
+        }
+    }
 
-            return response()->json(['code' => 200, 'inspection_count' => $inspection_count]);
+    public function vehicleMaintenanceComparison(Request $request)
+    {
+        try {
+            $data = $this->vehicleRepository->vehicleMaintenanceComparison($request->all());
+
+            $maintenance_count = $data['vehicles'];
+
+            return response()->json(['code' => 200, 'maintenance_count' => $maintenance_count, 'available_months' => $data['available_months']]);
         } catch (Throwable $th) {
             return response()->json(['code' => 500, 'message' => $th->getMessage()]);
         }

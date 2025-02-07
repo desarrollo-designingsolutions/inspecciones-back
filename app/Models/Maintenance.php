@@ -27,6 +27,11 @@ class Maintenance extends Model
         return $this->belongsTo(MaintenanceType::class);
     }
 
+    public function maintenanceTypeGroups(): BelongsTo
+    {
+        return $this->belongsTo(MaintenanceTypeGroup::class, 'maintenance_id', 'id');
+    }
+
     public function user_mechanic(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_mechanic_id', 'id');
@@ -49,5 +54,4 @@ class Maintenance extends Model
     {
         return $this->hasMany(MaintenanceTypeInputResponse::class);
     }
-
 }

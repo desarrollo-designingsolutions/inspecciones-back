@@ -179,35 +179,125 @@ class VehicleRepository extends BaseRepository
 
     public function vehicleInspectionsComparison($request)
     {
-        $request['month'] = 'February';
-        // Por ejemplo, el request debe tener company_id, y opcionalmente vehicle_id y month.
-        // Si no se envía un mes, se podría decidir un valor por defecto o no filtrar por mes.
-        // En este ejemplo, usamos el mes enviado (en inglés, ej. "February") para la comparación.
-        // Convertimos el nombre del mes a número (por ejemplo, "February" a 02)
-        $monthNumber = date('m', strtotime($request['month']));
+        $monthTranslations = [
+            'Enero' => 'January',
+            'Febrero' => 'February',
+            'Marzo' => 'March',
+            'Abril' => 'April',
+            'Mayo' => 'May',
+            'Junio' => 'June',
+            'Julio' => 'July',
+            'Agosto' => 'August',
+            'Septiembre' => 'September',
+            'Octubre' => 'October',
+            'Noviembre' => 'November',
+            'Diciembre' => 'December'
+        ];
 
-        // Consulta: obtener todos los vehículos de la compañía
-        // y, para cada uno, contar las inspecciones en el mes indicado y las inspecciones en otros meses.
+        // Traducir mes de entrada a inglés
+        $requestMonth = $request['month'];
+        $englishMonth = $monthTranslations[$requestMonth] ?? null;
+        
+        $monthNumber = date('m', strtotime($englishMonth));
+
         $vehicles = DB::table('vehicles as v')
             ->leftJoin('inspections as i', 'v.id', '=', 'i.vehicle_id')
             ->select(
                 'v.id as vehicle_id',
                 'v.license_plate as vehicle_license_plate',
-                // Cuenta de inspecciones en el mes especificado
+
                 DB::raw("SUM(CASE WHEN MONTH(i.created_at) = {$monthNumber} THEN 1 ELSE 0 END) as inspections_in_month"),
-                // Cuenta de inspecciones fuera del mes especificado
+
                 DB::raw("SUM(CASE WHEN i.id IS NOT NULL AND MONTH(i.created_at) <> {$monthNumber} THEN 1 ELSE 0 END) as inspections_other"),
-                // Total de inspecciones (opcional)
+
                 DB::raw("COUNT(i.id) as total_inspections")
             )
             ->where('v.company_id', $request['company_id'])
             ->when(!empty($request['vehicle_id']), function ($query) use ($request) {
-                // Si se especifica un vehículo, filtrar por ese vehículo.
+
                 return $query->where('v.id', $request['vehicle_id']);
             })
             ->groupBy('v.id', 'v.license_plate')
             ->get();
 
-        return $vehicles;
+        $monthsWithInspections = DB::table('inspections as i')
+            ->join('vehicles as v', 'i.vehicle_id', '=', 'v.id')
+            ->where('v.company_id', $request['company_id'])
+            ->selectRaw('DISTINCT MONTHNAME(i.created_at) as month_name, MONTH(i.created_at) as month_number')
+            ->orderBy('month_number')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name' => $item->month_name,
+                    'number' => $item->month_number
+                ];
+            });
+
+        return [
+            'vehicles' => $vehicles,
+            'available_months' => $monthsWithInspections,
+        ];
+    }
+
+    public function vehicleMaintenanceComparison($request)
+    {
+        $monthTranslations = [
+            'Enero' => 'January',
+            'Febrero' => 'February',
+            'Marzo' => 'March',
+            'Abril' => 'April',
+            'Mayo' => 'May',
+            'Junio' => 'June',
+            'Julio' => 'July',
+            'Agosto' => 'August',
+            'Septiembre' => 'September',
+            'Octubre' => 'October',
+            'Noviembre' => 'November',
+            'Diciembre' => 'December'
+        ];
+
+        // Traducir mes de entrada a inglés
+        $requestMonth = $request['month'];
+        $englishMonth = $monthTranslations[$requestMonth] ?? null;
+        
+        $monthNumber = date('m', strtotime($englishMonth));
+
+        $vehicles = DB::table('vehicles as v')
+            ->leftJoin('maintenances as i', 'v.id', '=', 'i.vehicle_id')
+            ->select(
+                'v.id as vehicle_id',
+                'v.license_plate as vehicle_license_plate',
+
+                DB::raw("SUM(CASE WHEN MONTH(i.created_at) = {$monthNumber} THEN 1 ELSE 0 END) as maintenances_in_month"),
+
+                DB::raw("SUM(CASE WHEN i.id IS NOT NULL AND MONTH(i.created_at) <> {$monthNumber} THEN 1 ELSE 0 END) as maintenances_other"),
+
+                DB::raw("COUNT(i.id) as total_maintenances")
+            )
+            ->where('v.company_id', $request['company_id'])
+            ->when(!empty($request['vehicle_id']), function ($query) use ($request) {
+
+                return $query->where('v.id', $request['vehicle_id']);
+            })
+            ->groupBy('v.id', 'v.license_plate')
+            ->get();
+
+        $monthsWithInspections = DB::table('maintenances as i')
+            ->join('vehicles as v', 'i.vehicle_id', '=', 'v.id')
+            ->where('v.company_id', $request['company_id'])
+            ->selectRaw('DISTINCT MONTHNAME(i.created_at) as month_name, MONTH(i.created_at) as month_number')
+            ->orderBy('month_number')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name' => $item->month_name,
+                    'number' => $item->month_number
+                ];
+            });
+
+        return [
+            'vehicles' => $vehicles,
+            'available_months' => $monthsWithInspections,
+        ];
     }
 }
