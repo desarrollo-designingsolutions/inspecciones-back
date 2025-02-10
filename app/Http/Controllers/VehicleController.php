@@ -7,23 +7,30 @@ use App\Helpers\Constants;
 use App\Http\Requests\Vehicle\VehicleStoreRequest;
 use App\Http\Resources\Vehicle\VehicleFormResource;
 use App\Http\Resources\Vehicle\VehicleListResource;
+use App\Repositories\MaintenanceRepository;
+use App\Repositories\MaintenanceTypeGroupRepository;
 use App\Repositories\VehicleDocumentRepository;
 use App\Repositories\VehicleEmergencyElementRepository;
 use App\Repositories\VehicleRepository;
 use App\Repositories\VehicleStructureRepository;
+use App\Traits\HttpTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
 
 class VehicleController extends Controller
 {
+    use HttpTrait;
+
     public function __construct(
         protected VehicleRepository $vehicleRepository,
         protected QueryController $queryController,
         protected VehicleStructureRepository $vehicleStructureRepository,
         protected VehicleDocumentRepository $vehicleDocumentRepository,
         protected VehicleEmergencyElementRepository $vehicleEmergencyElementRepository,
+        protected MaintenanceTypeGroupRepository $maintenanceTypeGroupRepository,
     ) {}
 
     public function list(Request $request)
@@ -373,5 +380,86 @@ class VehicleController extends Controller
                 'line' => $th->getLine(),
             ], 500);
         }
+    }
+
+    public function pdfExport(Request $request)
+    {
+        return $this->execute(function () use ($request) {
+
+            $vehicle = $this->vehicleRepository->find($request->input('id'), ['maintenance']);
+
+            $maintenanceType = $this->maintenanceTypeGroupRepository->list(
+                [
+                    'typeData' => 'all',
+                    'maintenance_type_id' => 1,
+                    'sortBy' => json_encode([
+                        [
+                            'key' => 'order',
+                            'order' => 'asc',
+                        ],
+                    ]),
+                ],
+                select: ['id', 'name']
+            );
+
+            $table = [];
+            $table[0][0] = 'Año';
+            $table[0][1] = 'Mes';
+
+            foreach ($maintenanceType->sortBy("order") as $key => $value) {
+                $table[0][$key + 2] = $value->name;
+            }
+
+            foreach ($vehicle->maintenance as $key => $currentMaintenance) {
+                $rowIndex = $key + 1;
+                $table[$rowIndex][] = Carbon::parse($currentMaintenance->maintenance_date)->format('Y');
+                $table[$rowIndex][] = Carbon::parse($currentMaintenance->maintenance_date)->format('m');
+
+                // Iterar sobre cada tipo de mantenimiento (columnas)
+                for ($columnIndex = 2; $columnIndex < count($table[0]); $columnIndex++) {
+                    $count = 0; // Reiniciar contador para cada celda
+                    $maintenanceTypeName = $table[0][$columnIndex];
+
+                    // Obtener el tipo de mantenimiento correspondiente a esta columna
+                    $maintenanceTypeGroup = $currentMaintenance->maintenanceType->maintenanceTypeGroups
+                        ->where('name', $maintenanceTypeName)
+                        ->first();
+
+                    if ($maintenanceTypeGroup) {
+                        // Contar solo las respuestas asociadas al mantenimiento actual
+                        foreach ($maintenanceTypeGroup->maintenanceTypeInputs as $input) {
+                            foreach ($input->maintenanceInputResponses as $response) {
+                                // Verificar si la respuesta pertenece al mantenimiento actual
+                                if ($response->maintenance_id === $currentMaintenance->id) {
+                                    if (
+                                        !empty($response->type) ||
+                                        !empty($response->type_maintenance) ||
+                                        !empty($response->comment)
+                                    ) {
+                                        $count++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    $table[$rowIndex][$columnIndex] = $count;
+                }
+            }
+
+            $data = [
+                'vehicle' => $vehicle,
+                'maintenance' => $vehicle->maintenance,
+                'table' => $table,
+            ];
+
+            $pdf = $this->vehicleRepository->pdf('Exports.Vehicle.VehicleListExportPDF', $data, $request->input('pdf_name'));
+
+            $pdfBase64 = base64_encode($pdf);
+            return [
+                'code' => 200,
+                'pdf' => $pdfBase64
+            ];
+        });
     }
 }

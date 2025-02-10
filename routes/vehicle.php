@@ -30,4 +30,6 @@ Route::middleware(['check.permission:vehicle.list'])->group(function () {
 
     Route::post('/vehicle/validateLicensePlate', [VehicleController::class, 'validateLicensePlate']);
 
+    Route::post('/vehicle/pdfExport', [VehicleController::class, 'pdfExport']);
+
 });

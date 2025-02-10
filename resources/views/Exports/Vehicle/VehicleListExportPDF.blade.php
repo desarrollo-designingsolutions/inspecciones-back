@@ -55,7 +55,8 @@
         <thead>
             <tr>
                 <th colspan="3" style="width: 20%; text-align: center;">
-                    <img src="{{ public_path('images/logo_ochoa.jpeg') }}" alt="logo" style="max-width: 100px; max-height: 50px;">
+                    <img src="{{ public_path('images/logo_ochoa.jpeg') }}" alt="logo"
+                        style="max-width: 100px; max-height: 50px;">
                 </th>
                 <th colspan="13" style="width: 80%; text-align: center;">
 
@@ -87,7 +88,8 @@
             </tr>
             <tr>
                 <td colspan="4" style="font-weight: bold">FECHA DE MATRICULA</td>
-                <td colspan="4">{{ $data['vehicle']->date_registration }}</td>
+                <td colspan="4">{{ \Carbon\Carbon::parse($data['vehicle']->date_registration)->format('d/m/Y') }}
+                </td>
                 <td colspan="4" style="font-weight: bold">NÚMERO DE MOTOR</td>
                 <td colspan="4">{{ $data['vehicle']->engine_number }}</td>
             </tr>
@@ -129,9 +131,9 @@
             </tr>
             <tr>
                 <td colspan="4" style="font-weight: bold">TRAILER</td>
-                <td colspan="4">{{$data['vehicle']->have_trailer ? 'X' : ''}}</td>
+                <td colspan="4">{{ $data['vehicle']->have_trailer ? 'X' : '' }}</td>
                 <td colspan="4" style="font-weight: bold">NÚMERO DE TRAILER</td>
-                <td colspan="4">{{$data['vehicle']->have_trailer ? $data['vehicle']->trailer : ''}}</td>
+                <td colspan="4">{{ $data['vehicle']->have_trailer ? $data['vehicle']->trailer : '' }}</td>
             </tr>
         </thead>
     </table>
@@ -147,12 +149,12 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($data['vehicle']->type_documents as $document)
-            <tr>
-                <td>{{ $document->type_document->name }}</td>
-                <td style="text-align: center">{{ $document->document_number }}</td>
-                <td style="text-align: center">{{ $document->expiration_date }}</td>
-            </tr>
+            @foreach ($data['vehicle']->type_documents as $document)
+                <tr>
+                    <td>{{ $document->type_document->name }}</td>
+                    <td style="text-align: center">{{ $document->document_number }}</td>
+                    <td style="text-align: center">{{ $document->expiration_date }}</td>
+                </tr>
             @endforeach
         </tbody>
     </table>
@@ -170,10 +172,14 @@
         <tbody>
             <tr>
                 <td style="text-align: center">
-                    <img src="{{ public_path('storage/'.$data['vehicle']->photo_front) }}" style="width: auto; height: 200px; text-align: center" alt="Foto del vehículo">
+                    <img src="{{ public_path('storage/' . $data['vehicle']->photo_front) }}"
+                        style="width: auto; max-width: 200px; height: 200px; text-align: center"
+                        alt="Foto del vehículo">
                 </td>
                 <td style="text-align: center">
-                    <img src="{{ public_path('storage/'.$data['vehicle']->photo_rear) }}" style="width: auto; height: 200px; text-align: center" alt="Foto del vehículo">
+                    <img src="{{ public_path('storage/' . $data['vehicle']->photo_rear) }}"
+                        style="width: auto; max-width: 200px; height: 200px; text-align: center"
+                        alt="Foto del vehículo">
                 </td>
             </tr>
         </tbody>
@@ -186,46 +192,51 @@
         <tbody>
             <tr>
                 <td style="text-align: center">
-                    <img src="{{ public_path('storage/'.$data['vehicle']->photo_right_side) }}" style="width: auto; height: 200px; text-align: center" alt="Foto del vehículo">
+                    <img src="{{ public_path('storage/' . $data['vehicle']->photo_right_side) }}"
+                        style="width: auto; max-width: 200px; height: 200px; text-align: center"
+                        alt="Foto del vehículo">
                 </td>
                 <td style="text-align: center">
-                    <img src="{{ public_path('storage/'.$data['vehicle']->photo_left_side) }}" style="width: auto; height: 200px; text-align: center" alt="Foto del vehículo">
+                    <img src="{{ public_path('storage/' . $data['vehicle']->photo_left_side) }}"
+                        style="width: auto; max-width: 200px; height: 200px; text-align: center"
+                        alt="Foto del vehículo">
                 </td>
             </tr>
         </tbody>
     </table>
 
-
     <table>
-        <thead>
-            <tr>
-                <th colspan="12">REGISTRO MANTENIMIENTO</th>
-            </tr>
-            <tr>
-                <th>AÑO</th>
-                <th>MES</th>
+        @if (count($data['table']) > 1)
+            <thead>
+                <tr>
+                    <th colspan="12">REGISTRO MANTENIMIENTOS</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($data['table'] as $item)
+                    <tr>
 
-                @foreach($data['maintenance_type'] ?? [] as $group => $value)
-                @if(!in_array($group, ['year', 'month']))
-                <th style="width: 8.3%; font-size: 8px; font-weight: bold">{{ $value['name'] }}</th>
-                @endif
+                        @foreach ($item as $item2)
+                            <th style="width: 1rem; font-size: 8px; font-weight: bold">{{ $item2 }}
+                            </th>
+                        @endforeach
+
+                    </tr>
                 @endforeach
-            </tr>
-        </thead>
-        <tbody>
+            </tbody>
+        @else
+            <thead>
+                <tr>
+                    <th colspan="12">REGISTRO MANTENIMIENTOS</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="text-align: center" colspan="12">No hay registros de mantenimientos</td>
+                </tr>
+            </tbody>
+        @endif
 
-            @foreach($data['maintenance'] as $dataMaintenance)
-            <tr>
-                <td style="width: 8.3%; font-size: 12px;">{{ $dataMaintenance['year'] }}</td>
-                <td style="width: 8.3%; font-size: 12px;">{{ $dataMaintenance['month'] }}</td>
-                
-                @foreach($data['maintenance_type'] as $key => $group)
-
-                <td>{{ $group->total_filled_responses }}</td>
-                @endforeach
-            </tr>
-            @endforeach
-        </tbody>
     </table>
 
 </body>
