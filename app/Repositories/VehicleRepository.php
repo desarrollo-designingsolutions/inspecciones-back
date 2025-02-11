@@ -197,7 +197,7 @@ class VehicleRepository extends BaseRepository
         // Traducir mes de entrada a inglés
         $requestMonth = $request['month'];
         $englishMonth = $monthTranslations[$requestMonth] ?? null;
-        
+
         $monthNumber = date('m', strtotime($englishMonth));
 
         $vehicles = DB::table('vehicles as v')
@@ -259,7 +259,7 @@ class VehicleRepository extends BaseRepository
         // Traducir mes de entrada a inglés
         $requestMonth = $request['month'];
         $englishMonth = $monthTranslations[$requestMonth] ?? null;
-        
+
         $monthNumber = date('m', strtotime($englishMonth));
 
         $vehicles = DB::table('vehicles as v')

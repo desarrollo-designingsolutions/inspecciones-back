@@ -9,6 +9,7 @@ use App\Http\Resources\EmergencyElement\EmergencyElementSelectInfiniteResource;
 use App\Http\Resources\PlateVehicle\PlateVehicleSelectInfiniteResource;
 use App\Http\Resources\TypeDocument\TypeDocumentSelectInfiniteResource;
 use App\Http\Resources\TypeVehicle\TypeVehicleSelectInfiniteResource;
+use App\Http\Resources\User\UserInspectorsSelectInfiniteResource;
 use App\Http\Resources\User\UserMechanicsSelectInfiniteResource;
 use App\Http\Resources\User\UserOperatorsSelectInfiniteResource;
 use App\Repositories\BrandVehicleRepository;
@@ -189,6 +190,28 @@ class QueryController extends Controller
             'code' => 200,
             'userMechanic_arrayInfo' => $dataUserMechanic,
             'userMechanic_countLinks' => $userMechanic->lastPage(),
+        ];
+    }
+
+    public function selectInfiniteUserInspector(Request $request)
+    {
+        $request['is_active'] = true;
+        $userInspector = $this->userRepository->getInspector($request->all());
+        $dataUserInspector = UserInspectorsSelectInfiniteResource::collection($userInspector);
+
+        return [
+            'code' => 200,
+            'userInspector_arrayInfo' => $dataUserInspector,
+            'userInspector_countLinks' => $userInspector->lastPage(),
+        ];
+    }
+
+    public function selectResponseStatus(Request $request)
+    {
+        return [
+            'code' => 200,
+            'status_arrayInfo' => getResponseStatus(),
+            'status_countLinks' => getResponseStatus(),
         ];
     }
 }

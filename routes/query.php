@@ -18,3 +18,5 @@ Route::post('/selectInfiniteEmergencyElement', [QueryController::class, 'selectI
 Route::post('/selectInfinitePlateVehicle', [QueryController::class, 'selectInfinitePlateVehicle']);
 Route::post('/selectInfiniteUserOperator', [QueryController::class, 'selectInfiniteUserOperator']);
 Route::post('/selectInfiniteUserMechanic', [QueryController::class, 'selectInfiniteUserMechanic']);
+Route::post('/selectInfiniteUserInspector', [QueryController::class, 'selectInfiniteUserInspector']);
+Route::post('/selectResponseStatus', [QueryController::class, 'selectResponseStatus']);
