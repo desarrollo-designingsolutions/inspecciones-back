@@ -203,7 +203,7 @@ class UserController extends Controller
 
             DB::commit();
 
-            return response()->json(['code' => 200, 'message' => 'User '.$msg.' con éxito']);
+            return response()->json(['code' => 200, 'message' => 'User ' . $msg . ' con éxito']);
         } catch (Throwable $th) {
             DB::rollback();
 
@@ -225,6 +225,7 @@ class UserController extends Controller
 
             // Cambiar la contraseña
             $user->password = $request->input('new_password');
+            $user->first_time = false;
             $user->save();
 
             DB::commit();
