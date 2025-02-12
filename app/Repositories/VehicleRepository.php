@@ -184,10 +184,8 @@ class VehicleRepository extends BaseRepository
             ->select(
                 DB::raw("YEAR(i.created_at) as inspection_year"),
                 DB::raw("MONTH(i.created_at) as inspection_month"),
-                DB::raw("SUM(CASE WHEN i.inspection_type_id = 1 AND i.is_completed = 0 THEN 1 ELSE 0 END) as type1_incomplete"),
-                DB::raw("SUM(CASE WHEN i.inspection_type_id = 1 AND i.is_completed = 1 THEN 1 ELSE 0 END) as type1_complete"),
-                DB::raw("SUM(CASE WHEN i.inspection_type_id = 2 AND i.is_completed = 0 THEN 1 ELSE 0 END) as type2_incomplete"),
-                DB::raw("SUM(CASE WHEN i.inspection_type_id = 2 AND i.is_completed = 1 THEN 1 ELSE 0 END) as type2_complete")
+                DB::raw("SUM(CASE WHEN i.inspection_type_id = 1 THEN 1 ELSE 0 END) as type1"),
+                DB::raw("SUM(CASE WHEN i.inspection_type_id = 2 THEN 1 ELSE 0 END) as type2"),
             )
             ->where('v.company_id', $request['company_id'])
             ->groupBy(DB::raw("YEAR(i.created_at)"), DB::raw("MONTH(i.created_at)"))
@@ -195,29 +193,21 @@ class VehicleRepository extends BaseRepository
             ->orderBy(DB::raw("MONTH(i.created_at)"), 'desc');
 
         // Aplicar filtros dinámicos
-        $this->applyFilters($query, $request);
+        $this->applyFilters($query, $request, 'i.created_at');
 
         return $query->get();
     }
 
-    private function applyFilters($query, $request)
+    private function applyFilters($query, $request, $created_at)
     {
         // Filtro por vehículo
         if (!empty($request['vehicle_id'])) {
             $query->where('v.id', $request['vehicle_id']);
         }
 
-        // Filtro por mes en español
-        if (!empty($request['month'])) {
-            $monthNumber = $this->spanishMonthToNumber($request['month']);
-            if ($monthNumber) {
-                $query->where(DB::raw('MONTH(i.created_at)'), $monthNumber);
-            }
-        }
-
         // Filtro por año
         if (!empty($request['year'])) {
-            $query->where(DB::raw('YEAR(i.created_at)'), $request['year']);
+            $query->where(DB::raw('YEAR('.$created_at.')'), $request['year']);
         }
     }
 
@@ -294,63 +284,21 @@ class VehicleRepository extends BaseRepository
 
     public function vehicleMaintenanceComparison($request)
     {
-        $monthTranslations = [
-            'Enero' => 'January',
-            'Febrero' => 'February',
-            'Marzo' => 'March',
-            'Abril' => 'April',
-            'Mayo' => 'May',
-            'Junio' => 'June',
-            'Julio' => 'July',
-            'Agosto' => 'August',
-            'Septiembre' => 'September',
-            'Octubre' => 'October',
-            'Noviembre' => 'November',
-            'Diciembre' => 'December'
-        ];
-
-        // Traducir mes de entrada a inglés
-        $requestMonth = $request['month'];
-        $englishMonth = $monthTranslations[$requestMonth] ?? null;
-
-        $monthNumber = date('m', strtotime($englishMonth));
-
-        $vehicles = DB::table('vehicles as v')
-            ->leftJoin('maintenances as i', 'v.id', '=', 'i.vehicle_id')
+        $query = DB::table('vehicles as v')
+            ->leftJoin('maintenances as m', 'v.id', '=', 'm.vehicle_id')
             ->select(
-                'v.id as vehicle_id',
-                'v.license_plate as vehicle_license_plate',
-
-                DB::raw("SUM(CASE WHEN MONTH(i.created_at) = {$monthNumber} THEN 1 ELSE 0 END) as maintenances_in_month"),
-
-                DB::raw("SUM(CASE WHEN i.id IS NOT NULL AND MONTH(i.created_at) <> {$monthNumber} THEN 1 ELSE 0 END) as maintenances_other"),
-
-                DB::raw("COUNT(i.id) as total_maintenances")
+                DB::raw("YEAR(m.created_at) as maintenance_year"),
+                DB::raw("MONTH(m.created_at) as maintenance_month"),
+                DB::raw("SUM(CASE WHEN m.maintenance_type_id = 1 THEN 1 ELSE 0 END) as maintenance_count"),
             )
             ->where('v.company_id', $request['company_id'])
-            ->when(!empty($request['vehicle_id']), function ($query) use ($request) {
+            ->groupBy(DB::raw("YEAR(m.created_at)"), DB::raw("MONTH(m.created_at)"))
+            ->orderBy(DB::raw("YEAR(m.created_at)"), 'desc')
+            ->orderBy(DB::raw("MONTH(m.created_at)"), 'asc');
 
-                return $query->where('v.id', $request['vehicle_id']);
-            })
-            ->groupBy('v.id', 'v.license_plate')
-            ->get();
+        // Aplicar filtros dinámicos
+        $this->applyFilters($query, $request, 'm.created_at');
 
-        $monthsWithInspections = DB::table('maintenances as i')
-            ->join('vehicles as v', 'i.vehicle_id', '=', 'v.id')
-            ->where('v.company_id', $request['company_id'])
-            ->selectRaw('DISTINCT MONTHNAME(i.created_at) as month_name, MONTH(i.created_at) as month_number')
-            ->orderBy('month_number')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'name' => $item->month_name,
-                    'number' => $item->month_number
-                ];
-            });
-
-        return [
-            'vehicles' => $vehicles,
-            'available_months' => $monthsWithInspections,
-        ];
+        return $query->get();
     }
 }

@@ -91,10 +91,8 @@ class DashboardController extends Controller
 
         // 4. Tipos de inspección
         $types = [
-            'type1_complete' => 'Pre-Operacional Realizados',
-            'type1_incomplete' => 'Pre-Operacional Pendientes',
-            'type2_complete' => 'HSEQ Realizados',
-            'type2_incomplete' => 'HSEQ Pendientes',
+            'type1' => 'Pre',
+            'type2' => 'HSEQ',
         ];
 
         // 5. Colores para cada tipo
@@ -148,9 +146,59 @@ private function getMonthName($monthNumber)
         try {
             $data = $this->vehicleRepository->vehicleMaintenanceComparison($request->all());
 
-            $maintenance_count = $data['vehicles'];
+            $yearsAndMounts = $this->vehicleRepository->getInspectionFilters($request->input('company_id'));
 
-            return response()->json(['code' => 200, 'maintenance_count' => $maintenance_count, 'available_months' => $data['available_months']]);
+            $datasets = [];
+
+            $years = $yearsAndMounts['years'];
+
+            $months = $yearsAndMounts['months'];
+
+            // 1. Agrupar datos por mes
+            $monthsData = collect($data)->groupBy('maintenance_month');
+
+            // 2. Obtener meses únicos ORDENADOS numéricamente
+            $uniqueMonths = $monthsData->keys()
+                ->sort(SORT_NUMERIC)
+                ->values();
+
+            // 3. Crear labels con nombres de mes
+            $labels = $uniqueMonths->map(function ($month) {
+                return $this->getMonthName($month);
+            })->toArray();
+
+            // 5. Colores para cada tipo
+            $colors = ['#FF6384', '#36A2EB', '#4BC0C0', '#FFCE56'];
+            $typeIndex = 0;
+
+            foreach ($labels as $typeKey => $typeLabel) {
+                $dataset = [
+                    'label' => $typeLabel,
+                    'data' => array_fill(0, count($labels), 0),
+                    'backgroundColor' => $colors[$typeIndex],
+                    'borderColor' => $colors[$typeIndex]
+                ];
+
+
+                $dataset['data'][$typeKey] = $data[$typeKey]->maintenance_count;
+                // // Llenar datos para cada mes
+                // foreach ($uniqueMonths as $month) {
+                //      $monthData = $monthsData->get($month)?->first();
+                //      $dataset['data'][] = $monthData ? $monthData->maintenance_count : 0;
+                // }
+
+                $datasets[] = $dataset;
+                $typeIndex++;
+            }
+
+            return response()->json([
+                'code' => 200,
+                'labels' => $labels,
+                'datasets' => $datasets,
+                'years' => $years,
+                'months' => $months,
+            ]);
+
         } catch (Throwable $th) {
             return response()->json(['code' => 500, 'message' => $th->getMessage()]);
         }
