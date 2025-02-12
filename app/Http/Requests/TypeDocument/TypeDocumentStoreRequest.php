@@ -29,7 +29,7 @@ class TypeDocumentStoreRequest extends FormRequest
         return [
             'company_id.required' => 'El campo es obligatorio',
             'name.required' => 'El campo es obligatorio',
-            'name.unique' => 'El nombre ya está en uso',
+            'name.unique' => 'El nombre ya está registrado',
         ];
     }
 

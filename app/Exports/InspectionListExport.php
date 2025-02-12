@@ -31,7 +31,8 @@ class InspectionListExport implements FromView, ShouldAutoSize, WithEvents
                 'vehicle_brand_name' =>  $value->vehicle?->brand_vehicle?->name,
                 'vehicle_model' => $value->vehicle?->model,
                 'inspection_type_name' => $value->inspectionType?->name,
-                'user_full_name' => $value->user?->full_name,
+                'user_full_name' => $value->user_inspector?->full_name,
+                'is_active' => $value->is_active ? 'Activo' : 'Inactivo',
             ];
         });
 

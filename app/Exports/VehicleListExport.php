@@ -31,6 +31,7 @@ class VehicleListExport implements FromView, ShouldAutoSize, WithEvents
                 'date_registration' => $value->date_registration,
                 'model' => $value->model,
                 'city_name' => $value->city?->name,
+                'is_active' => $value->is_active ? 'Activo' : 'Inactivo',
             ];
         });
 

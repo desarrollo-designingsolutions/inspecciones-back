@@ -8,6 +8,7 @@
                 <th>Modelo</th>
                 <th>Tipo de inspección</th>
                 <th>Inspector</th>
+                <th>Estado</th>
             </tr>
         </thead>
         <tbody>
@@ -19,6 +20,7 @@
                     <td>{{ $row['vehicle_model'] }}</td>
                     <td>{{ $row['inspection_type_name'] }}</td>
                     <td>{{ $row['user_full_name'] }}</td>
+                    <td>{{ $row['is_active'] }}</td>
                 </tr>
             @endforeach
         </tbody>

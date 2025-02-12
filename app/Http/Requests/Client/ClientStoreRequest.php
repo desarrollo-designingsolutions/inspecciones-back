@@ -40,7 +40,7 @@ class ClientStoreRequest extends FormRequest
         return [
             'company_id.required' => 'El campo es obligatorio',
             'name.required' => 'El campo es obligatorio',
-            'name.unique' => 'El nombre ya está en uso',
+            'name.unique' => 'El nombre ya está registrado',
             'name.min' => 'El nombre debe contener mínimo 2 caracteres',
             'name.max' => 'El nombre debe contener máximo 100 caracteres',
         ];

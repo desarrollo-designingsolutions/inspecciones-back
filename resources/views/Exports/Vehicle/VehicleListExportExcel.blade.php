@@ -7,6 +7,7 @@
                 <th>Fecha de matrícula</th>
                 <th>Modelo</th>
                 <th>Ciudad de operación</th>
+                <th>Estado</th>
             </tr>
         </thead>
         <tbody>
@@ -17,6 +18,7 @@
                     <td>{{ $row['date_registration'] }}</td>
                     <td>{{ $row['model'] }}</td>
                     <td>{{ $row['city_name'] }}</td>
+                    <td>{{ $row['is_active'] }}</td>
                 </tr>
             @endforeach
         </tbody>

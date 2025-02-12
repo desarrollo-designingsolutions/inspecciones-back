@@ -143,7 +143,7 @@
                 <th colspan="3">DOCUMENTOS</th>
             </tr>
             <tr>
-                <th width="50%">DOCUMENTO</th>
+                <th width="50%">TIPO DE DOCUMENTO</th>
                 <th>Numero</th>
                 <th>Vence</th>
             </tr>
