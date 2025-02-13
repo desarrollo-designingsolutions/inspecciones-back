@@ -64,7 +64,7 @@ class MaintenanceController extends Controller
     {
         return $this->runTransaction(function () use ($request) {
 
-            $fields = ['id', 'company_id', 'vehicle_id', 'maintenance_type_id', 'user_mechanic_id', 'user_operator_id', 'user_inspector_id', 'state_id', 'city_id', 'maintenance_date', 'mileage', 'general_comment', 'status'];
+            $fields = ['id', 'company_id', 'vehicle_id', 'maintenance_type_id', 'user_mechanic_id', 'user_made_maintenance_id', 'user_operator_id', 'user_inspector_id', 'state_id', 'city_id', 'maintenance_date', 'mileage', 'general_comment', 'status'];
 
             $post1 = $request->only($fields);
 
@@ -80,7 +80,7 @@ class MaintenanceController extends Controller
                         'maintenance_type_input_id' => $key,
                     ],
                     [
-                        'user_inspector_id' => $post1['user_inspector_id'],
+                        'user_made_maintenance_id' => $post1['user_inspector_id'],
                         'type' => $value['type'],
                         'type_maintenance' => $value['type_maintenance'],
                         'comment' => $value['comment'],
@@ -119,7 +119,7 @@ class MaintenanceController extends Controller
     {
         return $this->runTransaction(function () use ($request) {
 
-            $fields = ['id', 'company_id', 'vehicle_id', 'maintenance_type_id', 'user_mechanic_id', 'user_operator_id', 'user_inspector_id', 'state_id', 'city_id', 'maintenance_date', 'mileage', 'general_comment', 'status'];
+            $fields = ['id', 'company_id', 'vehicle_id', 'maintenance_type_id', 'user_mechanic_id', 'user_made_maintenance_id', 'user_operator_id', 'user_inspector_id', 'state_id', 'city_id', 'maintenance_date', 'mileage', 'general_comment', 'status'];
 
             $post1 = $request->only($fields);
 
@@ -135,7 +135,7 @@ class MaintenanceController extends Controller
                         'maintenance_type_input_id' => $key,
                     ],
                     [
-                        'user_inspector_id' => $post1['user_inspector_id'],
+                        'user_made_maintenance_id' => $post1['user_made_maintenance_id'],
                         'type' => $value['type'],
                         'type_maintenance' => $value['type_maintenance'],
                         'comment' => $value['comment'],

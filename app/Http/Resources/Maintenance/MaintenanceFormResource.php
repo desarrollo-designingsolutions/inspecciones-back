@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Maintenance;
 
 use App\Http\Resources\PlateVehicle\PlateVehicleSelectInfiniteResource;
+use App\Http\Resources\User\UserInspectorsSelectInfiniteResource;
 use App\Http\Resources\User\UserMechanicsSelectInfiniteResource;
 use App\Http\Resources\User\UserOperatorsSelectInfiniteResource;
 use App\Models\MaintenanceTypeGroup;
@@ -26,6 +27,7 @@ class MaintenanceFormResource extends JsonResource
             'state_id' => $this->state_id,
             'user_mechanic_id' => new UserMechanicsSelectInfiniteResource(User::find($this->user_mechanic_id)),
             'user_operator_id' => new UserOperatorsSelectInfiniteResource(User::find($this->user_operator_id)),
+            'user_inspector_id' => new UserInspectorsSelectInfiniteResource(User::find($this->user_inspector_id)),
             'vehicle_id' => new PlateVehicleSelectInfiniteResource($this->vehicle),
             'maintenance_date' => $this->maintenance_date,
             'mileage' => $this->mileage,

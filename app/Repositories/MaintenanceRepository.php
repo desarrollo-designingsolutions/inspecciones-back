@@ -25,6 +25,10 @@ class MaintenanceRepository extends BaseRepository
                 $query->where('is_active', $request['is_active']);
             }
 
+            if (! empty($request['user_mechanic_id'])) {
+                $query->where('user_mechanic_id', $request['user_mechanic_id']);
+            }
+
             if (isset($request['searchQuery']['relationsGeneral']) && count($request['searchQuery']['relationsGeneral']) > 0) {
 
                 $search = $request['searchQuery']['generalSearch'];

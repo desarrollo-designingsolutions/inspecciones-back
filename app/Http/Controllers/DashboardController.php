@@ -91,7 +91,7 @@ class DashboardController extends Controller
 
         // 4. Tipos de inspección
         $types = [
-            'type1' => 'Pre',
+            'type1' => 'Pre Operacional',
             'type2' => 'HSEQ',
         ];
 

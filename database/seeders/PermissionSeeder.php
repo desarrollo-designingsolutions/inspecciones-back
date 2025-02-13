@@ -113,6 +113,18 @@ class PermissionSeeder extends Seeder
                 'description' => 'Realizar inspeccion HSEQ',
                 'menu_id' => 13,
             ],
+            [
+                'id' => 17,
+                'name' => 'maintenance.create.form',
+                'description' => 'Asignar Mantenimiento',
+                'menu_id' => 14,
+            ],
+            [
+                'id' => 18,
+                'name' => 'maintenance.make.form',
+                'description' => 'Realizar Mantenimiento',
+                'menu_id' => 14,
+            ],
         ];
 
         // Inicializar la barra de progreso
