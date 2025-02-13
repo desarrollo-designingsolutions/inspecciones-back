@@ -8,6 +8,7 @@ use App\Http\Requests\Client\ClientStoreRequest;
 use App\Http\Resources\Client\ClientFormResource;
 use App\Http\Resources\Client\ClientListResource;
 use App\Repositories\ClientRepository;
+use App\Traits\HttpTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -15,6 +16,7 @@ use Throwable;
 
 class ClientController extends Controller
 {
+    use HttpTrait;
     public function __construct(
         protected ClientRepository $clientRepository,
     ) {}
@@ -61,24 +63,12 @@ class ClientController extends Controller
 
     public function store(ClientStoreRequest $request)
     {
-        try {
-            DB::beginTransaction();
+        return $this->runTransaction(function () use ($request) {
 
             $client = $this->clientRepository->store($request->all());
 
-            DB::commit();
-
-            return response()->json(['code' => 200, 'message' => 'Cliente agregado correctamente', 'data' => $client]);
-        } catch (Throwable $th) {
-            DB::rollBack();
-
-            return response()->json([
-                'code' => 500,
-                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
-                'error' => $th->getMessage(),
-                'line' => $th->getLine(),
-            ], 500);
-        }
+            return ['code' => 200, 'message' => 'Cliente agregado correctamente', 'data' => $client];
+        });
     }
 
     public function edit($id)
@@ -162,7 +152,7 @@ class ClientController extends Controller
 
             DB::commit();
 
-            return response()->json(['code' => 200, 'message' => 'Cliente '.$msg.' con éxito']);
+            return response()->json(['code' => 200, 'message' => 'Cliente ' . $msg . ' con éxito']);
         } catch (Throwable $th) {
             DB::rollback();
 

@@ -173,12 +173,12 @@
             <tr>
                 <td style="text-align: center">
                     <img src="{{ public_path('storage/' . $data['vehicle']->photo_front) }}"
-                        style="width: auto; max-width: 200px; height: 200px; text-align: center"
+                        style="width: auto; height: 200px; text-align: center"
                         alt="Foto del vehículo">
                 </td>
                 <td style="text-align: center">
                     <img src="{{ public_path('storage/' . $data['vehicle']->photo_rear) }}"
-                        style="width: auto; max-width: 200px; height: 200px; text-align: center"
+                        style="width: auto; height: 200px; text-align: center"
                         alt="Foto del vehículo">
                 </td>
             </tr>
@@ -193,12 +193,12 @@
             <tr>
                 <td style="text-align: center">
                     <img src="{{ public_path('storage/' . $data['vehicle']->photo_right_side) }}"
-                        style="width: auto; max-width: 200px; height: 200px; text-align: center"
+                        style="width: auto; height: 200px; text-align: center"
                         alt="Foto del vehículo">
                 </td>
                 <td style="text-align: center">
                     <img src="{{ public_path('storage/' . $data['vehicle']->photo_left_side) }}"
-                        style="width: auto; max-width: 200px; height: 200px; text-align: center"
+                        style="width: auto; height: 200px; text-align: center"
                         alt="Foto del vehículo">
                 </td>
             </tr>

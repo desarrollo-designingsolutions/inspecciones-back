@@ -11,12 +11,14 @@ use App\Repositories\RoleRepository;
 use App\Repositories\TypeLicenseRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\UserTypeDocumentRepository;
+use App\Traits\HttpTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class UserController extends Controller
 {
+    use HttpTrait;
     public function __construct(
         protected UserRepository $userRepository,
         protected RoleRepository $roleRepository,
@@ -241,5 +243,27 @@ class UserController extends Controller
                 'line' => $th->getLine(),
             ], 500);
         }
+    }
+
+    public function changePhoto(Request $request)
+    {
+        return $this->runTransaction(function () use ($request) {
+            $user = $this->userRepository->find($request->input('user_id'));
+
+            // Cambiar la photo
+            if ($request->file('photo')) {
+                $file = $request->file('photo');
+                $ruta = 'companies/company_' . $user->company_id . '/' . $user->id . $request->input('photo');
+                $photo = $file->store($ruta, 'public');
+                $user->photo = $photo;
+                $user->save();
+            }
+
+            return [
+                'code' => 200,
+                'message' => 'Foto modificada con éxito.',
+                'photo' => $user->photo
+            ];
+        });
     }
 }

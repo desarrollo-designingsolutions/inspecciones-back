@@ -29,3 +29,5 @@ Route::middleware(['check.permission:menu.user'])->group(function () {
 });
 
 Route::post('/user/changePassword', [UserController::class, 'changePassword']);
+
+Route::post('/user/changePhoto', [UserController::class, 'changePhoto']);

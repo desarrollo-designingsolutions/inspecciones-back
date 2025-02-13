@@ -17,6 +17,7 @@ use App\Traits\HttpTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
 
@@ -453,12 +454,21 @@ class VehicleController extends Controller
                 'table' => $table,
             ];
 
-            $pdf = $this->vehicleRepository->pdf('Exports.Vehicle.VehicleListExportPDF', $data, $request->input('pdf_name'));
+            $pdf = $this->vehicleRepository->pdf('Exports.Vehicle.VehicleListExportPDF', $data, is_stream: false);
 
-            $pdfBase64 = base64_encode($pdf);
+            if (empty($pdf)) {
+                throw new \Exception('Error al generar el PDF');
+            }
+
+            $content = $pdf->getOriginalContent();
+
+            $filename = 'temp/pdf/hoja_de_vida_' . $vehicle->license_plate . '.pdf';
+            Storage::disk('public')->put($filename, $content);
+            $path = Storage::disk('public')->url($filename);
+
             return [
                 'code' => 200,
-                'pdf' => $pdfBase64
+                'path' => $path,
             ];
         });
     }
