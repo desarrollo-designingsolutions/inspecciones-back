@@ -85,7 +85,28 @@ class VehicleController extends Controller
         try {
             DB::beginTransaction();
 
-            $post = $request->except(['photo_front', 'photo_rear', 'photo_right_side', 'photo_left_side', 'type_documents', 'emergency_elements']);
+            $post = [
+                'id' => $request->input('id'),
+                'company_id' => $request->input('company_id'),
+                'license_plate' => $request->input('license_plate'),
+                'type_vehicle_id' => $request->input('type_vehicle_id'),
+                'date_registration' => $request->input('date_registration'),
+                'brand_vehicle_id' => $request->input('brand_vehicle_id'),
+                'engine_number' => $request->input('engine_number'),
+                'state_id' => $request->input('state_id'),
+                'city_id' => $request->input('city_id'),
+                'model' => $request->input('model'),
+                'vin_number' => $request->input('vin_number'),
+                'load_capacity' => $request->input('load_capacity'),
+                'client_id' => $request->input('client_id'),
+                'gross_vehicle_weight' => $request->input('gross_vehicle_weight'),
+                'passenger_capacity' => $request->input('passenger_capacity'),
+                'number_axles' => $request->input('number_axles'),
+                'current_mileage' => $request->input('current_mileage'),
+                'have_trailer' => $request->input('have_trailer'),
+                'trailer' => $request->input('trailer'),
+                'vehicle_structure_id' => $request->input('vehicle_structure_id'),
+            ];
 
             $vehicle = $this->vehicleRepository->store($post);
 
@@ -122,25 +143,10 @@ class VehicleController extends Controller
                 $vehicle->save();
             }
 
-            $type_documents = json_decode($request->input('type_documents'), 1);
-            $arrayIds = collect($type_documents)->pluck('id');
-            $this->vehicleDocumentRepository->deleteArray($arrayIds, $vehicle->id);
-
-            foreach ($type_documents as $key => $value) {
-                $dataSave = [
-                    'id' => $value['id'],
-                    'vehicle_id' => $vehicle->id,
-                    'type_document_id' => $value['type_document_id']['value'],
-                    'document_number' => $value['document_number'],
-                    'date_issue' => $value['date_issue'],
-                    'expiration_date' => $value['expiration_date'],
-                ];
-                $this->vehicleDocumentRepository->store($dataSave);
-            }
-
+            //EMERGENCY ELEMENTS
             $emergency_elements = json_decode($request->input('emergency_elements'), 1);
             $arrayIds = collect($emergency_elements)->pluck('id');
-            $this->vehicleDocumentRepository->deleteArray($arrayIds, $vehicle->id);
+            $this->vehicleEmergencyElementRepository->deleteArray($arrayIds, $vehicle->id);
 
             foreach ($emergency_elements as $key => $value) {
                 $dataSave = [
@@ -148,9 +154,40 @@ class VehicleController extends Controller
                     'vehicle_id' => $vehicle->id,
                     'emergency_element_id' => $value['emergency_element_id']['value'],
                     'quantity' => $value['quantity'],
-                    'expiration_date' => $value['expiration_date'],
                 ];
                 $this->vehicleEmergencyElementRepository->store($dataSave);
+            }
+
+            //TYPE DOCUMENTS
+            $type_documents = json_decode($request->input('type_documents'), 1);
+            $arrayIds = collect($type_documents)->pluck('id');
+            $this->vehicleDocumentRepository->deleteArray($arrayIds, $vehicle->id);
+
+            $cantfiles = $request->input('cantfiles');
+
+            for ($i = 0; $i < $cantfiles; $i++) {
+                $idFile = $request->input('file_id'.$i) == 'null' ? null : $request->input('file_id'.$i);
+
+                $dataSave = [
+                    'id' => $idFile,
+                    'vehicle_id' => $vehicle->id,
+                    'type_document_id' => $request->input('file_type_document_id'.$i),
+                    'document_number' => $request->input('file_document_number'.$i),
+                    'date_issue' => $request->input('file_date_issue'.$i),
+                    'expiration_date' => $request->input('file_expiration_date'.$i),
+                ];
+                if ($request->hasFile('file_photo'.$i)) {
+                    $file = $request->file('file_photo'.$i);
+                    $company_id = $request->input('company_id');
+
+                    // Define la ruta donde se guardará el archivo
+                    $ruta = "companies/company_{$company_id}/vehicle/{$vehicle->id}/document";
+
+                    // Guarda el archivo con el nombre original
+                    $path = $file->store($ruta, 'public');
+                    $dataSave['photo'] = $path;
+                }
+                $this->vehicleDocumentRepository->store($dataSave);
             }
 
             DB::commit();
@@ -198,7 +235,28 @@ class VehicleController extends Controller
         try {
             DB::beginTransaction();
 
-            $post = $request->except(['photo_front', 'photo_rear', 'photo_right_side', 'photo_left_side', 'type_documents', 'emergency_elements']);
+            $post = [
+                'id' => $request->input('id'),
+                'company_id' => $request->input('company_id'),
+                'license_plate' => $request->input('license_plate'),
+                'type_vehicle_id' => $request->input('type_vehicle_id'),
+                'date_registration' => $request->input('date_registration'),
+                'brand_vehicle_id' => $request->input('brand_vehicle_id'),
+                'engine_number' => $request->input('engine_number'),
+                'state_id' => $request->input('state_id'),
+                'city_id' => $request->input('city_id'),
+                'model' => $request->input('model'),
+                'vin_number' => $request->input('vin_number'),
+                'load_capacity' => $request->input('load_capacity'),
+                'client_id' => $request->input('client_id'),
+                'gross_vehicle_weight' => $request->input('gross_vehicle_weight'),
+                'passenger_capacity' => $request->input('passenger_capacity'),
+                'number_axles' => $request->input('number_axles'),
+                'current_mileage' => $request->input('current_mileage'),
+                'have_trailer' => $request->input('have_trailer'),
+                'trailer' => $request->input('trailer'),
+                'vehicle_structure_id' => $request->input('vehicle_structure_id'),
+            ];
 
             $vehicle = $this->vehicleRepository->store($post);
 
@@ -235,22 +293,7 @@ class VehicleController extends Controller
                 $vehicle->save();
             }
 
-            $type_documents = json_decode($request->input('type_documents'), 1);
-            $arrayIds = collect($type_documents)->pluck('id');
-            $this->vehicleDocumentRepository->deleteArray($arrayIds, $vehicle->id);
-
-            foreach ($type_documents as $key => $value) {
-                $dataSave = [
-                    'id' => $value['id'],
-                    'vehicle_id' => $vehicle->id,
-                    'type_document_id' => $value['type_document_id']['value'],
-                    'document_number' => $value['document_number'],
-                    'date_issue' => $value['date_issue'],
-                    'expiration_date' => $value['expiration_date'],
-                ];
-                $this->vehicleDocumentRepository->store($dataSave);
-            }
-
+            //EMERGENCY ELEMENTS
             $emergency_elements = json_decode($request->input('emergency_elements'), 1);
             $arrayIds = collect($emergency_elements)->pluck('id');
             $this->vehicleEmergencyElementRepository->deleteArray($arrayIds, $vehicle->id);
@@ -263,6 +306,38 @@ class VehicleController extends Controller
                     'quantity' => $value['quantity'],
                 ];
                 $this->vehicleEmergencyElementRepository->store($dataSave);
+            }
+
+            //TYPE DOCUMENTS
+            $type_documents = json_decode($request->input('type_documents'), 1);
+            $arrayIds = collect($type_documents)->pluck('id');
+            $this->vehicleDocumentRepository->deleteArray($arrayIds, $vehicle->id);
+
+            $cantfiles = $request->input('cantfiles');
+
+            for ($i = 0; $i < $cantfiles; $i++) {
+                $idFile = $request->input('file_id'.$i) == 'null' ? null : $request->input('file_id'.$i);
+
+                $dataSave = [
+                    'id' => $idFile,
+                    'vehicle_id' => $vehicle->id,
+                    'type_document_id' => $request->input('file_type_document_id'.$i),
+                    'document_number' => $request->input('file_document_number'.$i),
+                    'date_issue' => $request->input('file_date_issue'.$i),
+                    'expiration_date' => $request->input('file_expiration_date'.$i),
+                ];
+                if ($request->hasFile('file_photo'.$i)) {
+                    $file = $request->file('file_photo'.$i);
+                    $company_id = $request->input('company_id');
+
+                    // Define la ruta donde se guardará el archivo
+                    $ruta = "companies/company_{$company_id}/vehicle/{$vehicle->id}/document";
+
+                    // Guarda el archivo con el nombre original
+                    $path = $file->store($ruta, 'public');
+                    $dataSave['photo'] = $path;
+                }
+                $this->vehicleDocumentRepository->store($dataSave);
             }
 
             DB::commit();
