@@ -9,4 +9,9 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:api');
 
 Route::get('/register', [PassportAuthController::class, 'register']);
+
 Route::post('login', [PassportAuthController::class, 'login']);
+
+Route::post('/password/email', [PassportAuthController::class, 'sendResetLink']);
+
+Route::post('/password/reset', [PassportAuthController::class, 'passwordReset']);
