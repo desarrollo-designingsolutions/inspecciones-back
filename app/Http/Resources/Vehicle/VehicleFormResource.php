@@ -27,7 +27,7 @@ class VehicleFormResource extends JsonResource
                 return [
                     'id' => $item->id,
                     'vehicle_id' => $item->vehicle_id,
-                    'type_document_id' => new TypeDocumentSelectInfiniteResource($item->type_document),
+                    // 'type_document_id' => new TypeDocumentSelectInfiniteResource($item->type_document),
                     'document_number' => $item->document_number,
                     'date_issue' => $item->date_issue,
                     'expiration_date' => $item->expiration_date,
@@ -42,8 +42,9 @@ class VehicleFormResource extends JsonResource
                 return [
                     'id' => $item->id,
                     'vehicle_id' => $item->vehicle_id,
-                    'emergency_element_id' => new EmergencyElementSelectInfiniteResource($item->emergency_element),
+                    // 'emergency_element_id' => new EmergencyElementSelectInfiniteResource($item->emergency_element),
                     'quantity' => $item->quantity,
+                    'expiration_date' => $item->expiration_date,
                 ];
             });
         }
