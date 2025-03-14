@@ -19,6 +19,36 @@ class VehicleFormResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
+        $type_documents = null;
+
+        if($this->type_documents){
+            $type_documents = $this->type_documents->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'vehicle_id' => $item->vehicle_id,
+                    'type_document_id' => new TypeDocumentSelectInfiniteResource($item->type_document),
+                    'document_number' => $item->document_number,
+                    'date_issue' => $item->date_issue,
+                    'expiration_date' => $item->expiration_date,
+                ];
+            });
+        }
+
+        $emergenct_elements = null;
+
+        if($this->emergency_elements){
+            $emergenct_elements = $this->emergency_elements->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'vehicle_id' => $item->vehicle_id,
+                    'emergency_element_id' => new EmergencyElementSelectInfiniteResource($item->emergency_element),
+                    'quantity' => $item->quantity,
+                ];
+            });
+        }
+
+
         return [
             'id' => $this->id,
             'company_id' => $this->company_id,
@@ -44,24 +74,8 @@ class VehicleFormResource extends JsonResource
             'photo_rear' => $this->photo_rear,
             'photo_right_side' => $this->photo_right_side,
             'photo_left_side' => $this->photo_left_side,
-            'type_documents' => $this->type_documents->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'vehicle_id' => $item->vehicle_id,
-                    'type_document_id' => new TypeDocumentSelectInfiniteResource($item->type_document),
-                    'document_number' => $item->document_number,
-                    'date_issue' => $item->date_issue,
-                    'expiration_date' => $item->expiration_date,
-                ];
-            }),
-            'emergency_elements' => $this->emergency_elements->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'vehicle_id' => $item->vehicle_id,
-                    'emergency_element_id' => new EmergencyElementSelectInfiniteResource($item->emergency_element),
-                    'quantity' => $item->quantity,
-                ];
-            }),
+            'type_documents' => $type_documents,
+            'emergency_elements' => $emergenct_elements,
 
         ];
     }
