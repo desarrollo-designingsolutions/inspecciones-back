@@ -20,6 +20,12 @@ class VehicleStructureSeeder extends Seeder
             [
                 'name' => 'Articulado',
             ],
+            [
+                'name' => 'Volqueta',
+            ],
+            [
+                'name' => 'Camioneta',
+            ],
         ];
 
         // Inicializar la barra de progreso
