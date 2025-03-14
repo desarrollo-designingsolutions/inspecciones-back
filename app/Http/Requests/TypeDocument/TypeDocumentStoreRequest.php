@@ -6,6 +6,7 @@ use App\Helpers\Constants;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class TypeDocumentStoreRequest extends FormRequest
 {
@@ -18,7 +19,15 @@ class TypeDocumentStoreRequest extends FormRequest
     {
         $rules = [
             'company_id' => 'required',
-            'name' => 'required|unique:type_documents,name,'.$this->id.',id,company_id,'.$this->company_id,
+            'name' => [
+                'required',
+                Rule::unique('type_documents', 'name')
+                        ->ignore($this->id) // Ignorar el ID actual si es una actualización
+                        ->where(function ($query) {
+                            $query->where('company_id', $this->company_id) // Filtrar por empresa
+                                  ->whereNull('deleted_at'); // Excluir registros eliminados
+                        }),
+            ],
         ];
 
         return $rules;
