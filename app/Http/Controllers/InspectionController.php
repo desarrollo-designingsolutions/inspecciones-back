@@ -373,7 +373,6 @@ class InspectionController extends Controller
                             $responses = [];
                             $response = $input->inspectionInputResponses->first();
 
-                            logMessage($response);
                             if ($inspection->inspection_type_id == 1 && isset($response->response['value'])) {
                                 $decodedResponse = json_decode(json_encode($response->response), true);
 
