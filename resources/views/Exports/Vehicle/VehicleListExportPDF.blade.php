@@ -159,51 +159,51 @@
         </tbody>
     </table>
 
-    <table>
-        <thead>
-            <tr>
-                <th colspan="2">FOTOS</th>
-            </tr>
-            <tr>
-                <th width="50%">Foto Frontal</th>
-                <th width="50%">Foto Reverso</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td style="text-align: center; vertical-align: middle;">
-                    <img src="{{ public_path('storage/' . $data['vehicle']->photo_front) }}"
-                        style="width: 370px; height: 210px;"
-                        alt="Foto del vehículo">
-                </td>
-                <td style="text-align: center; vertical-align: middle;">
-                    <img src="{{ public_path('storage/' . $data['vehicle']->photo_rear) }}"
-                        style="width: 370px; height: 210px;"
-                        alt="Foto del vehículo">
-                </td>
-            </tr>
-        </tbody>
-        <thead>
-            <tr>
-                <th width="50%">Foto Lado Derecho</th>
-                <th width="50%">Foto Lado Izquierdo</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td style="text-align: center; vertical-align: middle;">
-                    <img src="{{ public_path('storage/' . $data['vehicle']->photo_right_side) }}"
-                        style="width: 370px; height: 210px;"
-                        alt="Foto del vehículo">
-                </td>
-                <td style="text-align: center; vertical-align: middle;">
-                    <img src="{{ public_path('storage/' . $data['vehicle']->photo_left_side) }}"
-                        style="width: 370px; height: 210px;"
-                        alt="Foto del vehículo">
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <<table>
+    <thead>
+        <tr>
+            <th colspan="2">FOTOS</th>
+        </tr>
+        <tr>
+            <th width="50%">Foto Frontal</th>
+            <th width="50%">Foto Reverso</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                <img src="{{ $data['vehicle']->photo_front ? public_path('storage/' . $data['vehicle']->photo_front) : public_path('storage/placeholder.jpg') }}"
+                    style="width: 370px; height: 210px;"
+                    alt="Foto del vehículo">
+            </td>
+            <td style="text-align: center; vertical-align: middle;">
+                <img src="{{ $data['vehicle']->photo_rear ? public_path('storage/' . $data['vehicle']->photo_rear) : public_path('storage/placeholder.jpg') }}"
+                    style="width: 370px; height: 210px;"
+                    alt="Foto del vehículo">
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th width="50%">Foto Lado Derecho</th>
+            <th width="50%">Foto Lado Izquierdo</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="text-align: center; vertical-align: middle;">
+                <img src="{{ $data['vehicle']->photo_right_side ? public_path('storage/' . $data['vehicle']->photo_right_side) : public_path('storage/placeholder.jpg') }}"
+                    style="width: 370px; height: 210px;"
+                    alt="Foto del vehículo">
+            </td>
+            <td style="text-align: center; vertical-align: middle;">
+                <img src="{{ $data['vehicle']->photo_left_side ? public_path('storage/' . $data['vehicle']->photo_left_side) : public_path('storage/placeholder.jpg') }}"
+                    style="width: 370px; height: 210px;"
+                    alt="Foto del vehículo">
+            </td>
+        </tr>
+    </tbody>
+</table>
 
     <table>
         @if (count($data['table']) > 1)
