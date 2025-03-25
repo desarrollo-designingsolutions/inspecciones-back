@@ -7,13 +7,14 @@ use App\Helpers\Constants;
 use App\Http\Requests\Vehicle\VehicleStoreRequest;
 use App\Http\Resources\Vehicle\VehicleFormResource;
 use App\Http\Resources\Vehicle\VehicleListResource;
+use App\Http\Resources\Vehicle\VehiclePaginateResource;
 use App\Repositories\MaintenanceRepository;
 use App\Repositories\MaintenanceTypeGroupRepository;
 use App\Repositories\VehicleDocumentRepository;
 use App\Repositories\VehicleEmergencyElementRepository;
 use App\Repositories\VehicleRepository;
 use App\Repositories\VehicleStructureRepository;
-use App\Traits\HttpTrait;
+use App\Traits\HttpResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +24,7 @@ use Throwable;
 
 class VehicleController extends Controller
 {
-    use HttpTrait;
+    use HttpResponseTrait;
 
     public function __construct(
         protected VehicleRepository $vehicleRepository,
@@ -33,6 +34,23 @@ class VehicleController extends Controller
         protected VehicleEmergencyElementRepository $vehicleEmergencyElementRepository,
         protected MaintenanceTypeGroupRepository $maintenanceTypeGroupRepository,
     ) {}
+
+    public function paginate(Request $request)
+    {
+        return $this->execute(function () use ($request) {
+            $data = $this->vehicleRepository->paginate($request->all());
+            $tableData = VehiclePaginateResource::collection($data);
+
+            return [
+                'code' => 200,
+                'tableData' => $tableData,
+                'lastPage' => $data->lastPage(),
+                'totalData' => $data->total(),
+                'totalPage' => $data->perPage(),
+                'currentPage' => $data->currentPage(),
+            ];
+        });
+    }
 
     public function list(Request $request)
     {

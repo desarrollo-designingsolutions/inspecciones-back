@@ -11,14 +11,14 @@ use App\Repositories\RoleRepository;
 use App\Repositories\TypeLicenseRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\UserTypeDocumentRepository;
-use App\Traits\HttpTrait;
+use App\Traits\HttpResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class UserController extends Controller
 {
-    use HttpTrait;
+    use HttpResponseTrait;
     public function __construct(
         protected UserRepository $userRepository,
         protected RoleRepository $roleRepository,

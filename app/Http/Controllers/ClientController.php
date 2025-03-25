@@ -8,7 +8,7 @@ use App\Http\Requests\Client\ClientStoreRequest;
 use App\Http\Resources\Client\ClientFormResource;
 use App\Http\Resources\Client\ClientListResource;
 use App\Repositories\ClientRepository;
-use App\Traits\HttpTrait;
+use App\Traits\HttpResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -16,7 +16,7 @@ use Throwable;
 
 class ClientController extends Controller
 {
-    use HttpTrait;
+    use HttpResponseTrait;
     public function __construct(
         protected ClientRepository $clientRepository,
     ) {}

@@ -12,6 +12,8 @@ Route::middleware(['check.permission:vehicle.list'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
+    Route::get('/vehicle/paginate', [VehicleController::class, 'paginate']);
+
     Route::get('/vehicle/list', [VehicleController::class, 'list']);
 
     Route::get('/vehicle/create', [VehicleController::class, 'create']);

@@ -15,14 +15,14 @@ use App\Repositories\InspectionRepository;
 use App\Repositories\InspectionTypeGroupRepository;
 use App\Repositories\InspectionTypeRepository;
 use App\Repositories\VehicleRepository;
-use App\Traits\HttpTrait;
+use App\Traits\HttpResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 
 class InspectionController extends Controller
 {
-    use HttpTrait;
+    use HttpResponseTrait;
 
     public function __construct(
         protected InspectionRepository $inspectionRepository,
@@ -195,9 +195,9 @@ class InspectionController extends Controller
         return $this->runTransaction(function () use ($request) {
 
             $model = $this->inspectionRepository->changeState($request->input('id'), strval($request->input('value')), $request->input('field'));
-    
+
             ($model->is_active == 1) ? $msg = 'habilitado(a)' : $msg = 'inhabilitado(a)';
-    
+
             return response()->json(['code' => 200, 'message' => 'Vehículo ' . $msg . ' con éxito']);
         });
     }

@@ -13,13 +13,13 @@ use App\Repositories\MaintenanceRepository;
 use App\Repositories\MaintenanceTypeGroupRepository;
 use App\Repositories\MaintenanceTypeRepository;
 use App\Repositories\VehicleRepository;
-use App\Traits\HttpTrait;
+use App\Traits\HttpResponseTrait;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
 class MaintenanceController extends Controller
 {
-    use HttpTrait;
+    use HttpResponseTrait;
 
     public function __construct(
         protected MaintenanceRepository $maintenanceRepository,
