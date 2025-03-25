@@ -21,18 +21,11 @@ class VehicleRepository extends BaseRepository
         parent::__construct($modelo);
     }
 
-    // id
-// license_plate
-// type_vehicle_name
-// date_registration
-// model
-// city_name
-// is_active
     public function paginate($request = [])
     {
         $cacheKey = $this->cacheService->generateKey("{$this->model->getTable()}_paginate", $request, 'string');
 
-        // return $this->cacheService->remember($cacheKey, function () use ($request) {
+        return $this->cacheService->remember($cacheKey, function () use ($request) {
         $query = QueryBuilder::for($this->model->query())
             ->with(['type_vehicle:id,name', 'city:id,name'])
             ->select(['vehicles.id', 'license_plate', 'type_vehicle_id', 'date_registration', 'model', 'city_id', 'vehicles.is_active'])
@@ -79,7 +72,7 @@ class VehicleRepository extends BaseRepository
             ->paginate(request()->perPage ?? Constants::ITEMS_PER_PAGE);
 
         return $query;
-        // }, Constants::REDIS_TTL);
+        }, Constants::REDIS_TTL);
     }
 
     public function list($request = [], $with = [], $select = ['*'])
