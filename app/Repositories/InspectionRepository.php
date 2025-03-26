@@ -27,7 +27,7 @@ class InspectionRepository extends BaseRepository
         $cacheKey = $this->cacheService->generateKey("{$this->model->getTable()}_paginate", $request, 'string');
         return $this->cacheService->remember($cacheKey, function () use ($request) {
             $query = QueryBuilder::for(subject: $this->model->query())
-                ->with(['vehicle:id,license_plate,brand_vehicle_id,model', 'brand_vehicle', 'vehicle.brand_vehicle:id,name', 'user_inspector:id,name,surname', 'inspectionType:id,name'])
+                ->with(['vehicle:id,license_plate,brand_vehicle_id,model', 'vehicle.brand_vehicle:id,name', 'user_inspector:id,name,surname', 'inspectionType:id,name'])
                 ->select(['inspections.id', 'vehicle_id', 'inspection_date', 'inspection_type_id', 'inspection_type_id', 'user_inspector_id', 'inspections.is_active'])
                 ->join('users', 'users.id', '=', 'user_inspector_id')
                 ->allowedFilters([
