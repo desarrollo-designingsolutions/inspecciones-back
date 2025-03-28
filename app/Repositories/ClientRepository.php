@@ -21,7 +21,7 @@ class ClientRepository extends BaseRepository
     {
         $cacheKey = $this->cacheService->generateKey("{$this->model->getTable()}_paginate", $request, 'string');
 
-        // return $this->cacheService->remember($cacheKey, function () use ($request) {
+        return $this->cacheService->remember($cacheKey, function () use ($request) {
             $query = QueryBuilder::for($this->model->query())
                 ->select(['id', 'name', 'is_active', 'company_id'])
                 ->allowedFilters([
@@ -53,7 +53,7 @@ class ClientRepository extends BaseRepository
                 }
 
             return $query;
-        // }, Constants::REDIS_TTL);
+        }, Constants::REDIS_TTL);
     }
 
     public function list($request = [], $with = [], $select = ['*'])

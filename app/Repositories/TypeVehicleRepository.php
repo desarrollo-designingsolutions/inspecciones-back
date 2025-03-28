@@ -4,6 +4,11 @@ namespace App\Repositories;
 
 use App\Helpers\Constants;
 use App\Models\TypeVehicle;
+use App\QueryBuilder\Filters\QueryFilters;
+use App\QueryBuilder\Sort\IsActiveSort;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class TypeVehicleRepository extends BaseRepository
 {
@@ -12,21 +17,60 @@ class TypeVehicleRepository extends BaseRepository
         parent::__construct($modelo);
     }
 
+    public function paginate($request = [])
+    {
+        $cacheKey = $this->cacheService->generateKey("{$this->model->getTable()}_paginate", $request, 'string');
+
+        return $this->cacheService->remember($cacheKey, function () use ($request) {
+            $query = QueryBuilder::for($this->model->query())
+                ->select(['id', 'name', 'is_active', 'company_id'])
+                ->allowedFilters([
+                    'is_active',
+                    AllowedFilter::callback('inputGeneral', function ($queryX, $value) {
+                        $queryX->where(function ($query) use ($value) {
+                            $query->orWhere('name', 'like', "%$value%");
+
+                            QueryFilters::filterByText($query, $value, 'is_active', [
+                                'activo' => 1,
+                                'inactivo' => 0,
+                            ]);
+                        });
+                    }),
+                ])
+                ->allowedSorts([
+                    'name',
+                    AllowedSort::custom('is_active', new IsActiveSort),
+                ])->where(function ($query) use ($request) {
+                    if (!empty($request['company_id'])) {
+                        $query->where('company_id', $request['company_id']);
+                    }
+                });
+
+            if (empty($request['typeData'])) {
+                $query = $query->paginate(request()->perPage ?? Constants::ITEMS_PER_PAGE);
+            } else {
+                $query = $query->get();
+            }
+
+            return $query;
+        }, Constants::REDIS_TTL);
+    }
+
     public function list($request = [], $with = [], $select = ['*'])
     {
         $data = $this->model->select($select)->with($with)->where(function ($query) use ($request) {
             filterComponent($query, $request);
 
-            if (! empty($request['company_id'])) {
+            if (!empty($request['company_id'])) {
                 $query->where('company_id', $request['company_id']);
             }
 
-            if (! empty($request['is_active'])) {
+            if (!empty($request['is_active'])) {
                 $query->where('is_active', $request['is_active']);
             }
         })->where(function ($query) use ($request) {
-            if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
-                $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
+            if (isset($request['searchQueryInfinite']) && !empty($request['searchQueryInfinite'])) {
+                $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
             }
         });
 
@@ -51,9 +95,9 @@ class TypeVehicleRepository extends BaseRepository
         $request = $this->clearNull($request);
 
         // Determinar el ID a utilizar para buscar o crear el modelo
-        $idToUse = ($id === null || $id === 'null') && ! empty($request['id']) && $request['id'] !== 'null' ? $request['id'] : $id;
+        $idToUse = ($id === null || $id === 'null') && !empty($request['id']) && $request['id'] !== 'null' ? $request['id'] : $id;
 
-        if (! empty($idToUse)) {
+        if (!empty($idToUse)) {
             $data = $this->model->find($idToUse);
         } else {
             $data = $this->model::newModelInstance();
@@ -71,7 +115,7 @@ class TypeVehicleRepository extends BaseRepository
     public function selectList($request = [], $with = [], $select = [], $fieldValue = 'id', $fieldTitle = 'name')
     {
         $data = $this->model->with($with)->where(function ($query) use ($request) {
-            if (! empty($request['idsAllowed'])) {
+            if (!empty($request['idsAllowed'])) {
                 $query->whereIn('id', $request['idsAllowed']);
             }
         })->get()->map(function ($value) use ($with, $select, $fieldValue, $fieldTitle) {
@@ -101,7 +145,7 @@ class TypeVehicleRepository extends BaseRepository
     public function searchOne($request = [], $with = [], $select = ['*'])
     {
         $data = $this->model->select($select)->with($with)->where(function ($query) use ($request) {
-            if (! empty($request['company_id'])) {
+            if (!empty($request['company_id'])) {
                 $query->where('company_id', $request['company_id']);
             }
         });
@@ -114,7 +158,7 @@ class TypeVehicleRepository extends BaseRepository
     public function countData($request = [])
     {
         $data = $this->model->where(function ($query) use ($request) {
-            if (! empty($request['company_id'])) {
+            if (!empty($request['company_id'])) {
                 $query->where('company_id', $request['company_id']);
             }
         });

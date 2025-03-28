@@ -18,6 +18,7 @@ use Throwable;
 class ClientController extends Controller
 {
     use HttpResponseTrait;
+
     public function __construct(
         protected ClientRepository $clientRepository,
     ) {}

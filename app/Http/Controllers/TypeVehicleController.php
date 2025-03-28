@@ -7,7 +7,9 @@ use App\Helpers\Constants;
 use App\Http\Requests\TypeVehicle\TypeVehicleStoreRequest;
 use App\Http\Resources\TypeVehicle\TypeVehicleFormResource;
 use App\Http\Resources\TypeVehicle\TypeVehicleListResource;
+use App\Http\Resources\TypeVehicle\TypeVehiclePaginateResource;
 use App\Repositories\TypeVehicleRepository;
+use App\Traits\HttpResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -15,14 +17,33 @@ use Throwable;
 
 class TypeVehicleController extends Controller
 {
+    use HttpResponseTrait;
+
     public function __construct(
-        protected TypeVehicleRepository $TypeVehicleRepository,
+        protected TypeVehicleRepository $typeVehicleRepository,
     ) {}
+
+    public function paginate(Request $request)
+    {
+        return $this->execute(function () use ($request) {
+            $data = $this->typeVehicleRepository->paginate($request->all());
+            $tableData = TypeVehiclePaginateResource::collection($data);
+
+            return [
+                'code' => 200,
+                'tableData' => $tableData,
+                'lastPage' => $data->lastPage(),
+                'totalData' => $data->total(),
+                'totalPage' => $data->perPage(),
+                'currentPage' => $data->currentPage(),
+            ];
+        });
+    }
 
     public function list(Request $request)
     {
         try {
-            $data = $this->TypeVehicleRepository->list($request->all());
+            $data = $this->typeVehicleRepository->list($request->all());
             $tableData = TypeVehicleListResource::collection($data);
 
             return [
@@ -64,7 +85,7 @@ class TypeVehicleController extends Controller
         try {
             DB::beginTransaction();
 
-            $typeVehicle = $this->TypeVehicleRepository->store($request->all());
+            $typeVehicle = $this->typeVehicleRepository->store($request->all());
 
             DB::commit();
 
@@ -84,7 +105,7 @@ class TypeVehicleController extends Controller
     public function edit($id)
     {
         try {
-            $typeVehicle = $this->TypeVehicleRepository->find($id);
+            $typeVehicle = $this->typeVehicleRepository->find($id);
             $form = new TypeVehicleFormResource($typeVehicle);
 
             return response()->json([
@@ -108,7 +129,7 @@ class TypeVehicleController extends Controller
 
             $post = $request->all();
 
-            $typeVehicle = $this->TypeVehicleRepository->store($post);
+            $typeVehicle = $this->typeVehicleRepository->store($post);
 
             DB::commit();
 
@@ -129,7 +150,7 @@ class TypeVehicleController extends Controller
     {
         try {
             DB::beginTransaction();
-            $typeVehicle = $this->TypeVehicleRepository->find($id);
+            $typeVehicle = $this->typeVehicleRepository->find($id);
             if ($typeVehicle) {
                 $typeVehicle->delete();
                 $msg = 'Registro eliminado correctamente';
@@ -156,7 +177,7 @@ class TypeVehicleController extends Controller
         try {
             DB::beginTransaction();
 
-            $model = $this->TypeVehicleRepository->changeState($request->input('id'), strval($request->input('value')), $request->input('field'));
+            $model = $this->typeVehicleRepository->changeState($request->input('id'), strval($request->input('value')), $request->input('field'));
 
             ($model->is_active == 1) ? $msg = 'habilitado(a)' : $msg = 'inhabilitado(a)';
 
@@ -177,29 +198,19 @@ class TypeVehicleController extends Controller
 
     public function excelExport(Request $request)
     {
-        try {
+        return $this->execute(function () use ($request) {
+            $request['typeData'] = 'all';
 
-            $filter = [
-                'typeData' => 'all',
-            ];
-
-            $data = $this->TypeVehicleRepository->list([
-                ...$filter,
-                ...$request->all(),
-            ]);
+            $data = $this->typeVehicleRepository->paginate($request->all());
 
             $excel = Excel::raw(new TypeVehicleListExport($data), \Maatwebsite\Excel\Excel::XLSX);
 
             $excelBase64 = base64_encode($excel);
 
-            return response()->json(['code' => 200, 'excel' => $excelBase64]);
-        } catch (Throwable $th) {
-            return response()->json([
-                'code' => 500,
-                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
-                'error' => $th->getMessage(),
-                'line' => $th->getLine(),
-            ], 500);
-        }
+            return [
+                'code' => 200,
+                'excel' => $excelBase64
+            ];
+        });
     }
 }
