@@ -6,7 +6,9 @@ use App\Helpers\Constants;
 use App\Http\Requests\Company\CompanyStoreRequest;
 use App\Http\Resources\Company\CompanyFormResource;
 use App\Http\Resources\Company\CompanyListResource;
+use App\Http\Resources\Company\CompanyPaginateResource;
 use App\Repositories\CompanyRepository;
+use App\Traits\HttpResponseTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,10 +16,29 @@ use Throwable;
 
 class CompanyController extends Controller
 {
+    use HttpResponseTrait;
+
     public function __construct(
         protected CompanyRepository $companyRepository,
         protected QueryController $queryController,
     ) {}
+
+    public function paginate(Request $request)
+    {
+        return $this->execute(function () use ($request) {
+            $data = $this->companyRepository->paginate($request->all());
+            $tableData = CompanyPaginateResource::collection($data);
+
+            return [
+                'code' => 200,
+                'tableData' => $tableData,
+                'lastPage' => $data->lastPage(),
+                'totalData' => $data->total(),
+                'totalPage' => $data->perPage(),
+                'currentPage' => $data->currentPage(),
+            ];
+        });
+    }
 
     public function list(Request $request)
     {
