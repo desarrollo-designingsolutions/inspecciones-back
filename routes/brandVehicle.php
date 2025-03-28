@@ -12,6 +12,8 @@ Route::middleware(['check.permission:menu.brand.vehicle'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
+    Route::get('/brand-vehicle/paginate', [BrandVehicleController::class, 'paginate']);
+
     Route::get('/brand-vehicle/list', [BrandVehicleController::class, 'list']);
 
     Route::get('/brand-vehicle/create', [BrandVehicleController::class, 'create']);
@@ -26,6 +28,6 @@ Route::middleware(['check.permission:menu.brand.vehicle'])->group(function () {
 
     Route::post('/brand-vehicle/changeStatus', [BrandVehicleController::class, 'changeStatus']);
 
-    Route::post('/brand-vehicle/excelExport', [BrandVehicleController::class, 'excelExport']);
+    Route::get('/brand-vehicle/excelExport', [BrandVehicleController::class, 'excelExport']);
 
 });
