@@ -314,7 +314,6 @@ class InspectionController extends Controller
     public function excelExport(Request $request)
     {
         return $this->execute(function () use ($request) {
-
             $request['typeData'] = 'all';
 
             $data = $this->inspectionRepository->paginate($request->all());

@@ -7,6 +7,7 @@ use App\Helpers\Constants;
 use App\Http\Requests\Client\ClientStoreRequest;
 use App\Http\Resources\Client\ClientFormResource;
 use App\Http\Resources\Client\ClientListResource;
+use App\Http\Resources\Client\ClientPaginateResource;
 use App\Repositories\ClientRepository;
 use App\Traits\HttpResponseTrait;
 use Illuminate\Http\Request;
@@ -20,6 +21,23 @@ class ClientController extends Controller
     public function __construct(
         protected ClientRepository $clientRepository,
     ) {}
+
+    public function paginate(Request $request)
+    {
+        return $this->execute(function () use ($request) {
+            $data = $this->clientRepository->paginate($request->all());
+            $tableData = ClientPaginateResource::collection($data);
+
+            return [
+                'code' => 200,
+                'tableData' => $tableData,
+                'lastPage' => $data->lastPage(),
+                'totalData' => $data->total(),
+                'totalPage' => $data->perPage(),
+                'currentPage' => $data->currentPage(),
+            ];
+        });
+    }
 
     public function list(Request $request)
     {
@@ -167,29 +185,19 @@ class ClientController extends Controller
 
     public function excelExport(Request $request)
     {
-        try {
+        return $this->execute(function () use ($request) {
+            $request['typeData'] = 'all';
 
-            $filter = [
-                'typeData' => 'all',
-            ];
-
-            $data = $this->clientRepository->list([
-                ...$filter,
-                ...$request->all(),
-            ]);
+            $data = $this->clientRepository->paginate($request->all());
 
             $excel = Excel::raw(new ClientListExport($data), \Maatwebsite\Excel\Excel::XLSX);
 
             $excelBase64 = base64_encode($excel);
 
-            return response()->json(['code' => 200, 'excel' => $excelBase64]);
-        } catch (Throwable $th) {
-            return response()->json([
-                'code' => 500,
-                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
-                'error' => $th->getMessage(),
-                'line' => $th->getLine(),
-            ], 500);
-        }
+            return [
+                'code' => 200,
+                'excel' => $excelBase64
+            ];
+        });
     }
 }

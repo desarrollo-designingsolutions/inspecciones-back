@@ -25,41 +25,41 @@ class UserRepository extends BaseRepository
         $cacheKey = $this->cacheService->generateKey("{$this->model->getTable()}_paginate", $request, 'string');
 
         return $this->cacheService->remember($cacheKey, function () use ($request) {
-        $query = QueryBuilder::for($this->model->query())
-            ->with(['role:id,description'])
-            ->select(['users.id', 'users.name', 'surname', 'email', 'role_id', 'is_active'])
-            ->allowedFilters([
-                'is_active',
-                AllowedFilter::callback('inputGeneral', function ($queryX, $value) {
-                    $queryX->where(function ($query) use ($value) {
-                        $query->orWhereRaw("CONCAT(users.name, ' ', users.surname) LIKE ?", ["%{$value}%"]);
+            $query = QueryBuilder::for($this->model->query())
+                ->with(['role:id,description'])
+                ->select(['users.id', 'users.name', 'surname', 'email', 'role_id', 'is_active', 'company_id'])
+                ->allowedFilters([
+                    'is_active',
+                    AllowedFilter::callback('inputGeneral', function ($queryX, $value) {
+                        $queryX->where(function ($query) use ($value) {
+                            $query->orWhereRaw("CONCAT(users.name, ' ', users.surname) LIKE ?", ["%{$value}%"]);
 
-                        $query->orWhere('email', 'like', "%$value%");
+                            $query->orWhere('email', 'like', "%$value%");
 
-                        $query->orWhereHas('role', function ($query) use ($value) {
-                            $query->where('description', 'like', "%$value%");
+                            $query->orWhereHas('role', function ($query) use ($value) {
+                                $query->where('description', 'like', "%$value%");
+                            });
+
+                            QueryFilters::filterByText($query, $value, 'is_active', [
+                                'activo' => 1,
+                                'inactivo' => 0,
+                            ]);
                         });
+                    }),
+                ])
+                ->allowedSorts([
+                    'email',
+                    AllowedSort::custom('role_name', new RelatedTableSort('users', 'roles', 'description', 'role_id')),
+                    AllowedSort::custom('full_name', new DynamicConcatSort("users.name, ' ', users.surname")),
+                    AllowedSort::custom('is_active', new IsActiveSort),
+                ])->where(function ($query) use ($request) {
+                    if (!empty($request['company_id'])) {
+                        $query->where('users.company_id', $request['company_id']);
+                    }
+                })
+                ->paginate(request()->perPage ?? Constants::ITEMS_PER_PAGE);
 
-                        QueryFilters::filterByText($query, $value, 'is_active', [
-                            'activo' => 1,
-                            'inactivo' => 0,
-                        ]);
-                    });
-                }),
-            ])
-            ->allowedSorts([
-                'email',
-                AllowedSort::custom('role_name', new RelatedTableSort('users', 'roles', 'description', 'role_id')),
-                AllowedSort::custom('full_name', new DynamicConcatSort("users.name, ' ', users.surname")),
-                AllowedSort::custom('is_active', new IsActiveSort),
-            ])->where(function ($query) use ($request) {
-                if (!empty($request['company_id'])) {
-                    $query->where('users.company_id', $request['company_id']);
-                }
-            })
-            ->paginate(request()->perPage ?? Constants::ITEMS_PER_PAGE);
-
-        return $query;
+            return $query;
         }, Constants::REDIS_TTL);
     }
 
