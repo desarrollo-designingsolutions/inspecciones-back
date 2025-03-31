@@ -27,7 +27,7 @@ class UserRepository extends BaseRepository
         return $this->cacheService->remember($cacheKey, function () use ($request) {
             $query = QueryBuilder::for($this->model->query())
                 ->with(['role:id,description'])
-                ->select(['users.id', 'users.name', 'surname', 'email', 'role_id', 'is_active', 'company_id'])
+                ->select(['users.id', 'users.name', 'surname', 'email', 'role_id', 'is_active', 'users.company_id'])
                 ->allowedFilters([
                     'is_active',
                     AllowedFilter::callback('inputGeneral', function ($queryX, $value) {

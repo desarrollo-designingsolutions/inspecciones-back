@@ -4,6 +4,9 @@ namespace App\Repositories;
 
 use App\Helpers\Constants;
 use App\Models\Maintenance;
+use App\QueryBuilder\Filters\DataSelectFilter;
+use App\QueryBuilder\Filters\DataSelectRelationFilter;
+use App\QueryBuilder\Filters\DateRangeFilter;
 use App\QueryBuilder\Filters\QueryFilters;
 use App\QueryBuilder\Sort\DynamicConcatSort;
 use App\QueryBuilder\Sort\DynamicJoinConcatSort;
@@ -32,11 +35,18 @@ class MaintenanceRepository extends BaseRepository
 
         $cacheKey = $this->cacheService->generateKey("{$this->model->getTable()}_paginate", $request, 'string');
 
-        return $this->cacheService->remember($cacheKey, function () use ($request, $customTypes) {
+        // return $this->cacheService->remember($cacheKey, function () use ($request, $customTypes) {
             $query = QueryBuilder::for($this->model->query())
                 ->with(['user_inspector:id,name,surname', 'user_mechanic:id,name,surname', 'vehicle:id,license_plate,model,brand_vehicle_id', 'vehicle.brand_vehicle:id,name'])
                 ->select(['maintenances.id', 'maintenance_date', 'vehicle_id', 'user_inspector_id', 'user_mechanic_id', 'maintenances.company_id', 'status'])
                 ->allowedFilters([
+                    AllowedFilter::callback('maintenance_date', new DateRangeFilter()),
+                    AllowedFilter::callback('vehicle_id', new DataSelectFilter()),
+                    AllowedFilter::callback('vehicle.brand_vehicle_id', new DataSelectRelationFilter("vehicle", "brand_vehicle_id")),
+                    AllowedFilter::callback('vehicle.model', new DataSelectRelationFilter("vehicle", "model")),
+                    AllowedFilter::callback('user_inspector.id', new DataSelectRelationFilter("user_inspector", "id")),
+                    AllowedFilter::callback('user_mechanic.id', new DataSelectRelationFilter("user_mechanic", "id")),
+                    AllowedFilter::callback('status', new DataSelectFilter()),
                     AllowedFilter::callback('inputGeneral', function ($queryFilter, $value) use ($customTypes) {
                         $queryFilter->where(function ($query) use ($value, $customTypes) {
                             $query->orWhereHas('vehicle', function ($subQuery) use ($value) {
@@ -99,7 +109,7 @@ class MaintenanceRepository extends BaseRepository
             }
 
             return $query;
-        }, Constants::REDIS_TTL);
+        // }, Constants::REDIS_TTL);
     }
 
     public function list($request = [], $with = [], $select = ['*'])
