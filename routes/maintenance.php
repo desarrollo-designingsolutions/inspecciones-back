@@ -12,6 +12,8 @@ Route::middleware(['check.permission:maintenance.list'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
+    Route::get('/maintenance/paginate', [MaintenanceController::class, 'paginate']);
+
     Route::get('/maintenance/list', [MaintenanceController::class, 'list']);
 
     Route::get('/maintenance/loadBtnCreate', [MaintenanceController::class, 'loadBtnCreate']);
