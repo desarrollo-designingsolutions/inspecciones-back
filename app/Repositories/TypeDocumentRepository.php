@@ -4,12 +4,56 @@ namespace App\Repositories;
 
 use App\Helpers\Constants;
 use App\Models\TypeDocument;
+use App\QueryBuilder\Filters\QueryFilters;
+use App\QueryBuilder\Sort\IsActiveSort;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class TypeDocumentRepository extends BaseRepository
 {
     public function __construct(TypeDocument $modelo)
     {
         parent::__construct($modelo);
+    }
+
+    public function paginate($request = [])
+    {
+        $cacheKey = $this->cacheService->generateKey("{$this->model->getTable()}_paginate", $request, 'string');
+
+        return $this->cacheService->remember($cacheKey, function () use ($request) {
+            $query = QueryBuilder::for($this->model->query())
+                ->select(['id', 'name', 'is_active', 'company_id'])
+                ->allowedFilters([
+                    'is_active',
+                    AllowedFilter::callback('inputGeneral', function ($queryX, $value) {
+                        $queryX->where(function ($query) use ($value) {
+                            $query->orWhere('name', 'like', "%$value%");
+
+                            QueryFilters::filterByText($query, $value, 'is_active', [
+                                'activo' => 1,
+                                'inactivo' => 0,
+                            ]);
+                        });
+                    }),
+                ])
+                ->allowedSorts([
+                    'name',
+                    AllowedSort::custom('is_active', new IsActiveSort),
+                ])->where(function ($query) use ($request) {
+                    if (!empty($request['company_id'])) {
+                        $query->where('company_id', $request['company_id']);
+                    }
+                });
+
+                if (empty($request['typeData'])) {
+                    $query = $query->paginate(request()->perPage ?? Constants::ITEMS_PER_PAGE);
+                } else {
+                    $query = $query->get();
+                }
+
+            return $query;
+        }, Constants::REDIS_TTL);
     }
 
     public function list($request = [], $with = [], $select = ['*'])

@@ -12,6 +12,8 @@ Route::middleware(['check.permission:menu.emergency.element'])->group(function (
     |--------------------------------------------------------------------------
     */
 
+    Route::get('/emergency-element/paginate', [EmergencyElementController::class, 'paginate']);
+
     Route::get('/emergency-element/list', [EmergencyElementController::class, 'list']);
 
     Route::get('/emergency-element/create', [EmergencyElementController::class, 'create']);
@@ -26,6 +28,6 @@ Route::middleware(['check.permission:menu.emergency.element'])->group(function (
 
     Route::post('/emergency-element/changeStatus', [EmergencyElementController::class, 'changeStatus']);
 
-    Route::post('/emergency-element/excelExport', [EmergencyElementController::class, 'excelExport']);
+    Route::get('/emergency-element/excelExport', [EmergencyElementController::class, 'excelExport']);
 
 });
