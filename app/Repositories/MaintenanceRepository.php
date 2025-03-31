@@ -37,8 +37,8 @@ class MaintenanceRepository extends BaseRepository
 
         // return $this->cacheService->remember($cacheKey, function () use ($request, $customTypes) {
             $query = QueryBuilder::for($this->model->query())
-                ->with(['user_inspector:id,name,surname', 'user_mechanic:id,name,surname', 'vehicle:id,license_plate,model,brand_vehicle_id', 'vehicle.brand_vehicle:id,name'])
-                ->select(['maintenances.id', 'maintenance_date', 'vehicle_id', 'user_inspector_id', 'user_mechanic_id', 'maintenances.company_id', 'status'])
+                ->with(['user_inspector:id,name,surname', 'user_mechanic:id,name,surname', 'vehicle:id,license_plate,model,brand_vehicle_id', 'vehicle.brand_vehicle:id,name', 'maintenanceType:id,name'])
+                ->select(['maintenances.id', 'maintenance_date', 'vehicle_id', 'user_inspector_id', 'user_mechanic_id', 'maintenances.company_id', 'status', 'maintenance_type_id'])
                 ->allowedFilters([
                     AllowedFilter::callback('maintenance_date', new DateRangeFilter()),
                     AllowedFilter::callback('vehicle_id', new DataSelectFilter()),
