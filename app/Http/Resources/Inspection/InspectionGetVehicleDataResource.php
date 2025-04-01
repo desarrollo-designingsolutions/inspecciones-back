@@ -26,7 +26,7 @@ class InspectionGetVehicleDataResource extends JsonResource
                     'id' => $item->id,
                     'type_document_name' => $item->type_document?->name,
                     'document_number' => $item->document_number,
-                    'original' => $item->inspectionDocumentVerifications?->original,
+                    'original' => $item->inspectionDocumentVerifications?->original === true ? 1 : 0,
                     'expiration_date' => Carbon::Parse($item->expiration_date)->format('d-m-Y'),
                 ];
             }),

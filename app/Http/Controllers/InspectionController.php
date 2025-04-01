@@ -35,8 +35,7 @@ class InspectionController extends Controller
         protected VehicleRepository $vehicleRepository,
         protected InspectionDocumentVerificationRepository $inspectionDocumentVerificationRepository,
         protected QueryController $queryController,
-    ) {
-    }
+    ) {}
 
     public function paginate(Request $request)
     {
@@ -125,17 +124,19 @@ class InspectionController extends Controller
             $post3 = $request->except([...$fields, ...['type_documents']]);
 
             foreach ($post3 as $key => $value) {
-                InspectionInputResponse::updateOrCreate(
-                    [
-                        'inspection_id' => $inspection->id,
-                        'inspection_type_input_id' => $key,
-                    ],
-                    [
-                        'user_inspector_id' => $post1['user_inspector_id'],
-                        'response' => $value['value'],
-                        'observation' => $value['observation'],
-                    ]
-                );
+                if ($value != null) {
+                    InspectionInputResponse::updateOrCreate(
+                        [
+                            'inspection_id' => $inspection->id,
+                            'inspection_type_input_id' => $key,
+                        ],
+                        [
+                            'user_inspector_id' => $post1['user_inspector_id'],
+                            'response' => $value['value'] != null ? $value['value'] : '',
+                            'observation' => isset($value['observation']) ? $value['observation'] : '',
+                        ]
+                    );
+                }
             }
             return [
                 'code' => 200,
@@ -149,16 +150,30 @@ class InspectionController extends Controller
     {
         return $this->execute(function () use ($id) {
 
+            $tabs = collect([[
+                'id' => 0,
+                'name' => 'Información General',
+                'show' => true,
+                'errorsValidations' => false,
+                'order' => 0,
+            ]]);
+
             $inspection = $this->inspectionRepository->find($id);
 
             $form = new InspectionFormResource($inspection);
 
-            $data = $this->loadTabs($inspection->inspection_type_id);
+            $selectStates = $this->queryController->selectStates(Constants::COUNTRY_ID);
+
+            $responseDocument = getResponseDocument();
+            $responseVehicle = getResponseTypeInspection($inspection->inspection_type_id);
 
             return [
                 'code' => 200,
+                'tabs' => $tabs,
                 'form' => $form,
-                ...$data,
+                'responseDocument' => $responseDocument,
+                'responseVehicle' => $responseVehicle,
+                ...$selectStates,
             ];
         });
     }
@@ -175,27 +190,29 @@ class InspectionController extends Controller
 
             $post2 = $request->only(['type_documents']);
             foreach ($post2['type_documents'] as $key => $value) {
-                $this->inspectionDocumentVerificationRepository->updateOrCreate([
+                InspectionDocumentVerification::updateOrCreate([
                     'inspection_id' => $inspection->id,
                     'vehicle_document_id' => $value['id'],
                 ], [
-                    'original' => $value['response'],
+                    'original' => $value['original'],
                 ]);
             }
             $post3 = $request->except([...$fields, ...['type_documents']]);
 
             foreach ($post3 as $key => $value) {
-
-                $this->inspectionInputResponseRepository->updateOrCreate(
-                    [
-                        'inspection_id' => $inspection->id,
-                        'inspection_type_input_id' => $key,
-                    ],
-                    [
-                        'user_inspector_id' => $post1['user_inspector_id'],
-                        'response' => $value,
-                    ]
-                );
+                if ($value != null) {
+                    InspectionInputResponse::updateOrCreate(
+                        [
+                            'inspection_id' => $inspection->id,
+                            'inspection_type_input_id' => $key,
+                        ],
+                        [
+                            'user_inspector_id' => $post1['user_inspector_id'],
+                            'response' => $value['value'] != null ? $value['value'] : '',
+                            'observation' => isset($value['observation']) ? $value['observation'] : '',
+                        ]
+                    );
+                }
             }
 
             return [
@@ -221,8 +238,7 @@ class InspectionController extends Controller
             return [
                 'code' => 200,
                 'message' => $msg,
-            ]
-            ;
+            ];
         });
     }
 
@@ -262,62 +278,11 @@ class InspectionController extends Controller
         });
     }
 
-    public function loadTabs($inspection_type_id)
-    {
-
-        $tabs = $this->inspectionTypeGroupRepository->list(
-            [
-                'typeData' => 'all',
-                'inspection_type_id' => $inspection_type_id,
-                'sortBy' => json_encode([
-                    [
-                        'key' => 'order',
-                        'order' => 'asc',
-                    ],
-                ]),
-            ],
-            with: ['inspectionTypeInputs'],
-            select: ['id', 'name']
-        );
-        $order = 1;
-
-        foreach ($tabs as $key => $value) {
-            $value['show'] = true;
-            $value['errorsValidations'] = false;
-            $value['order'] = $order;
-            $order++;
-        }
-
-        $tabs = collect($tabs);
-
-        // Usar prepend() para agregar al inicio
-        $tabs->prepend([
-            'id' => 0,
-            'name' => 'Información General',
-            'show' => true,
-            'errorsValidations' => false,
-            'order' => 0,
-        ]);
-
-        $selectStates = $this->queryController->selectStates(Constants::COUNTRY_ID);
-
-        $responseDocument = getResponseDocument();
-        $responseVehicle = getResponseTypeInspection($inspection_type_id);
-
-        return [
-            'tabs' => $tabs,
-            'responseDocument' => $responseDocument,
-            'responseVehicle' => $responseVehicle,
-            ...$selectStates,
-        ];
-    }
-
     public function getVehicleInfo(Request $request, $vehicle_id)
     {
         return $this->execute(function () use ($request, $vehicle_id) {
 
             $vehicle = $this->vehicleRepository->find($vehicle_id);
-
             $vehicle = new InspectionGetVehicleDataResource($vehicle);
 
             $vehicleInputs = $vehicle->inspection_group_vehicle
@@ -325,32 +290,36 @@ class InspectionController extends Controller
                 ->pluck('id')
                 ->toArray();
 
-            $tabs = $this->inspectionTypeGroupRepository->list(
-                [
-                    'typeData'           => 'all',
-                    'inspection_type_id' => $request->input('inspection_type_id'),
-                    'ids'                => $vehicleInputs,
-                    'sortBy'             => json_encode([
-                        [
-                            'key'   => 'order',
-                            'order' => 'asc',
-                        ],
-                    ]),
-                ],
-                with: ['inspectionTypeInputs'],
-                select: ['id', 'name', 'order']
-            );
+            if (empty($vehicleInputs)) {
+                $tabs = collect([]);
+            } else {
+                $tabs = $this->inspectionTypeGroupRepository->list(
+                    [
+                        'typeData'           => 'all',
+                        'inspection_type_id' => $request->input('inspection_type_id'),
+                        'ids'                => $vehicleInputs,
+                        'sortBy'             => json_encode([
+                            [
+                                'key'   => 'order',
+                                'order' => 'asc',
+                            ],
+                        ]),
+                    ],
+                    with: ['inspectionTypeInputs'],
+                    select: ['id', 'name', 'order']
+                );
 
-            $newOrder = 1;
-            foreach ($tabs as $tab) {
-                $tab->order = $newOrder;
-                $newOrder++;
+                $newOrder = 1;
+                foreach ($tabs as $tab) {
+                    $tab->order = $newOrder;
+                    $newOrder++;
+                }
             }
 
             return [
-                'code' => 200,
+                'code'    => 200,
                 'vehicle' => $vehicle,
-                'tabs' => $tabs,
+                'tabs'    => $tabs,
             ];
         });
     }

@@ -57,7 +57,6 @@ class InspectionFormResource extends JsonResource
             if (isset($tab['inspectionTypeInputs']) && count($tab['inspectionTypeInputs']) > 0) {
                 foreach ($tab['inspectionTypeInputs'] as $input) {
                     $inspection_input_responses = $input['inspectionInputResponses']->first();
-                    logMessage($input['inspectionInputResponses']);
                     if ($this->inspection_type_id == 1) {
                         $decodedResponse = json_decode($inspection_input_responses->response, true);
 
