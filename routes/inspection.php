@@ -12,6 +12,8 @@ Route::middleware(['check.permission:inspection.list'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
+    Route::get('/inspection/paginate', [InspectionController::class, 'paginate']);
+
     Route::get('/inspection/list', [InspectionController::class, 'list']);
 
     Route::get('/inspection/loadBtnCreate', [InspectionController::class, 'loadBtnCreate']);
@@ -30,9 +32,7 @@ Route::middleware(['check.permission:inspection.list'])->group(function () {
 
     Route::post('/inspection/changeStatus', [InspectionController::class, 'changeStatus']);
 
-    Route::post('/inspection/excelExport', [InspectionController::class, 'excelExport']);
+    Route::get('/inspection/excelExport', [InspectionController::class, 'excelExport']);
 
     Route::post('/inspection/pdfExport', [InspectionController::class, 'pdfExport']);
-
-
 });

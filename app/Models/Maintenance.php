@@ -19,12 +19,12 @@ class Maintenance extends Model
 
     public function vehicle(): BelongsTo
     {
-        return $this->belongsTo(Vehicle::class);
+        return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
     }
 
     public function maintenanceType(): BelongsTo
     {
-        return $this->belongsTo(MaintenanceType::class);
+        return $this->belongsTo(MaintenanceType::class, 'maintenance_type_id', 'id');
     }
 
     public function maintenanceTypeGroups(): HasMany

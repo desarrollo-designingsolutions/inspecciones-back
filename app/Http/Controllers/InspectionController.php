@@ -10,6 +10,7 @@ use App\Http\Resources\Inspection\InspectionGetVehicleDataResource;
 use App\Http\Resources\Inspection\InspectionListResource;
 use App\Models\InspectionDocumentVerification;
 use App\Models\InspectionInputResponse;
+use App\Http\Resources\Inspection\InspectionPaginateResource;
 use App\Models\InspectionTypeGroup;
 use App\Repositories\InspectionDocumentVerificationRepository;
 use App\Repositories\InspectionInputResponseRepository;
@@ -34,7 +35,27 @@ class InspectionController extends Controller
         protected VehicleRepository $vehicleRepository,
         protected InspectionDocumentVerificationRepository $inspectionDocumentVerificationRepository,
         protected QueryController $queryController,
-    ) {}
+    ) {
+    }
+
+    public function paginate(Request $request)
+    {
+        return $this->execute(function () use ($request) {
+
+            $data = $this->inspectionRepository->paginate($request->all());
+
+            $tableData = InspectionPaginateResource::collection($data);
+
+            return [
+                'code' => 200,
+                'tableData' => $tableData,
+                'lastPage' => $data->lastPage(),
+                'totalData' => $data->total(),
+                'totalPage' => $data->perPage(),
+                'currentPage' => $data->currentPage(),
+            ];
+        });
+    }
 
     public function list(Request $request)
     {
@@ -197,12 +218,11 @@ class InspectionController extends Controller
                 $msg = 'El registro no existe';
             }
 
-            return response()->json(
-                [
-                    'code' => 200,
-                    'message' => $msg,
-                ]
-            );
+            return [
+                'code' => 200,
+                'message' => $msg,
+            ]
+            ;
         });
     }
 
@@ -214,7 +234,7 @@ class InspectionController extends Controller
 
             ($model->is_active == 1) ? $msg = 'habilitado(a)' : $msg = 'inhabilitado(a)';
 
-            return response()->json(['code' => 200, 'message' => 'Vehículo ' . $msg . ' con éxito']);
+            return ['code' => 200, 'message' => 'Vehículo ' . $msg . ' con éxito'];
         });
     }
 
@@ -305,12 +325,10 @@ class InspectionController extends Controller
                 ->pluck('id')
                 ->toArray();
 
-            // Obtiene los grupos de inspección filtrados por los IDs obtenidos
             $tabs = $this->inspectionTypeGroupRepository->list(
                 [
                     'typeData'           => 'all',
                     'inspection_type_id' => $request->input('inspection_type_id'),
-                    // Puedes agregar este parámetro para que el repositorio filtre los registros por su ID
                     'ids'                => $vehicleInputs,
                     'sortBy'             => json_encode([
                         [
@@ -340,15 +358,9 @@ class InspectionController extends Controller
     public function excelExport(Request $request)
     {
         return $this->execute(function () use ($request) {
+            $request['typeData'] = 'all';
 
-            $filter = [
-                'typeData' => 'all',
-            ];
-
-            $data = $this->inspectionRepository->list([
-                ...$filter,
-                ...$request->all(),
-            ]);
+            $data = $this->inspectionRepository->paginate($request->all());
 
             $excel = Excel::raw(new InspectionListExport($data), \Maatwebsite\Excel\Excel::XLSX);
 

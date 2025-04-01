@@ -12,6 +12,8 @@ Route::middleware(['check.permission:menu.user'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
+    Route::get('/user/paginate', [UserController::class, 'paginate']);
+
     Route::get('/user/list', [UserController::class, 'list']);
 
     Route::get('/user/create', [UserController::class, 'create']);

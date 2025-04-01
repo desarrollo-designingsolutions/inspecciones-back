@@ -6,6 +6,7 @@ use App\Helpers\Constants;
 use App\Http\Requests\User\UserStoreRequest;
 use App\Http\Resources\User\UserFormResource;
 use App\Http\Resources\User\UserListResource;
+use App\Http\Resources\User\UserPaginateResource;
 use App\Repositories\CompanyRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\TypeLicenseRepository;
@@ -26,6 +27,23 @@ class UserController extends Controller
         protected UserTypeDocumentRepository $userTypeDocumentRepository,
         protected TypeLicenseRepository $typeLicenseRepository,
     ) {}
+
+    public function paginate(Request $request)
+    {
+        return $this->execute(function () use ($request) {
+            $data = $this->userRepository->paginate($request->all());
+            $tableData = UserPaginateResource::collection($data);
+
+            return [
+                'code' => 200,
+                'tableData' => $tableData,
+                'lastPage' => $data->lastPage(),
+                'totalData' => $data->total(),
+                'totalPage' => $data->perPage(),
+                'currentPage' => $data->currentPage(),
+            ];
+        });
+    }
 
     public function list(Request $request)
     {

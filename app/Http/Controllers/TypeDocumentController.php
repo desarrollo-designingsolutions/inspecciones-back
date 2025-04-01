@@ -7,7 +7,9 @@ use App\Helpers\Constants;
 use App\Http\Requests\TypeDocument\TypeDocumentStoreRequest;
 use App\Http\Resources\TypeDocument\TypeDocumentFormResource;
 use App\Http\Resources\TypeDocument\TypeDocumentListResource;
+use App\Http\Resources\TypeDocument\TypeDocumentPaginateResource;
 use App\Repositories\TypeDocumentRepository;
+use App\Traits\HttpResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -15,9 +17,28 @@ use Throwable;
 
 class TypeDocumentController extends Controller
 {
+    use HttpResponseTrait;
+
     public function __construct(
         protected TypeDocumentRepository $typeDocumentRepository,
     ) {}
+
+    public function paginate(Request $request)
+    {
+        return $this->execute(function () use ($request) {
+            $data = $this->typeDocumentRepository->paginate($request->all());
+            $tableData = TypeDocumentPaginateResource::collection($data);
+
+            return [
+                'code' => 200,
+                'tableData' => $tableData,
+                'lastPage' => $data->lastPage(),
+                'totalData' => $data->total(),
+                'totalPage' => $data->perPage(),
+                'currentPage' => $data->currentPage(),
+            ];
+        });
+    }
 
     public function list(Request $request)
     {
@@ -177,29 +198,19 @@ class TypeDocumentController extends Controller
 
     public function excelExport(Request $request)
     {
-        try {
+        return $this->execute(function () use ($request) {
+            $request['typeData'] = 'all';
 
-            $filter = [
-                'typeData' => 'all',
-            ];
-
-            $data = $this->typeDocumentRepository->list([
-                ...$filter,
-                ...$request->all(),
-            ]);
+            $data = $this->typeDocumentRepository->paginate($request->all());
 
             $excel = Excel::raw(new TypeDocumentListExport($data), \Maatwebsite\Excel\Excel::XLSX);
 
             $excelBase64 = base64_encode($excel);
 
-            return response()->json(['code' => 200, 'excel' => $excelBase64]);
-        } catch (Throwable $th) {
-            return response()->json([
-                'code' => 500,
-                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
-                'error' => $th->getMessage(),
-                'line' => $th->getLine(),
-            ], 500);
-        }
+            return [
+                'code' => 200,
+                'excel' => $excelBase64
+            ];
+        });
     }
 }

@@ -7,7 +7,9 @@ use App\Helpers\Constants;
 use App\Http\Requests\EmergencyElement\EmergencyElementStoreRequest;
 use App\Http\Resources\EmergencyElement\EmergencyElementFormResource;
 use App\Http\Resources\EmergencyElement\EmergencyElementListResource;
+use App\Http\Resources\EmergencyElement\EmergencyElementPaginateResource;
 use App\Repositories\EmergencyElementRepository;
+use App\Traits\HttpResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -15,9 +17,28 @@ use Throwable;
 
 class EmergencyElementController extends Controller
 {
+    use HttpResponseTrait;
+
     public function __construct(
         protected EmergencyElementRepository $emergencyElementRepository,
     ) {}
+
+    public function paginate(Request $request)
+    {
+        return $this->execute(function () use ($request) {
+            $data = $this->emergencyElementRepository->paginate($request->all());
+            $tableData = EmergencyElementPaginateResource::collection($data);
+
+            return [
+                'code' => 200,
+                'tableData' => $tableData,
+                'lastPage' => $data->lastPage(),
+                'totalData' => $data->total(),
+                'totalPage' => $data->perPage(),
+                'currentPage' => $data->currentPage(),
+            ];
+        });
+    }
 
     public function list(Request $request)
     {
@@ -178,29 +199,19 @@ class EmergencyElementController extends Controller
 
     public function excelExport(Request $request)
     {
-        try {
+        return $this->execute(function () use ($request) {
+            $request['typeData'] = 'all';
 
-            $filter = [
-                'typeData' => 'all',
-            ];
-
-            $data = $this->emergencyElementRepository->list([
-                ...$filter,
-                ...$request->all(),
-            ]);
+            $data = $this->emergencyElementRepository->paginate($request->all());
 
             $excel = Excel::raw(new EmergencyElementListExport($data), \Maatwebsite\Excel\Excel::XLSX);
 
             $excelBase64 = base64_encode($excel);
 
-            return response()->json(['code' => 200, 'excel' => $excelBase64]);
-        } catch (Throwable $th) {
-            return response()->json([
-                'code' => 500,
-                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
-                'error' => $th->getMessage(),
-                'line' => $th->getLine(),
-            ], 500);
-        }
+            return [
+                'code' => 200,
+                'excel' => $excelBase64
+            ];
+        });
     }
 }

@@ -12,6 +12,8 @@ Route::middleware(['check.permission:menu.type.document'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
+    Route::get('/type-document/paginate', [TypeDocumentController::class, 'paginate']);
+
     Route::get('/type-document/list', [TypeDocumentController::class, 'list']);
 
     Route::get('/type-document/create', [TypeDocumentController::class, 'create']);
@@ -26,6 +28,6 @@ Route::middleware(['check.permission:menu.type.document'])->group(function () {
 
     Route::post('/type-document/changeStatus', [TypeDocumentController::class, 'changeStatus']);
 
-    Route::post('/type-document/excelExport', [TypeDocumentController::class, 'excelExport']);
+    Route::get('/type-document/excelExport', [TypeDocumentController::class, 'excelExport']);
 
 });

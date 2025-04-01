@@ -8,6 +8,7 @@ use App\Http\Requests\Maintenance\MaintenanceStoreRequest;
 use App\Http\Resources\Maintenance\MaintenanceFormResource;
 use App\Http\Resources\Maintenance\MaintenanceGetVehicleDataResource;
 use App\Http\Resources\Maintenance\MaintenanceListResource;
+use App\Http\Resources\Maintenance\MaintenancePaginateResource;
 use App\Repositories\MaintenanceInputResponseRepository;
 use App\Repositories\MaintenanceRepository;
 use App\Repositories\MaintenanceTypeGroupRepository;
@@ -29,6 +30,23 @@ class MaintenanceController extends Controller
         protected VehicleRepository $vehicleRepository,
         protected QueryController $queryController,
     ) {}
+
+    public function paginate(Request $request)
+    {
+        return $this->execute(callback: function () use ($request) {
+            $data = $this->maintenanceRepository->paginate($request->all());
+            $tableData = MaintenancePaginateResource::collection($data);
+
+            return [
+                'code' => 200,
+                'tableData' => $tableData,
+                'lastPage' => $data->lastPage(),
+                'totalData' => $data->total(),
+                'totalPage' => $data->perPage(),
+                'currentPage' => $data->currentPage(),
+            ];
+        });
+    }
 
     public function list(Request $request)
     {
@@ -273,20 +291,18 @@ class MaintenanceController extends Controller
     public function excelExport(Request $request)
     {
         return $this->execute(function () use ($request) {
-            $filter = [
-                'typeData' => 'all',
-            ];
+            $request['typeData'] = 'all';
 
-            $data = $this->maintenanceRepository->list([
-                ...$filter,
-                ...$request->all(),
-            ]);
+            $data = $this->maintenanceRepository->paginate($request->all());
 
             $excel = Excel::raw(new MaintenanceListExport($data), \Maatwebsite\Excel\Excel::XLSX);
 
             $excelBase64 = base64_encode($excel);
 
-            return ['code' => 200, 'excel' => $excelBase64];
+            return [
+                'code' => 200,
+                'excel' => $excelBase64
+            ];
         });
     }
 }

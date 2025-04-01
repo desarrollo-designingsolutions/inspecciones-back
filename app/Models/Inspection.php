@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Cacheable;
 use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Inspection extends Model
 {
-    use HasUuids, Searchable, SoftDeletes;
+    use HasUuids, Searchable, SoftDeletes, Cacheable;
 
     protected $casts = [
         'order' => 'integer',
@@ -50,5 +51,17 @@ class Inspection extends Model
     public function inspectionDocumentVerifications(): HasMany
     {
         return $this->hasMany(InspectionDocumentVerification::class);
+    }
+
+    public function brand_vehicle()
+    {
+        return $this->hasOneThrough(
+            BrandVehicle::class,    // Target model
+            Vehicle::class,         // Intermediate model
+            'id',                   // Foreign key on Vehicle table
+            'id',                   // Foreign key on BrandVehicle table
+            'vehicle_id',           // Local key on Inspection table
+            'brand_vehicle_id'      // Local key on Vehicle table
+        );
     }
 }

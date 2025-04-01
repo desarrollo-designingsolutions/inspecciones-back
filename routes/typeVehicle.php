@@ -12,6 +12,8 @@ Route::middleware(['check.permission:menu.type.vehicle'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
+    Route::get('/type-vehicle/paginate', [TypeVehicleController::class, 'paginate']);
+
     Route::get('/type-vehicle/list', [TypeVehicleController::class, 'list']);
 
     Route::get('/type-vehicle/create', [TypeVehicleController::class, 'create']);
@@ -26,6 +28,6 @@ Route::middleware(['check.permission:menu.type.vehicle'])->group(function () {
 
     Route::post('/type-vehicle/changeStatus', [TypeVehicleController::class, 'changeStatus']);
 
-    Route::post('/type-vehicle/excelExport', [TypeVehicleController::class, 'excelExport']);
+    Route::get('/type-vehicle/excelExport', [TypeVehicleController::class, 'excelExport']);
 
 });

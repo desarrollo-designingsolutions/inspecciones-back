@@ -12,6 +12,8 @@ Route::middleware(['check.permission:client.list'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
+    Route::get('/client/paginate', [ClientController::class, 'paginate']);
+
     Route::get('/client/list', [ClientController::class, 'list']);
 
     Route::get('/client/create', [ClientController::class, 'create']);
@@ -26,6 +28,6 @@ Route::middleware(['check.permission:client.list'])->group(function () {
 
     Route::post('/client/changeStatus', [ClientController::class, 'changeStatus']);
 
-    Route::post('/client/excelExport', [ClientController::class, 'excelExport']);
+    Route::get('/client/excelExport', [ClientController::class, 'excelExport']);
 
 });
