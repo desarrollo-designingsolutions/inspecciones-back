@@ -111,6 +111,11 @@ class InspectionController extends Controller
             $post1 = $request->only($fields);
 
             $inspection = $this->inspectionRepository->store($post1);
+            $vehicle = $this->vehicleRepository->find($post1['vehicle_id']);
+
+            $inpectionGroupsIds = $vehicle->inspection_group_vehicle->where('inspection_type_id', $inspection->inspection_type_id)->pluck('id');
+
+            $inspection->inspection_group_inspection()->sync($inpectionGroupsIds);
 
             $post2 = $request->only(['type_documents']);
             foreach ($post2['type_documents'] as $key => $value) {
@@ -186,8 +191,25 @@ class InspectionController extends Controller
 
             $post1 = $request->only($fields);
 
+            $inspectionOld = $this->inspectionRepository->find($id);
             $inspection = $this->inspectionRepository->store($post1, $id);
 
+            
+            // return [
+            //     'inspeccion' => $inspection->vehicle_id,
+            //     'Post' => $inspectionOld->vehicle_id
+            // ];
+            
+            if($inspection->vehicle_id != $inspectionOld->vehicle_id){
+                $inspection->inspection_group_inspection()->sync([]);
+
+                $vehicle = $this->vehicleRepository->find($post1['vehicle_id']);
+    
+                $inpectionGroupsIds = $vehicle->inspection_group_vehicle->where('inspection_type_id', $inspection->inspection_type_id)->pluck('id');
+    
+                $inspection->inspection_group_inspection()->sync($inpectionGroupsIds);
+            }
+            
             $post2 = $request->only(['type_documents']);
             foreach ($post2['type_documents'] as $key => $value) {
                 InspectionDocumentVerification::updateOrCreate([
@@ -282,22 +304,46 @@ class InspectionController extends Controller
     {
         return $this->execute(function () use ($request, $vehicle_id) {
 
+            $inspection_id = $request->input('inspection_id', null);
+
             $vehicle = $this->vehicleRepository->find($vehicle_id);
             $vehicle = new InspectionGetVehicleDataResource($vehicle);
 
-            $vehicleInputs = $vehicle->inspection_group_vehicle
-                ->where('inspection_type_id', $request->input('inspection_type_id'))
-                ->pluck('id')
-                ->toArray();
+            $form = null;
 
-            if (empty($vehicleInputs)) {
+            if (empty($inspection_id)) {
+
+                $inputs = $vehicle->inspection_group_vehicle
+                    ->where('inspection_type_id', $request->input('inspection_type_id'))
+                    ->pluck('id')
+                    ->toArray();
+            } else {
+                $inspection = $this->inspectionRepository->find($inspection_id);
+
+                if ($vehicle->id == $inspection->vehicle_id) {
+
+                    $form = new InspectionFormResource($inspection);
+
+                    $inputs = $inspection->inspection_group_inspection
+                        ->where('inspection_type_id', $request->input('inspection_type_id'))
+                        ->pluck('id')
+                        ->toArray();
+                } else {
+                    $inputs = $vehicle->inspection_group_vehicle
+                        ->where('inspection_type_id', $request->input('inspection_type_id'))
+                        ->pluck('id')
+                        ->toArray();
+                }
+            }
+
+            if (empty($inputs)) {
                 $tabs = collect([]);
             } else {
                 $tabs = $this->inspectionTypeGroupRepository->list(
                     [
                         'typeData'           => 'all',
                         'inspection_type_id' => $request->input('inspection_type_id'),
-                        'ids'                => $vehicleInputs,
+                        'ids'                => $inputs,
                         'sortBy'             => json_encode([
                             [
                                 'key'   => 'order',
@@ -320,6 +366,7 @@ class InspectionController extends Controller
                 'code'    => 200,
                 'vehicle' => $vehicle,
                 'tabs'    => $tabs,
+                'form'    => $form,
             ];
         });
     }
@@ -348,7 +395,7 @@ class InspectionController extends Controller
             $inspection = $this->inspectionRepository->find($request->input('id'));
             $vehicle = $this->vehicleRepository->find($inspection->vehicle->id);
 
-            $inpectionGroupsIds = $vehicle->inspection_group_vehicle->where('inspection_type_id', $inspection->inspection_type_id)->pluck('id');
+            $inpectionGroupsIds = $inspection->inspection_group_inspection->where('inspection_type_id', $inspection->inspection_type_id)->pluck('id');
 
             $tabs = InspectionTypeGroup::select(['id', 'name'])
                 ->with([
