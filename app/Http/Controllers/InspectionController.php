@@ -459,8 +459,6 @@ class InspectionController extends Controller
                             foreach ($getResponseTypeInspection as $key => $value) {
                                 $responses[$key] = '';
 
-                                logMessage($response['response']);
-
                                 $tempResponse = json_decode($response['response'], true)['value'] ?? $response['response'];
 
                                 if ($value['value'] == $tempResponse) {
