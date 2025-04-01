@@ -1,14 +1,11 @@
 <?php
 
-use App\Http\Resources\Inspection\InspectionPDFGetVehicleDataResource;
-use App\Models\Inspection;
-use App\Models\InspectionTypeGroup;
+use App\Exports\VehicleDesignExport;
 use App\Models\MaintenanceTypeGroup;
 use App\Models\Vehicle;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
-
-use function PHPUnit\Framework\isEmpty;
+use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('/', function () {
     return view('welcome');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\VehicleDesignExport;
 use App\Exports\VehicleListExport;
 use App\Helpers\Constants;
 use App\Http\Requests\Vehicle\VehicleStoreRequest;
@@ -562,6 +563,24 @@ class VehicleController extends Controller
             return [
                 'code' => 200,
                 'path' => $path,
+            ];
+        });
+    }
+
+    public function excelReportExport(Request $request)
+    {
+        return $this->execute(function () use ($request) {
+            // $request['typeData'] = 'all';
+
+            // $data = $this->vehicleRepository->paginate($request->all());
+
+            $excel = Excel::raw(new VehicleDesignExport($request->all()), \Maatwebsite\Excel\Excel::XLSX);
+
+            $excelBase64 = base64_encode($excel);
+
+            return [
+                'code' => 200,
+                'excel' => $excelBase64
             ];
         });
     }
