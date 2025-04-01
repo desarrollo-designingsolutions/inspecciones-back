@@ -348,6 +348,8 @@ class InspectionController extends Controller
             $inspection = $this->inspectionRepository->find($request->input('id'));
             $vehicle = $this->vehicleRepository->find($inspection->vehicle->id);
 
+            $inpectionGroupsIds = $vehicle->inspection_group_vehicle->where('inspection_type_id', $inspection->inspection_type_id)->pluck('id');
+
             $tabs = InspectionTypeGroup::select(['id', 'name'])
                 ->with([
                     'inspectionTypeInputs:id,inspection_type_group_id,name',
@@ -356,7 +358,7 @@ class InspectionController extends Controller
                         $query->where('inspection_id', $inspection->id);
                     },
                 ])
-                ->where('inspection_type_id', $inspection['inspection_type_id'])->get();
+                ->whereIn('id', $inpectionGroupsIds)->get();
 
             $data = [
                 'inspection_type_id' => $inspection['inspection_type_id'],
@@ -409,6 +411,8 @@ class InspectionController extends Controller
 
                             foreach ($getResponseTypeInspection as $key => $value) {
                                 $responses[$key] = '';
+
+                                logMessage($response['response']);
 
                                 $tempResponse = json_decode($response['response'], true)['value'] ?? $response['response'];
 
