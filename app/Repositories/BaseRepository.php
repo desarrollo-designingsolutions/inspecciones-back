@@ -334,4 +334,12 @@ class BaseRepository
     {
         return get_class($this->model);
     }
+
+    public function updateOrCreate($attributes, $data)
+    {
+        return $this->model::updateOrCreate(
+            $attributes,
+            $data
+        );
+    }
 }
