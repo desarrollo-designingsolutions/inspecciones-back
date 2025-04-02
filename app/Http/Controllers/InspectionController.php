@@ -14,6 +14,7 @@ use App\Models\InspectionInputResponse;
 use App\Http\Resources\Inspection\InspectionPaginateResource;
 use App\Models\InspectionTypeGroup;
 use App\Models\User;
+use App\Models\Company;
 use App\Repositories\InspectionDocumentVerificationRepository;
 use App\Repositories\InspectionInputResponseRepository;
 use App\Repositories\InspectionRepository;
@@ -146,9 +147,9 @@ class InspectionController extends Controller
                 }
             }
 
-            $user = User::where('id', '9e2805c2-0e86-48bb-b2cf-05c3a0b1f45b')->get()->first();
+            $company = Company::where('id', $post1['company_id'])->get()->first();
 
-            $this->sendNotificationGenerateInspection($user, [
+            $this->sendNotificationGenerateInspection($company, [
                 'title' => 'Se ha creado una nueva inspección',
                 'type_inspection' => $inspection->inspectionType->name,
                 'license_plate' => $inspection->vehicle->license_plate,
@@ -492,23 +493,23 @@ class InspectionController extends Controller
         });
     }
 
-    private function sendNotificationGenerateInspection($user, $data)
+    private function sendNotificationGenerateInspection($company, $data)
     {
         // Enviar el correo usando el job de Brevo
         BrevoProcessSendEmail::dispatch(
             emailTo: [
                 [
-                    "name" => $user->company?->name,
-                    "email" => $user->company?->email,
+                    "name" => $company->name,
+                    "email" => $company->email,
                 ],
             ],
             subject: $data['title'],
             templateId: 7,  // El ID de la plantilla de Brevo que quieres usar
             params: [
-                "full_name" => $user->full_name,
+                "full_name" => $company->full_name,
                 "type_inspection" => $data['type_inspection'],
                 "license_plate" => $data['license_plate'],
-                "bussines_name" => $user->company?->name,
+                "bussines_name" => $company->name,
                 'action_url' => env("SYSTEM_URL_FRONT") . $data['action_url'],
 
             ],  // Aquí pasas los parámetros para la plantilla, por ejemplo, el texto del mensaje
