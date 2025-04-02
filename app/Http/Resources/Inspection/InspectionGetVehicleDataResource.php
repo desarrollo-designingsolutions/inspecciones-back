@@ -28,8 +28,23 @@ class InspectionGetVehicleDataResource extends JsonResource
                     'document_number' => $item->document_number,
                     'original' => $item->inspectionDocumentVerifications?->original === true ? 1 : 0,
                     'expiration_date' => Carbon::Parse($item->expiration_date)->format('d-m-Y'),
+                    'traffic_light_color' => $this->traffic_light_color($item->expiration_date),
                 ];
             }),
         ];
+    }
+
+    private function traffic_light_color($expiration_date)
+    {
+        $expirationDate = Carbon::parse($expiration_date);
+        $today = Carbon::now();
+        $daysRemaining = $today->diffInDays($expirationDate, false); // false para que considere fechas pasadas como negativas
+        if ($daysRemaining <= 5) {
+            return 'error';
+        } elseif ($daysRemaining <= 30) {
+            return 'warning';
+        } else {
+            return 'success';
+        }
     }
 }
