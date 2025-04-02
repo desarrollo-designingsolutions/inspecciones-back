@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Helpers\Constants;
+use App\Models\InspectionType;
 use App\Models\InspectionTypeGroup;
 
 class InspectionTypeGroupRepository extends BaseRepository
@@ -28,9 +29,13 @@ class InspectionTypeGroupRepository extends BaseRepository
             if (! empty($request['is_active'])) {
                 $query->where('is_active', $request['is_active']);
             }
+
+            if (!empty($request['ids'])) {
+                $query->whereIn('id', $request['ids']);
+            }
         })->where(function ($query) use ($request) {
             if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
-                $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
+                $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
             }
         });
 
@@ -49,6 +54,28 @@ class InspectionTypeGroupRepository extends BaseRepository
 
         return $data;
     }
+
+    public function typeInspectionInputs()
+{
+    $inspectionTypes = InspectionType::pluck('name', 'id');
+    $grouped = $this->model->select('id', 'inspection_type_id', 'name')->get()->groupBy('inspection_type_id');
+    
+    $transformed = $grouped->mapWithKeys(function ($items, $key) use ($inspectionTypes) {
+        $typeName = $inspectionTypes[$key];
+        return ['type_inspection_' . $key => [
+            'name' => $typeName,
+            'inputs' => $items->map(function ($model) {
+                return [
+                    'id' => $model->id,
+                    'description' => $model->name,
+                    'check_state' => false,
+                ];
+            })->all(),
+        ]];
+    });
+
+    return $transformed;
+}
 
     public function store(array $request, $id = null)
     {

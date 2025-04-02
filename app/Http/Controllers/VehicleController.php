@@ -6,11 +6,13 @@ use App\Exports\VehicleDesignExport;
 use App\Exports\VehicleListExport;
 use App\Helpers\Constants;
 use App\Http\Requests\Vehicle\VehicleStoreRequest;
+use App\Http\Resources\Vehicle\MenuCheckBoxResource;
 use App\Http\Resources\Vehicle\VehicleFormResource;
 use App\Http\Resources\Vehicle\VehicleListResource;
 use App\Http\Resources\Vehicle\VehiclePaginateResource;
 use App\Repositories\MaintenanceRepository;
 use App\Repositories\MaintenanceTypeGroupRepository;
+use App\Repositories\InspectionTypeGroupRepository;
 use App\Repositories\VehicleDocumentRepository;
 use App\Repositories\VehicleEmergencyElementRepository;
 use App\Repositories\VehicleRepository;
@@ -34,6 +36,7 @@ class VehicleController extends Controller
         protected VehicleDocumentRepository $vehicleDocumentRepository,
         protected VehicleEmergencyElementRepository $vehicleEmergencyElementRepository,
         protected MaintenanceTypeGroupRepository $maintenanceTypeGroupRepository,
+        protected InspectionTypeGroupRepository $inspectionTypeGroupRepository,
     ) {}
 
     public function paginate(Request $request)
@@ -83,10 +86,12 @@ class VehicleController extends Controller
 
             $selectStates = $this->queryController->selectStates(Constants::COUNTRY_ID);
             $vehicle_structures = $this->vehicleStructureRepository->selectList();
+            $type_inspection_inputs = $this->inspectionTypeGroupRepository->typeInspectionInputs();
 
             return response()->json([
                 'code' => 200,
                 'vehicle_structures' => $vehicle_structures,
+                'type_inspection_inputs' => $type_inspection_inputs,
                 ...$selectStates,
             ]);
         } catch (Throwable $th) {
@@ -101,6 +106,7 @@ class VehicleController extends Controller
 
     public function store(VehicleStoreRequest $request)
     {
+
         try {
             DB::beginTransaction();
 
@@ -128,6 +134,10 @@ class VehicleController extends Controller
             ];
 
             $vehicle = $this->vehicleRepository->store($post);
+
+            $type_groups = json_decode($request->input('type_groups'), 1);
+
+            $vehicle->inspection_group_vehicle()->sync($type_groups);
 
             //PHOTOS
             if ($request->file('photo_front')) {
@@ -173,6 +183,7 @@ class VehicleController extends Controller
                     'vehicle_id' => $vehicle->id,
                     'emergency_element_id' => $value['emergency_element_id']['value'],
                     'quantity' => $value['quantity'],
+                    'expiration_date' => $value['expiration_date'],
                 ];
                 $this->vehicleEmergencyElementRepository->store($dataSave);
             }
@@ -185,18 +196,18 @@ class VehicleController extends Controller
             $cantfiles = $request->input('cantfiles');
 
             for ($i = 0; $i < $cantfiles; $i++) {
-                $idFile = $request->input('file_id'.$i) == 'null' ? null : $request->input('file_id'.$i);
+                $idFile = $request->input('file_id' . $i) == 'null' ? null : $request->input('file_id' . $i);
 
                 $dataSave = [
                     'id' => $idFile,
                     'vehicle_id' => $vehicle->id,
-                    'type_document_id' => $request->input('file_type_document_id'.$i),
-                    'document_number' => $request->input('file_document_number'.$i),
-                    'date_issue' => $request->input('file_date_issue'.$i),
-                    'expiration_date' => $request->input('file_expiration_date'.$i),
+                    'type_document_id' => $request->input('file_type_document_id' . $i),
+                    'document_number' => $request->input('file_document_number' . $i),
+                    'date_issue' => $request->input('file_date_issue' . $i),
+                    'expiration_date' => $request->input('file_expiration_date' . $i),
                 ];
-                if ($request->hasFile('file_photo'.$i)) {
-                    $file = $request->file('file_photo'.$i);
+                if ($request->hasFile('file_photo' . $i)) {
+                    $file = $request->file('file_photo' . $i);
                     $company_id = $request->input('company_id');
 
                     // Define la ruta donde se guardará el archivo
@@ -231,11 +242,13 @@ class VehicleController extends Controller
             $vehicle_structures = $this->vehicleStructureRepository->selectList();
             $vehicle = $this->vehicleRepository->find($id);
             $form = new VehicleFormResource($vehicle);
+            $type_inspection_inputs = $this->inspectionTypeGroupRepository->typeInspectionInputs();
 
             return response()->json([
                 'code' => 200,
                 'form' => $form,
                 'vehicle_structures' => $vehicle_structures,
+                'type_inspection_inputs' => $type_inspection_inputs,
                 ...$selectStates,
             ]);
         } catch (Throwable $th) {
@@ -279,6 +292,10 @@ class VehicleController extends Controller
 
             $vehicle = $this->vehicleRepository->store($post);
 
+            $type_groups = json_decode($request->input('type_groups'), 1);
+
+            $vehicle->inspection_group_vehicle()->sync($type_groups);
+
             //PHOTOS
             if ($request->file('photo_front')) {
                 $file = $request->file('photo_front');
@@ -323,6 +340,7 @@ class VehicleController extends Controller
                     'vehicle_id' => $vehicle->id,
                     'emergency_element_id' => $value['emergency_element_id']['value'],
                     'quantity' => $value['quantity'],
+                    'expiration_date' => $value['expiration_date'],
                 ];
                 $this->vehicleEmergencyElementRepository->store($dataSave);
             }
@@ -335,18 +353,18 @@ class VehicleController extends Controller
             $cantfiles = $request->input('cantfiles');
 
             for ($i = 0; $i < $cantfiles; $i++) {
-                $idFile = $request->input('file_id'.$i) == 'null' ? null : $request->input('file_id'.$i);
+                $idFile = $request->input('file_id' . $i) == 'null' ? null : $request->input('file_id' . $i);
 
                 $dataSave = [
                     'id' => $idFile,
                     'vehicle_id' => $vehicle->id,
-                    'type_document_id' => $request->input('file_type_document_id'.$i),
-                    'document_number' => $request->input('file_document_number'.$i),
-                    'date_issue' => $request->input('file_date_issue'.$i),
-                    'expiration_date' => $request->input('file_expiration_date'.$i),
+                    'type_document_id' => $request->input('file_type_document_id' . $i),
+                    'document_number' => $request->input('file_document_number' . $i),
+                    'date_issue' => $request->input('file_date_issue' . $i),
+                    'expiration_date' => $request->input('file_expiration_date' . $i),
                 ];
-                if ($request->hasFile('file_photo'.$i)) {
-                    $file = $request->file('file_photo'.$i);
+                if ($request->hasFile('file_photo' . $i)) {
+                    $file = $request->file('file_photo' . $i);
                     $company_id = $request->input('company_id');
 
                     // Define la ruta donde se guardará el archivo

@@ -8,8 +8,12 @@ use App\Http\Requests\Inspection\InspectionStoreRequest;
 use App\Http\Resources\Inspection\InspectionFormResource;
 use App\Http\Resources\Inspection\InspectionGetVehicleDataResource;
 use App\Http\Resources\Inspection\InspectionListResource;
+use App\Jobs\BrevoProcessSendEmail;
+use App\Models\InspectionDocumentVerification;
+use App\Models\InspectionInputResponse;
 use App\Http\Resources\Inspection\InspectionPaginateResource;
 use App\Models\InspectionTypeGroup;
+use App\Models\User;
 use App\Repositories\InspectionDocumentVerificationRepository;
 use App\Repositories\InspectionInputResponseRepository;
 use App\Repositories\InspectionRepository;
@@ -33,8 +37,7 @@ class InspectionController extends Controller
         protected VehicleRepository $vehicleRepository,
         protected InspectionDocumentVerificationRepository $inspectionDocumentVerificationRepository,
         protected QueryController $queryController,
-    ) {
-    }
+    ) {}
 
     public function paginate(Request $request)
     {
@@ -78,11 +81,25 @@ class InspectionController extends Controller
     {
         return $this->execute(function () use ($inspection_type_id) {
 
-            $data = $this->loadTabs($inspection_type_id);
+            $tabs = collect([[
+                'id' => 0,
+                'name' => 'Información General',
+                'show' => true,
+                'errorsValidations' => false,
+                'order' => 0,
+            ]]);
+
+            $selectStates = $this->queryController->selectStates(Constants::COUNTRY_ID);
+
+            $responseDocument = getResponseDocument();
+            $responseVehicle = getResponseTypeInspection($inspection_type_id);
 
             return [
                 'code' => 200,
-                ...$data,
+                'tabs' => $tabs,
+                'responseDocument' => $responseDocument,
+                'responseVehicle' => $responseVehicle,
+                ...$selectStates,
             ];
         });
     }
@@ -96,31 +113,48 @@ class InspectionController extends Controller
             $post1 = $request->only($fields);
 
             $inspection = $this->inspectionRepository->store($post1);
+            $vehicle = $this->vehicleRepository->find($post1['vehicle_id']);
+
+            $inpectionGroupsIds = $vehicle->inspection_group_vehicle->where('inspection_type_id', $inspection->inspection_type_id)->pluck('id');
+
+            $inspection->inspection_group_inspection()->sync($inpectionGroupsIds);
 
             $post2 = $request->only(['type_documents']);
             foreach ($post2['type_documents'] as $key => $value) {
-                $this->inspectionDocumentVerificationRepository->updateOrCreate([
+                InspectionDocumentVerification::updateOrCreate([
                     'inspection_id' => $inspection->id,
                     'vehicle_document_id' => $value['id'],
                 ], [
-                    'original' => $value['response'],
+                    'original' => $value['original'],
                 ]);
             }
             $post3 = $request->except([...$fields, ...['type_documents']]);
 
             foreach ($post3 as $key => $value) {
-                $this->inspectionInputResponseRepository->updateOrCreate(
-                    [
-                        'inspection_id' => $inspection->id,
-                        'inspection_type_input_id' => $key,
-                    ],
-                    [
-                        'user_inspector_id' => $post1['user_inspector_id'],
-                        'response' => $value['value'],
-                        'observation' => $value['observation'],
-                    ]
-                );
+                if ($value != null) {
+                    InspectionInputResponse::updateOrCreate(
+                        [
+                            'inspection_id' => $inspection->id,
+                            'inspection_type_input_id' => $key,
+                        ],
+                        [
+                            'user_inspector_id' => $post1['user_inspector_id'],
+                            'response' => $value['value'] != null ? $value['value'] : '',
+                            'observation' => isset($value['observation']) ? $value['observation'] : '',
+                        ]
+                    );
+                }
             }
+
+            $user = User::where('id', '9e2805c2-0e86-48bb-b2cf-05c3a0b1f45b')->get()->first();
+
+            $this->sendNotificationGenerateInspection($user, [
+                'title' => 'Se ha creado una nueva inspección',
+                'type_inspection' => $inspection->inspectionType->name,
+                'license_plate' => $inspection->vehicle->license_plate,
+                'action_url' => 'Inspection/Inspection-form/'.$inspection->inspection_type_id.'/edit/'.$inspection->id,
+            ]);
+
             return [
                 'code' => 200,
                 'message' => 'Inspección agregado correctamente',
@@ -133,16 +167,30 @@ class InspectionController extends Controller
     {
         return $this->execute(function () use ($id) {
 
+            $tabs = collect([[
+                'id' => 0,
+                'name' => 'Información General',
+                'show' => true,
+                'errorsValidations' => false,
+                'order' => 0,
+            ]]);
+
             $inspection = $this->inspectionRepository->find($id);
 
             $form = new InspectionFormResource($inspection);
 
-            $data = $this->loadTabs($inspection->inspection_type_id);
+            $selectStates = $this->queryController->selectStates(Constants::COUNTRY_ID);
+
+            $responseDocument = getResponseDocument();
+            $responseVehicle = getResponseTypeInspection($inspection->inspection_type_id);
 
             return [
                 'code' => 200,
+                'tabs' => $tabs,
                 'form' => $form,
-                ...$data,
+                'responseDocument' => $responseDocument,
+                'responseVehicle' => $responseVehicle,
+                ...$selectStates,
             ];
         });
     }
@@ -155,31 +203,44 @@ class InspectionController extends Controller
 
             $post1 = $request->only($fields);
 
+            $inspectionOld = $this->inspectionRepository->find($id);
             $inspection = $this->inspectionRepository->store($post1, $id);
+            
+            if($inspection->vehicle_id != $inspectionOld->vehicle_id){
+                $inspection->inspection_group_inspection()->sync([]);
 
+                $vehicle = $this->vehicleRepository->find($post1['vehicle_id']);
+    
+                $inpectionGroupsIds = $vehicle->inspection_group_vehicle->where('inspection_type_id', $inspection->inspection_type_id)->pluck('id');
+    
+                $inspection->inspection_group_inspection()->sync($inpectionGroupsIds);
+            }
+            
             $post2 = $request->only(['type_documents']);
             foreach ($post2['type_documents'] as $key => $value) {
-                $this->inspectionDocumentVerificationRepository->updateOrCreate([
+                InspectionDocumentVerification::updateOrCreate([
                     'inspection_id' => $inspection->id,
                     'vehicle_document_id' => $value['id'],
                 ], [
-                    'original' => $value['response'],
+                    'original' => $value['original'],
                 ]);
             }
             $post3 = $request->except([...$fields, ...['type_documents']]);
 
             foreach ($post3 as $key => $value) {
-
-                $this->inspectionInputResponseRepository->updateOrCreate(
-                    [
-                        'inspection_id' => $inspection->id,
-                        'inspection_type_input_id' => $key,
-                    ],
-                    [
-                        'user_inspector_id' => $post1['user_inspector_id'],
-                        'response' => $value,
-                    ]
-                );
+                if ($value != null) {
+                    InspectionInputResponse::updateOrCreate(
+                        [
+                            'inspection_id' => $inspection->id,
+                            'inspection_type_input_id' => $key,
+                        ],
+                        [
+                            'user_inspector_id' => $post1['user_inspector_id'],
+                            'response' => $value['value'] != null ? $value['value'] : '',
+                            'observation' => isset($value['observation']) ? $value['observation'] : '',
+                        ]
+                    );
+                }
             }
 
             return [
@@ -205,8 +266,7 @@ class InspectionController extends Controller
             return [
                 'code' => 200,
                 'message' => $msg,
-            ]
-            ;
+            ];
         });
     }
 
@@ -246,67 +306,73 @@ class InspectionController extends Controller
         });
     }
 
-    public function loadTabs($inspection_type_id)
+    public function getVehicleInfo(Request $request, $vehicle_id)
     {
+        return $this->execute(function () use ($request, $vehicle_id) {
 
-        $tabs = $this->inspectionTypeGroupRepository->list(
-            [
-                'typeData' => 'all',
-                'inspection_type_id' => $inspection_type_id,
-                'sortBy' => json_encode([
-                    [
-                        'key' => 'order',
-                        'order' => 'asc',
-                    ],
-                ]),
-            ],
-            with: ['inspectionTypeInputs'],
-            select: ['id', 'name']
-        );
-        $order = 1;
-
-        foreach ($tabs as $key => $value) {
-            $value['show'] = true;
-            $value['errorsValidations'] = false;
-            $value['order'] = $order;
-            $order++;
-        }
-
-        $tabs = collect($tabs);
-
-        // Usar prepend() para agregar al inicio
-        $tabs->prepend([
-            'id' => 0,
-            'name' => 'Información General',
-            'show' => true,
-            'errorsValidations' => false,
-            'order' => 0,
-        ]);
-
-        $selectStates = $this->queryController->selectStates(Constants::COUNTRY_ID);
-
-        $responseDocument = getResponseDocument();
-        $responseVehicle = getResponseTypeInspection($inspection_type_id);
-
-        return [
-            'tabs' => $tabs,
-            'responseDocument' => $responseDocument,
-            'responseVehicle' => $responseVehicle,
-            ...$selectStates,
-        ];
-    }
-
-    public function getVehicleInfo($vehicle_id)
-    {
-        return $this->execute(function () use ($vehicle_id) {
+            $inspection_id = $request->input('inspection_id', null);
 
             $vehicle = $this->vehicleRepository->find($vehicle_id);
-
             $vehicle = new InspectionGetVehicleDataResource($vehicle);
 
+            $form = null;
+
+            if (empty($inspection_id)) {
+
+                $inputs = $vehicle->inspection_group_vehicle
+                    ->where('inspection_type_id', $request->input('inspection_type_id'))
+                    ->pluck('id')
+                    ->toArray();
+            } else {
+                $inspection = $this->inspectionRepository->find($inspection_id);
+
+                if ($vehicle->id == $inspection->vehicle_id) {
+
+                    $form = new InspectionFormResource($inspection);
+
+                    $inputs = $inspection->inspection_group_inspection
+                        ->where('inspection_type_id', $request->input('inspection_type_id'))
+                        ->pluck('id')
+                        ->toArray();
+                } else {
+                    $inputs = $vehicle->inspection_group_vehicle
+                        ->where('inspection_type_id', $request->input('inspection_type_id'))
+                        ->pluck('id')
+                        ->toArray();
+                }
+            }
+
+            if (empty($inputs)) {
+                $tabs = collect([]);
+            } else {
+                $tabs = $this->inspectionTypeGroupRepository->list(
+                    [
+                        'typeData'           => 'all',
+                        'inspection_type_id' => $request->input('inspection_type_id'),
+                        'ids'                => $inputs,
+                        'sortBy'             => json_encode([
+                            [
+                                'key'   => 'order',
+                                'order' => 'asc',
+                            ],
+                        ]),
+                    ],
+                    with: ['inspectionTypeInputs'],
+                    select: ['id', 'name', 'order']
+                );
+
+                $newOrder = 1;
+                foreach ($tabs as $tab) {
+                    $tab->order = $newOrder;
+                    $newOrder++;
+                }
+            }
+
             return [
-                'code' => 200,
+                'code'    => 200,
                 'vehicle' => $vehicle,
+                'tabs'    => $tabs,
+                'form'    => $form,
             ];
         });
     }
@@ -335,6 +401,8 @@ class InspectionController extends Controller
             $inspection = $this->inspectionRepository->find($request->input('id'));
             $vehicle = $this->vehicleRepository->find($inspection->vehicle->id);
 
+            $inpectionGroupsIds = $inspection->inspection_group_inspection->where('inspection_type_id', $inspection->inspection_type_id)->pluck('id');
+
             $tabs = InspectionTypeGroup::select(['id', 'name'])
                 ->with([
                     'inspectionTypeInputs:id,inspection_type_group_id,name',
@@ -343,7 +411,7 @@ class InspectionController extends Controller
                         $query->where('inspection_id', $inspection->id);
                     },
                 ])
-                ->where('inspection_type_id', $inspection['inspection_type_id'])->get();
+                ->whereIn('id', $inpectionGroupsIds)->get();
 
             $data = [
                 'inspection_type_id' => $inspection['inspection_type_id'],
@@ -422,5 +490,28 @@ class InspectionController extends Controller
                 'pdf' => $pdfBase64
             ];
         });
+    }
+
+    private function sendNotificationGenerateInspection($user, $data)
+    {
+        // Enviar el correo usando el job de Brevo
+        BrevoProcessSendEmail::dispatch(
+            emailTo: [
+                [
+                    "name" => $user->company?->name,
+                    "email" => $user->company?->email,
+                ],
+            ],
+            subject: $data['title'],
+            templateId: 7,  // El ID de la plantilla de Brevo que quieres usar
+            params: [
+                "full_name" => $user->full_name,
+                "type_inspection" => $data['type_inspection'],
+                "license_plate" => $data['license_plate'],
+                "bussines_name" => $user->company?->name,
+                'action_url' => env("SYSTEM_URL_FRONT") . $data['action_url'],
+
+            ],  // Aquí pasas los parámetros para la plantilla, por ejemplo, el texto del mensaje
+        );
     }
 }

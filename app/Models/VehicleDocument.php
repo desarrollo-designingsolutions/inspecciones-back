@@ -14,6 +14,11 @@ class VehicleDocument extends Model
 
     public function type_document()
     {
-        return $this->hasOne(TypeDocument::class, 'id', 'type_document_id');
+        return $this->belongsTo(TypeDocument::class, 'type_document_id', 'id');
+    }
+
+    public function inspectionDocumentVerifications()
+    {
+        return $this->belongsTo(InspectionDocumentVerification::class, 'id', 'vehicle_document_id');
     }
 }

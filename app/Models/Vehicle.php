@@ -76,4 +76,9 @@ class Vehicle extends Model
     {
         return $this->hasMany(Maintenance::class, 'vehicle_id', 'id');
     }
+
+    public function inspection_group_vehicle()
+    {
+        return $this->belongsToMany(InspectionTypeGroup::class, 'inspection_group_vehicles', 'vehicle_id', 'inspection_type_group_id');
+    }
 }

@@ -22,7 +22,8 @@ class VehicleFormResource extends JsonResource
 
         $type_documents = null;
 
-        if($this->type_documents){
+        
+        if ($this->type_documents) {
             $type_documents = $this->type_documents->map(function ($item) {
                 return [
                     'id' => $item->id,
@@ -35,10 +36,13 @@ class VehicleFormResource extends JsonResource
             });
         }
 
+        
         $emergenct_elements = null;
 
-        if($this->emergency_elements){
+
+        if ($this->emergency_elements) {
             $emergenct_elements = $this->emergency_elements->map(function ($item) {
+
                 return [
                     'id' => $item->id,
                     'vehicle_id' => $item->vehicle_id,
@@ -48,6 +52,16 @@ class VehicleFormResource extends JsonResource
                 ];
             });
         }
+
+        
+        $inspection_group_vehicle = [];
+
+        if ($this->inspection_group_vehicle->isNotEmpty()) {
+            $inspection_group_vehicle = $this->inspection_group_vehicle->map(function ($item) {
+                return $item->id;
+            });
+        }
+
 
 
         return [
@@ -77,6 +91,7 @@ class VehicleFormResource extends JsonResource
             'photo_left_side' => $this->photo_left_side,
             'type_documents' => $type_documents,
             'emergency_elements' => $emergenct_elements,
+            'type_groups' => $inspection_group_vehicle,
 
         ];
     }

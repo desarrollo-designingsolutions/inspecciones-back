@@ -32,5 +32,5 @@ Route::middleware(['check.permission:maintenance.list'])->group(function () {
 
     Route::post('/maintenance/changeStatus', [MaintenanceController::class, 'changeStatus']);
 
-    Route::post('/maintenance/excelExport', [MaintenanceController::class, 'excelExport']);
+    Route::get('/maintenance/excelExport', [MaintenanceController::class, 'excelExport']);
 });

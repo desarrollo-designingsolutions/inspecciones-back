@@ -64,4 +64,9 @@ class Inspection extends Model
             'brand_vehicle_id'      // Local key on Vehicle table
         );
     }
+
+    public function inspection_group_inspection()
+    {
+        return $this->belongsToMany(InspectionTypeGroup::class, 'inspection_group_inspections', 'inspection_id', 'inspection_type_group_id');
+    }
 }
