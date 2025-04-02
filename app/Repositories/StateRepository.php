@@ -18,7 +18,7 @@ class StateRepository extends BaseRepository
             ->with($with)
             ->where(function ($query) use ($request, $idsAllowed) {
                 if (! empty($request['name'])) {
-                    $query->where('id', 'like', '%'.$request['name'].'%');
+                    $query->where('id', 'like', '%' . $request['name'] . '%');
                 }
                 if (count($idsAllowed) > 0) {
                     $query->whereIn('id', $idsAllowed);
@@ -29,7 +29,7 @@ class StateRepository extends BaseRepository
             })
             ->where(function ($query) use ($request) {
                 if (! empty($request['searchQueryInfinite'])) {
-                    $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
+                    $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
                 }
             });
         if (empty($request['typeData'])) {
@@ -43,11 +43,15 @@ class StateRepository extends BaseRepository
 
     public function selectList($country_id)
     {
-        return $this->model->where('country_id', $country_id)->get()->map(function ($value) {
-            return [
-                'value' => $value->id,
-                'title' => $value->name,
-            ];
-        });
+        return $this->model
+            ->where('country_id', $country_id)
+            ->orderBy('name', 'asc')
+            ->get()
+            ->map(function ($value) {
+                return [
+                    'value' => $value->id,
+                    'title' => $value->name,
+                ];
+            });
     }
 }
