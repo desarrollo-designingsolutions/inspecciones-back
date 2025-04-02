@@ -17,6 +17,7 @@ use App\Repositories\CityRepository;
 use App\Repositories\ClientRepository;
 use App\Repositories\CountryRepository;
 use App\Repositories\EmergencyElementRepository;
+use App\Repositories\InspectionTypeRepository;
 use App\Repositories\StateRepository;
 use App\Repositories\TypeDocumentRepository;
 use App\Repositories\TypeVehicleRepository;
@@ -38,6 +39,7 @@ class QueryController extends Controller
         protected TypeDocumentRepository $typeDocumentRepository,
         protected EmergencyElementRepository $emergencyElementRepository,
         protected VehicleRepository $vehicleRepository,
+        protected InspectionTypeRepository $inspectionTypeRepository,
     ) {}
 
     public function selectInfiniteCountries(Request $request)
@@ -212,6 +214,17 @@ class QueryController extends Controller
             'code' => 200,
             'status_arrayInfo' => getResponseStatus(),
             'status_countLinks' => getResponseStatus(),
+        ];
+    }
+
+    public function selectInspectionType(Request $request)
+    {
+        $inspectionType = $this->inspectionTypeRepository->selectList($request->all());
+
+        return [
+            'code' => 200,
+            'inspectionType_arrayInfo' => $inspectionType,
+            'inspectionType_countLinks' => 1,
         ];
     }
 }
