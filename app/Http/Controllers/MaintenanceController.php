@@ -124,7 +124,6 @@ class MaintenanceController extends Controller
 
             $data = $this->loadTabs($maintenance->maintenance_type_id);
 
-
             return [
                 'code' => 200,
                 'form' => $form,

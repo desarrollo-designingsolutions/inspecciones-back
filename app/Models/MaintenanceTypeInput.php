@@ -27,4 +27,9 @@ class MaintenanceTypeInput extends Model
     {
         return $this->hasMany(MaintenanceTypeInputResponse::class);
     }
+
+    public function inspection_group_vehicle()
+    {
+        return $this->belongsToMany(Vehicle::class, 'inspection_group_vehicles', 'inspection_type_input_id', 'vehicle_id');
+    }
 }
