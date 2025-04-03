@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\InspectionListExport;
+use App\Exports\VehicleDesignExport;
 use App\Helpers\Constants;
 use App\Http\Requests\Inspection\InspectionStoreRequest;
 use App\Http\Resources\Inspection\InspectionFormResource;
@@ -11,6 +12,7 @@ use App\Http\Resources\Inspection\InspectionListResource;
 use App\Http\Resources\Inspection\InspectionPaginateResource;
 use App\Jobs\BrevoProcessSendEmail;
 use App\Models\Company;
+use App\Models\Inspection;
 use App\Models\InspectionDocumentVerification;
 use App\Models\InspectionInputResponse;
 use App\Models\InspectionTypeGroup;
@@ -657,5 +659,73 @@ class InspectionController extends Controller
             'title' => $result,
             'color' => $color,
         ];
+    }
+
+    public function excelReportExport(Request $request)
+    {
+        return $this->execute(function () use ($request) {
+            $post = $request->all();
+
+            $inspection = Inspection::with([
+                'inspection_group_inspection.inspectionTypeInputs.inspectionInputResponses.inspection',
+            ])->where(function ($query) use ($post) {
+                $query->whereMonth('inspection_date', $post['month']);
+                $query->whereYear('inspection_date', $post['year']);
+                $query->where('inspection_type_id', $post['inspectionType_id']);
+                $query->where('company_id', $post['company_id']);
+                $query->where('vehicle_id', $post['vehicle_id']);
+            })->get();
+
+            if($inspection->isEmpty()) {
+                return [
+                    'code' => 404,
+                    'message' => 'No se encontraron inspecciones filtro seleccionados.',
+                ];
+
+            }
+
+            $data = collect($inspection)->map(function ($item) {
+                return [
+                    'inspection_group_inspection' => $item->inspection_group_inspection->groupBy('id')->map(function ($groupTabs) {
+                        $tab = $groupTabs->first(); // Tomamos el primer elemento como base
+
+                        return [
+                            'name' => $tab->name,
+                            'inspection_type_inputs' => $tab->inspectionTypeInputs->map(function ($input) use ($groupTabs) {
+                                // Unificar todas las inspection_input_responses de este input en todas las inspecciones
+                                $allResponses = $groupTabs->flatMap(function ($tab) use ($input) {
+                                    return $tab->inspectionTypeInputs->where('id', $input->id)->first()->inspectionInputResponses;
+                                })->map(function ($response) {
+                                    // Obtener la fecha de la inspección asociada a esta respuesta
+                                    $inspectionDate = $response->inspection->inspection_date;
+                                    $day = Carbon::create($inspectionDate)->format('d');
+
+                                    return [
+                                        'response' => $response->response,
+                                        'observation' => $response->observation,
+                                        'day' => intval($day),
+                                    ];
+                                })->all();
+
+                                return [
+                                    'name' => $input->name,
+                                    'inspection_input_responses' => $allResponses,
+                                ];
+                            })->values()->all(),
+                        ];
+                    })->values()->all(),
+                ];
+            })->first();
+
+            $excel = Excel::raw(new VehicleDesignExport($request->all(), $data), \Maatwebsite\Excel\Excel::XLSX);
+
+            $excelBase64 = base64_encode($excel);
+
+            return [
+                'code' => 200,
+                'excel' => $excelBase64,
+                'inspection' => $data,
+            ];
+        });
     }
 }

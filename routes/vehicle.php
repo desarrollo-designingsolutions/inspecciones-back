@@ -34,6 +34,5 @@ Route::middleware(['check.permission:vehicle.list'])->group(function () {
 
     Route::post('/vehicle/pdfExport', [VehicleController::class, 'pdfExport']);
 
-    Route::post('/vehicle/excelReportExport', [VehicleController::class, 'excelReportExport']);
 
 });

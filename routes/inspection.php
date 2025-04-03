@@ -37,4 +37,7 @@ Route::middleware(['check.permission:inspection.list'])->group(function () {
     Route::post('/inspection/pdfExport', [InspectionController::class, 'pdfExport']);
 
     Route::get('/inspection/showReportInfo/{id}', [InspectionController::class, 'showReportInfo']);
+
+    Route::post('/inspection/excelReportExport', [InspectionController::class, 'excelReportExport']);
+
 });
