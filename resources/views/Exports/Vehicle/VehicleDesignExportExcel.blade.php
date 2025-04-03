@@ -48,7 +48,7 @@
                     Código:
                 </th>
                 <th colspan="10" style="text-align: center;">
-                    Fecha: {{ $inspections['inspection_details'][0]['inspection_date'] ?? '' }}
+                    Fecha: 
                 </th>
                 <th colspan="10" style="text-align: center;">
                     Versión:
@@ -60,7 +60,7 @@
 
             <tr>
                 <th colspan="5">
-                    No. Identificación: {{ $inspections['inspection_details'][0]['id'] ?? '' }}
+                    No. Identificación:
                 </th>
                 <th colspan="10">
                     Tipo de Manguera:
@@ -140,7 +140,6 @@
             <tr>
                 <th colspan="36">
                     OBSERVACIONES:
-                    {{ implode(', ', array_column($inspections['inspection_details'], 'general_comment')) }}
                 </th>
             </tr>
         </thead>
