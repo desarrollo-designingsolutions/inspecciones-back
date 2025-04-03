@@ -20,3 +20,4 @@ Route::post('/selectInfiniteUserOperator', [QueryController::class, 'selectInfin
 Route::post('/selectInfiniteUserMechanic', [QueryController::class, 'selectInfiniteUserMechanic']);
 Route::post('/selectInfiniteUserInspector', [QueryController::class, 'selectInfiniteUserInspector']);
 Route::post('/selectResponseStatus', [QueryController::class, 'selectResponseStatus']);
+Route::post('/selectInspectionType', [QueryController::class, 'selectInspectionType']);

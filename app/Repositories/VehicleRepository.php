@@ -64,11 +64,11 @@ class VehicleRepository extends BaseRepository
                     AllowedSort::custom('type_vehicle_name', new RelatedTableSort('vehicles', 'type_vehicles', 'name', 'type_vehicle_id')),
                     AllowedSort::custom('city_name', new RelatedTableSort('vehicles', 'cities', 'name', 'city_id')),
                     AllowedSort::custom('is_active', new IsActiveSort),
-            ])->where(function ($query) use ($request) {
-                if (! empty($request['company_id'])) {
-                    $query->where('vehicles.company_id', $request['company_id']);
-                }
-            })
+                ])->where(function ($query) use ($request) {
+                    if (! empty($request['company_id'])) {
+                        $query->where('vehicles.company_id', $request['company_id']);
+                    }
+                })
                 ->paginate(request()->perPage ?? Constants::ITEMS_PER_PAGE);
 
             return $query;

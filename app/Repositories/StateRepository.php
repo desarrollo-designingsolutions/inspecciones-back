@@ -18,7 +18,7 @@ class StateRepository extends BaseRepository
             ->with($with)
             ->where(function ($query) use ($request, $idsAllowed) {
                 if (! empty($request['name'])) {
-                    $query->where('id', 'like', '%' . $request['name'] . '%');
+                    $query->where('id', 'like', '%'.$request['name'].'%');
                 }
                 if (count($idsAllowed) > 0) {
                     $query->whereIn('id', $idsAllowed);
@@ -29,7 +29,7 @@ class StateRepository extends BaseRepository
             })
             ->where(function ($query) use ($request) {
                 if (! empty($request['searchQueryInfinite'])) {
-                    $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
+                    $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
                 }
             });
         if (empty($request['typeData'])) {

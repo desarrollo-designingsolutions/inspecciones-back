@@ -10,11 +10,10 @@ use App\Http\Resources\Inspection\InspectionGetVehicleDataResource;
 use App\Http\Resources\Inspection\InspectionListResource;
 use App\Http\Resources\Inspection\InspectionPaginateResource;
 use App\Jobs\BrevoProcessSendEmail;
+use App\Models\Company;
 use App\Models\InspectionDocumentVerification;
 use App\Models\InspectionInputResponse;
 use App\Models\InspectionTypeGroup;
-use App\Models\User;
-use App\Models\Company;
 use App\Repositories\InspectionDocumentVerificationRepository;
 use App\Repositories\InspectionInputResponseRepository;
 use App\Repositories\InspectionRepository;
@@ -153,7 +152,7 @@ class InspectionController extends Controller
                 'title' => 'Se ha creado una nueva inspección',
                 'type_inspection' => $inspection->inspectionType->name,
                 'license_plate' => $inspection->vehicle->license_plate,
-                'action_url' => 'Inspection/Inspection-form/' . $inspection->inspection_type_id . '/edit/' . $inspection->id,
+                'action_url' => 'Inspection/Inspection-form/'.$inspection->inspection_type_id.'/edit/'.$inspection->id,
             ]);
 
             return [
@@ -501,18 +500,18 @@ class InspectionController extends Controller
         BrevoProcessSendEmail::dispatch(
             emailTo: [
                 [
-                    "name" => $company->name,
-                    "email" => $company->email,
+                    'name' => $company->name,
+                    'email' => $company->email,
                 ],
             ],
             subject: $data['title'],
             templateId: 7,  // El ID de la plantilla de Brevo que quieres usar
             params: [
-                "full_name" => $company->full_name,
-                "type_inspection" => $data['type_inspection'],
-                "license_plate" => $data['license_plate'],
-                "bussines_name" => $company->name,
-                'action_url' => env("SYSTEM_URL_FRONT") . $data['action_url'],
+                'full_name' => $company->full_name,
+                'type_inspection' => $data['type_inspection'],
+                'license_plate' => $data['license_plate'],
+                'bussines_name' => $company->name,
+                'action_url' => env('SYSTEM_URL_FRONT').$data['action_url'],
 
             ],  // Aquí pasas los parámetros para la plantilla, por ejemplo, el texto del mensaje
         );
@@ -534,12 +533,12 @@ class InspectionController extends Controller
             } else {
                 $tabs = $this->inspectionTypeGroupRepository->list(
                     [
-                        'typeData'           => 'all',
+                        'typeData' => 'all',
                         'inspection_type_id' => $inspection->inspection_type_id,
-                        'ids'                => $inputs,
-                        'sortBy'             => json_encode([
+                        'ids' => $inputs,
+                        'sortBy' => json_encode([
                             [
-                                'key'   => 'order',
+                                'key' => 'order',
                                 'order' => 'asc',
                             ],
                         ]),
@@ -559,7 +558,7 @@ class InspectionController extends Controller
             foreach ($tabs as $tab) {
                 $group = [
                     'tab_name' => $tab->name,
-                    'inputs'   => []
+                    'inputs' => [],
                 ];
                 if (isset($tab['inspectionTypeInputs']) && count($tab['inspectionTypeInputs']) > 0) {
                     foreach ($tab['inspectionTypeInputs'] as $input) {
@@ -586,7 +585,7 @@ class InspectionController extends Controller
                         } else {
                             $include = true; // Por defecto, si se requiere otro comportamiento
                         }
-                        if (!$include) {
+                        if (! $include) {
                             continue;
                         }
 
@@ -594,8 +593,8 @@ class InspectionController extends Controller
                         $translatedValue = $this->translateInspectionResponse($rawValue, $inspection->inspection_type_id);
 
                         $group['inputs'][] = [
-                            'input_name'  => $input['name'],
-                            'value'       => $translatedValue,
+                            'input_name' => $input['name'],
+                            'value' => $translatedValue,
                         ];
                     }
                 }
@@ -608,7 +607,7 @@ class InspectionController extends Controller
             if ($expiredDocuments->isNotEmpty()) {
                 $documentsTab = [
                     'tab_name' => 'Documentos',
-                    'inputs'   => []
+                    'inputs' => [],
                 ];
 
                 foreach ($expiredDocuments as $document) {
@@ -619,8 +618,8 @@ class InspectionController extends Controller
                     ];
 
                     $documentsTab['inputs'][] = [
-                        'input_name'  => $document->type_document->name,
-                        'value'       => $expiration,
+                        'input_name' => $document->type_document->name,
+                        'value' => $expiration,
                     ];
                 }
 
@@ -629,11 +628,10 @@ class InspectionController extends Controller
 
             return [
                 'code' => 200,
-                'info' => $info
+                'info' => $info,
             ];
         });
     }
-
 
     private function translateInspectionResponse($value, $inspectionTypeId)
     {
@@ -657,7 +655,7 @@ class InspectionController extends Controller
 
         return [
             'title' => $result,
-            'color' => $color
+            'color' => $color,
         ];
     }
 }
