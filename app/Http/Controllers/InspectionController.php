@@ -697,7 +697,7 @@ class InspectionController extends Controller
                                     return $tab->inspectionTypeInputs->where('id', $input->id)->first()->inspectionInputResponses;
                                 })->map(function ($response) {
                                     // Obtener la fecha de la inspección asociada a esta respuesta
-                                    $inspectionDate = $response->inspection->inspection_date;
+                                    $inspectionDate = $response->inspection?->inspection_date;
                                     $day = Carbon::create($inspectionDate)->format('d');
 
                                     return [
