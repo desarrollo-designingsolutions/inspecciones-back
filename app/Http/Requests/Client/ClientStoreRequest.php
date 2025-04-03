@@ -27,7 +27,7 @@ class ClientStoreRequest extends FormRequest
                     ->ignore($this->id) // Ignorar el ID actual si es una actualización
                     ->where(function ($query) {
                         $query->where('company_id', $this->company_id) // Filtrar por empresa
-                              ->whereNull('deleted_at'); // Excluir registros eliminados
+                            ->whereNull('deleted_at'); // Excluir registros eliminados
                     }),
             ],
         ];

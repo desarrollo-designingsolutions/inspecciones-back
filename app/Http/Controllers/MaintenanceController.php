@@ -283,7 +283,7 @@ class MaintenanceController extends Controller
 
             ($model->is_active == 1) ? $msg = 'habilitado(a)' : $msg = 'inhabilitado(a)';
 
-            return ['code' => 200, 'message' => 'Vehículo ' . $msg . ' con éxito'];
+            return ['code' => 200, 'message' => 'Vehículo '.$msg.' con éxito'];
         });
     }
 
@@ -300,7 +300,7 @@ class MaintenanceController extends Controller
 
             return [
                 'code' => 200,
-                'excel' => $excelBase64
+                'excel' => $excelBase64,
             ];
         });
     }

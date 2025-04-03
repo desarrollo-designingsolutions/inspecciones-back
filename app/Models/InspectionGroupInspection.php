@@ -7,6 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class InspectionGroupInspection extends Model
 {
-    use  Cacheable;
-
+    use Cacheable;
 }

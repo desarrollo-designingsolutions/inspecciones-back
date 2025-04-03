@@ -44,7 +44,7 @@ class QueryFilters
             $month = str_pad($parts[1], 2, '0', STR_PAD_LEFT); // Mes: "01"
             $yearPart = $parts[2]; // Parte del año: "2025", "2", "20", "202"
 
-            if (strlen($yearPart) === 4 && !empty($yearPart)) {
+            if (strlen($yearPart) === 4 && ! empty($yearPart)) {
                 // Subcaso 1.1: Año completo (d-m-Y)
                 try {
                     $date = Carbon::createFromFormat('d-m-Y', $cleanValue);
@@ -58,7 +58,7 @@ class QueryFilters
             }
 
             // Subcaso 1.2: Año parcial (ej: "01-01-2", "01-01-20", "01-01-202")
-            if (!empty($yearPart)) {
+            if (! empty($yearPart)) {
                 $formattedPartial = "$yearPart%-$month-$day"; // Ej: "2%-01-01", "20%-01-01", "202%-01-01"
                 $query->orWhere($field, 'like', "%$formattedPartial%");
 
@@ -66,10 +66,10 @@ class QueryFilters
             }
         }
 
-        if (count($parts) >= 2 && !empty($parts[0])) {
+        if (count($parts) >= 2 && ! empty($parts[0])) {
             // Caso 2: Fecha parcial (d-m completo o incompleto, ej: "01-01" o "01-0")
             $day = str_pad($parts[0], 2, '0', STR_PAD_LEFT); // Día: "01"
-            $monthPart = !empty($parts[1]) ? $parts[1] : ''; // Parte del mes: "01" o "0"
+            $monthPart = ! empty($parts[1]) ? $parts[1] : ''; // Parte del mes: "01" o "0"
 
             // Construir el patrón ajustado al formato Y-m-d
             if ($monthPart) {
@@ -94,14 +94,14 @@ class QueryFilters
      * Si se encuentra una coincidencia, aplica un filtro al campo especificado en la consulta.
      * Si no hay coincidencia, realiza una búsqueda directa con LIKE en el campo.
      *
-     * @param  mixed  $query         El objeto de consulta (Builder) sobre el que se aplicará el filtro.
-     * @param  mixed  $value         El valor ingresado por el usuario para buscar (e.g., "Asignado", "comp").
-     * @param  string $field         El nombre del campo en la base de datos donde se aplicará el filtro (e.g., "status").
-     * @param  array $customTypes Arreglo de estados con estructura [['value' => ..., 'title' => ...], ...].
-     *                               Si es null, no se validan estados predefinidos (requiere arreglo externo).
-     * @param  string $compareByKey  La clave del arreglo de estados con la que se compara $value (default: "title").
-     * @param  string $returnByKey   La clave del arreglo de estados cuyo valor se usará en el filtro (default: "value").
-     * @param  string $typeSearch    Tipo de comparación: '===', '==', '!=', 'LIKE' (default: "LIKE").
+     * @param  mixed  $query  El objeto de consulta (Builder) sobre el que se aplicará el filtro.
+     * @param  mixed  $value  El valor ingresado por el usuario para buscar (e.g., "Asignado", "comp").
+     * @param  string  $field  El nombre del campo en la base de datos donde se aplicará el filtro (e.g., "status").
+     * @param  array  $customTypes  Arreglo de estados con estructura [['value' => ..., 'title' => ...], ...].
+     *                              Si es null, no se validan estados predefinidos (requiere arreglo externo).
+     * @param  string  $compareByKey  La clave del arreglo de estados con la que se compara $value (default: "title").
+     * @param  string  $returnByKey  La clave del arreglo de estados cuyo valor se usará en el filtro (default: "value").
+     * @param  string  $typeSearch  Tipo de comparación: '===', '==', '!=', 'LIKE' (default: "LIKE").
      * @return void
      */
     public static function filterByStatusOld($query, $value, $field, $customTypes = null, $compareByKey = 'title', $returnByKey = 'value', $typeSearch = 'LIKE')
@@ -119,6 +119,7 @@ class QueryFilters
                     case '===': // Comparación estricta
                         if ($stateValue === $inputValue) {
                             $query->orWhere($field, $state[$returnByKey]);
+
                             return;
                         }
                         break;
@@ -126,6 +127,7 @@ class QueryFilters
                     case '==': // Comparación de igualdad
                         if ($stateValue == $inputValue) {
                             $query->orWhere($field, $state[$returnByKey]);
+
                             return;
                         }
                         break;
@@ -133,6 +135,7 @@ class QueryFilters
                     case '!=': // Comparación de desigualdad
                         if ($stateValue != $inputValue) {
                             $query->orWhere($field, $state[$returnByKey]);
+
                             return;
                         }
                         break;
@@ -140,6 +143,7 @@ class QueryFilters
                     case 'LIKE': // Búsqueda parcial
                         if (strpos($stateValue, $inputValue) !== false) {
                             $query->orWhere($field, $state[$returnByKey]);
+
                             return;
                         }
                         break;
@@ -147,6 +151,7 @@ class QueryFilters
                     default: // Por defecto, comparación estricta
                         if ($stateValue === $inputValue) {
                             $query->orWhere($field, $state[$returnByKey]);
+
                             return;
                         }
                         break;

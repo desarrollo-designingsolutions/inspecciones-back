@@ -29,7 +29,6 @@ class InspectionStoreRequest extends FormRequest
             'inspection_date' => 'required',
         ];
 
-
         // foreach ($this->tabs as $tab) {
         //     if (isset($tab['inspectionTypeInputs']) && count($tab['inspectionTypeInputs']) > 0) {
         //         foreach ($tab['inspectionTypeInputs'] as $input) {

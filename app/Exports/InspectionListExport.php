@@ -28,7 +28,7 @@ class InspectionListExport implements FromView, ShouldAutoSize, WithEvents
                 'id' => $value->id,
                 'vehicle_license_plate' => $value->vehicle?->license_plate,
                 'inspection_date' => Carbon::parse($value->inspection_date)->format('d-m-Y'),
-                'vehicle_brand_name' =>  $value->vehicle?->brand_vehicle?->name,
+                'vehicle_brand_name' => $value->vehicle?->brand_vehicle?->name,
                 'vehicle_model' => $value->vehicle?->model,
                 'inspection_type_name' => $value->inspectionType?->name,
                 'user_full_name' => $value->user_inspector?->full_name,
@@ -49,7 +49,7 @@ class InspectionListExport implements FromView, ShouldAutoSize, WithEvents
                 // Obtener el rango de celdas con datos
                 $highestColumn = $sheet->getHighestColumn();
                 $highestRow = $sheet->getHighestRow();
-                $range = 'A1:' . $highestColumn . $highestRow;
+                $range = 'A1:'.$highestColumn.$highestRow;
 
                 // Establecer el filtro automático en el rango de celdas
                 $sheet->setAutoFilter($range);

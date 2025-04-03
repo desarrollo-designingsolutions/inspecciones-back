@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class InspectionTypeInput extends Model
 {
-    use HasUuids, SoftDeletes,Cacheable;
+    use Cacheable, HasUuids,SoftDeletes;
 
     protected $casts = [
         'order' => 'integer',

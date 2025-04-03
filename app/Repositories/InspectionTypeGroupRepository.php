@@ -30,12 +30,12 @@ class InspectionTypeGroupRepository extends BaseRepository
                 $query->where('is_active', $request['is_active']);
             }
 
-            if (!empty($request['ids'])) {
+            if (! empty($request['ids'])) {
                 $query->whereIn('id', $request['ids']);
             }
         })->where(function ($query) use ($request) {
             if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
-                $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
+                $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
             }
         });
 
@@ -56,26 +56,27 @@ class InspectionTypeGroupRepository extends BaseRepository
     }
 
     public function typeInspectionInputs()
-{
-    $inspectionTypes = InspectionType::pluck('name', 'id');
-    $grouped = $this->model->select('id', 'inspection_type_id', 'name')->get()->groupBy('inspection_type_id');
-    
-    $transformed = $grouped->mapWithKeys(function ($items, $key) use ($inspectionTypes) {
-        $typeName = $inspectionTypes[$key];
-        return ['type_inspection_' . $key => [
-            'name' => $typeName,
-            'inputs' => $items->map(function ($model) {
-                return [
-                    'id' => $model->id,
-                    'description' => $model->name,
-                    'check_state' => false,
-                ];
-            })->all(),
-        ]];
-    });
+    {
+        $inspectionTypes = InspectionType::pluck('name', 'id');
+        $grouped = $this->model->select('id', 'inspection_type_id', 'name')->get()->groupBy('inspection_type_id');
 
-    return $transformed;
-}
+        $transformed = $grouped->mapWithKeys(function ($items, $key) use ($inspectionTypes) {
+            $typeName = $inspectionTypes[$key];
+
+            return ['type_inspection_'.$key => [
+                'name' => $typeName,
+                'inputs' => $items->map(function ($model) {
+                    return [
+                        'id' => $model->id,
+                        'description' => $model->name,
+                        'check_state' => false,
+                    ];
+                })->all(),
+            ]];
+        });
+
+        return $transformed;
+    }
 
     public function store(array $request, $id = null)
     {

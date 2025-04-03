@@ -17,9 +17,9 @@ class VehicleStoreRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            //Modulo 1
+            // Modulo 1
             'company_id' => 'required',
-            'license_plate' => 'required|max:6|unique:vehicles,license_plate,' . $this->id . ',id,company_id,' . $this->company_id,
+            'license_plate' => 'required|max:6|unique:vehicles,license_plate,'.$this->id.',id,company_id,'.$this->company_id,
             'type_vehicle_id' => 'required',
             'date_registration' => 'required|date|before_or_equal:today',
             'brand_vehicle_id' => 'required',
@@ -35,12 +35,12 @@ class VehicleStoreRequest extends FormRequest
             'current_mileage' => 'required|numeric|min:1',
             'have_trailer' => 'required',
             'vehicle_structure_id' => 'required',
-            //Modulo 3
+            // Modulo 3
             'photo_front' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    if (!is_string($value) || !preg_match('/\.(jpg|png)$/i', $value)) {
-                        if (!$value instanceof \Illuminate\Http\UploadedFile || !in_array($value->getClientOriginalExtension(), ['jpg', 'png'])) {
+                    if (! is_string($value) || ! preg_match('/\.(jpg|png)$/i', $value)) {
+                        if (! $value instanceof \Illuminate\Http\UploadedFile || ! in_array($value->getClientOriginalExtension(), ['jpg', 'png'])) {
                             $fail('El archivo debe ser una imagen válida (JPG o PNG) o una ruta válida.');
                         }
                     }
@@ -49,8 +49,8 @@ class VehicleStoreRequest extends FormRequest
             'photo_rear' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    if (!is_string($value) || !preg_match('/\.(jpg|png)$/i', $value)) {
-                        if (!$value instanceof \Illuminate\Http\UploadedFile || !in_array($value->getClientOriginalExtension(), ['jpg', 'png'])) {
+                    if (! is_string($value) || ! preg_match('/\.(jpg|png)$/i', $value)) {
+                        if (! $value instanceof \Illuminate\Http\UploadedFile || ! in_array($value->getClientOriginalExtension(), ['jpg', 'png'])) {
                             $fail('El archivo debe ser una imagen válida (JPG o PNG) o una ruta válida.');
                         }
                     }
@@ -59,8 +59,8 @@ class VehicleStoreRequest extends FormRequest
             'photo_right_side' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    if (!is_string($value) || !preg_match('/\.(jpg|png)$/i', $value)) {
-                        if (!$value instanceof \Illuminate\Http\UploadedFile || !in_array($value->getClientOriginalExtension(), ['jpg', 'png'])) {
+                    if (! is_string($value) || ! preg_match('/\.(jpg|png)$/i', $value)) {
+                        if (! $value instanceof \Illuminate\Http\UploadedFile || ! in_array($value->getClientOriginalExtension(), ['jpg', 'png'])) {
                             $fail('El archivo debe ser una imagen válida (JPG o PNG) o una ruta válida.');
                         }
                     }
@@ -69,8 +69,8 @@ class VehicleStoreRequest extends FormRequest
             'photo_left_side' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    if (!is_string($value) || !preg_match('/\.(jpg|png)$/i', $value)) {
-                        if (!$value instanceof \Illuminate\Http\UploadedFile || !in_array($value->getClientOriginalExtension(), ['jpg', 'png'])) {
+                    if (! is_string($value) || ! preg_match('/\.(jpg|png)$/i', $value)) {
+                        if (! $value instanceof \Illuminate\Http\UploadedFile || ! in_array($value->getClientOriginalExtension(), ['jpg', 'png'])) {
                             $fail('El archivo debe ser una imagen válida (JPG o PNG) o una ruta válida.');
                         }
                     }

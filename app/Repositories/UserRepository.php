@@ -53,7 +53,7 @@ class UserRepository extends BaseRepository
                     AllowedSort::custom('full_name', new DynamicConcatSort("users.name, ' ', users.surname")),
                     AllowedSort::custom('is_active', new IsActiveSort),
                 ])->where(function ($query) use ($request) {
-                    if (!empty($request['company_id'])) {
+                    if (! empty($request['company_id'])) {
                         $query->where('users.company_id', $request['company_id']);
                     }
                 })
@@ -70,26 +70,26 @@ class UserRepository extends BaseRepository
             ->where(function ($query) use ($request) {
                 filterComponent($query, $request);
 
-                if (!empty($request['name'])) {
-                    $query->where('name', 'like', '%' . $request['name'] . '%');
+                if (! empty($request['name'])) {
+                    $query->where('name', 'like', '%'.$request['name'].'%');
                 }
 
-                //idsAllowed
-                if (!empty($request['idsAllowed']) && count($request['idsAllowed']) > 0) {
+                // idsAllowed
+                if (! empty($request['idsAllowed']) && count($request['idsAllowed']) > 0) {
                     $query->whereIn('id', $request['idsAllowed']);
                 }
 
-                //idsNotAllowed
-                if (!empty($request['idsNotAllowed']) && count($request['idsNotAllowed']) > 0) {
+                // idsNotAllowed
+                if (! empty($request['idsNotAllowed']) && count($request['idsNotAllowed']) > 0) {
                     $query->whereNotIn('id', $request['idsNotAllowed']);
                 }
 
-                if (!empty($request['company_id'])) {
+                if (! empty($request['company_id'])) {
                     $query->where('company_id', $request['company_id']);
                 }
             })->where(function ($query) use ($request) {
-                if (isset($request['searchQueryInfinite']) && !empty($request['searchQueryInfinite'])) {
-                    $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
+                if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
+                    $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
                 }
             });
 
@@ -126,7 +126,7 @@ class UserRepository extends BaseRepository
             $data[$key] = is_array($request[$key]) ? $request[$key]['value'] : $request[$key];
         }
 
-        if (!empty($validatedData['password'])) {
+        if (! empty($validatedData['password'])) {
             $data->password = $validatedData['password'];
         } else {
             unset($data->password);
@@ -158,7 +158,7 @@ class UserRepository extends BaseRepository
     public function selectList($request = [], $with = [], $select = [], $fieldValue = 'id', $fieldTitle = 'name')
     {
         $data = $this->model->with($with)->where(function ($query) use ($request) {
-            if (!empty($request['idsAllowed'])) {
+            if (! empty($request['idsAllowed'])) {
                 $query->whereIn('id', $request['idsAllowed']);
             }
 
@@ -190,7 +190,7 @@ class UserRepository extends BaseRepository
     public function countData($request = [])
     {
         $data = $this->model->where(function ($query) use ($request) {
-            if (!empty($request['status_id'])) {
+            if (! empty($request['status_id'])) {
                 $query->where('status_id', $request['status_id']);
             }
 
@@ -216,17 +216,17 @@ class UserRepository extends BaseRepository
         })->where(function ($query) use ($request) {
             filterComponent($query, $request);
 
-            if (!empty($request['is_active'])) {
+            if (! empty($request['is_active'])) {
                 $query->where('is_active', $request['is_active']);
             }
 
-            if (!empty($request['company_id'])) {
+            if (! empty($request['company_id'])) {
                 $query->where('company_id', $request['company_id']);
             }
         })->where(function ($query) use ($request) {
-            if (isset($request['searchQueryInfinite']) && !empty($request['searchQueryInfinite'])) {
-                $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
-                $query->orWhere('surname', 'like', '%' . $request['searchQueryInfinite'] . '%');
+            if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
+                $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
+                $query->orWhere('surname', 'like', '%'.$request['searchQueryInfinite'].'%');
             }
         });
 
@@ -246,17 +246,17 @@ class UserRepository extends BaseRepository
         })->where(function ($query) use ($request) {
             filterComponent($query, $request);
 
-            if (!empty($request['is_active'])) {
+            if (! empty($request['is_active'])) {
                 $query->where('is_active', $request['is_active']);
             }
 
-            if (!empty($request['company_id'])) {
+            if (! empty($request['company_id'])) {
                 $query->where('company_id', $request['company_id']);
             }
         })->where(function ($query) use ($request) {
-            if (isset($request['searchQueryInfinite']) && !empty($request['searchQueryInfinite'])) {
-                $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
-                $query->orWhere('surname', 'like', '%' . $request['searchQueryInfinite'] . '%');
+            if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
+                $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
+                $query->orWhere('surname', 'like', '%'.$request['searchQueryInfinite'].'%');
             }
         });
 
@@ -276,17 +276,17 @@ class UserRepository extends BaseRepository
         })->where(function ($query) use ($request) {
             filterComponent($query, $request);
 
-            if (!empty($request['is_active'])) {
+            if (! empty($request['is_active'])) {
                 $query->where('is_active', $request['is_active']);
             }
 
-            if (!empty($request['company_id'])) {
+            if (! empty($request['company_id'])) {
                 $query->where('company_id', $request['company_id']);
             }
         })->where(function ($query) use ($request) {
-            if (isset($request['searchQueryInfinite']) && !empty($request['searchQueryInfinite'])) {
-                $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
-                $query->orWhere('surname', 'like', '%' . $request['searchQueryInfinite'] . '%');
+            if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
+                $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
+                $query->orWhere('surname', 'like', '%'.$request['searchQueryInfinite'].'%');
             }
         });
 

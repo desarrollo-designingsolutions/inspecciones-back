@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class VehicleDocument extends Model
 {
-    use HasFactory, HasUuids, Searchable, SoftDeletes,Cacheable;
+    use Cacheable, HasFactory, HasUuids, Searchable,SoftDeletes;
 
     public function type_document()
     {

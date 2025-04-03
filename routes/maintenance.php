@@ -3,7 +3,7 @@
 use App\Http\Controllers\MaintenanceController;
 use Illuminate\Support\Facades\Route;
 
-//Rutas protegidas
+// Rutas protegidas
 Route::middleware(['check.permission:maintenance.list'])->group(function () {
 
     /*

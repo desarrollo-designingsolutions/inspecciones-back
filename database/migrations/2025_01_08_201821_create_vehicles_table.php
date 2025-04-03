@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('vehicles', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
-            //Tab 1: Información General
+            // Tab 1: Información General
             $table->foreignUuid('company_id')->constrained();
             $table->string('license_plate');
             $table->foreignUuid('type_vehicle_id')->constrained();
@@ -35,7 +35,7 @@ return new class extends Migration
             $table->string('trailer')->nullable();
             $table->foreignUuid('vehicle_structure_id')->constrained();
 
-            //Tab 3: Fotografías del Vehículo
+            // Tab 3: Fotografías del Vehículo
             $table->string('photo_front')->nullable();
             $table->string('photo_rear')->nullable();
             $table->string('photo_right_side')->nullable();

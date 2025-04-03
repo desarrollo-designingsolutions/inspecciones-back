@@ -13,7 +13,6 @@ use App\QueryBuilder\Sort\RelatedTableSort;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\QueryBuilder;
-use Illuminate\Database\Eloquent\Builder;
 
 class InspectionRepository extends BaseRepository
 {
@@ -25,6 +24,7 @@ class InspectionRepository extends BaseRepository
     public function paginate($request = [])
     {
         $cacheKey = $this->cacheService->generateKey("{$this->model->getTable()}_paginate", $request, 'string');
+
         return $this->cacheService->remember($cacheKey, function () use ($request) {
             $query = QueryBuilder::for(subject: $this->model->query())
                 ->with(['vehicle:id,license_plate,brand_vehicle_id,model', 'vehicle.brand_vehicle:id,name', 'user_inspector:id,name,surname', 'inspectionType:id,name'])
@@ -34,13 +34,13 @@ class InspectionRepository extends BaseRepository
                     'inspection_date',
                     'inspectionType.name',
                     'is_active',
-                    AllowedFilter::callback('vehicle_id', new DataSelectFilter()),
+                    AllowedFilter::callback('vehicle_id', new DataSelectFilter),
 
-                    AllowedFilter::callback('vehicle.brand_vehicle', new DataSelectRelationFilter()),
+                    AllowedFilter::callback('vehicle.brand_vehicle', new DataSelectRelationFilter),
 
-                    AllowedFilter::callback('vehicle.model', new DataSelectRelationFilter("vehicle", "model")),
+                    AllowedFilter::callback('vehicle.model', new DataSelectRelationFilter('vehicle', 'model')),
 
-                    AllowedFilter::callback('user_inspector_id', new DataSelectFilter()),
+                    AllowedFilter::callback('user_inspector_id', new DataSelectFilter),
 
                     AllowedFilter::callback('inputGeneral', function ($queryX, $value) {
                         $queryX->where(function ($query) use ($value) {
@@ -71,15 +71,16 @@ class InspectionRepository extends BaseRepository
                 ->allowedSorts([
                     'inspection_date',
                     AllowedSort::custom('vehicle_license_plate', new RelatedTableSort('inspections', 'vehicles', 'license_plate', 'vehicle_id')),
-                    AllowedSort::custom('vehicle_brand_name', new class implements \Spatie\QueryBuilder\Sorts\Sort {
-                public function __invoke($query, $descending, string $property)
-                {
-                    $direction = $descending ? 'desc' : 'asc';
+                    AllowedSort::custom('vehicle_brand_name', new class implements \Spatie\QueryBuilder\Sorts\Sort
+                    {
+                        public function __invoke($query, $descending, string $property)
+                        {
+                            $direction = $descending ? 'desc' : 'asc';
 
-                    $query->join('vehicles', 'inspections.vehicle_id', '=', 'vehicles.id')
-                        ->join('brand_vehicles', 'vehicles.brand_vehicle_id', '=', 'brand_vehicles.id')
-                        ->orderBy('brand_vehicles.name', $direction);
-                }
+                            $query->join('vehicles', 'inspections.vehicle_id', '=', 'vehicles.id')
+                                ->join('brand_vehicles', 'vehicles.brand_vehicle_id', '=', 'brand_vehicles.id')
+                                ->orderBy('brand_vehicles.name', $direction);
+                        }
                     }),
                     AllowedSort::custom('vehicle_model', new RelatedTableSort('inspections', 'vehicles', 'model', 'vehicle_id')),
                     AllowedSort::custom('inspection_type_name', new RelatedTableSort('inspections', 'inspection_types', 'name', 'inspection_type_id')),
@@ -87,7 +88,7 @@ class InspectionRepository extends BaseRepository
                     AllowedSort::custom('is_active', new IsActiveSort),
                 ])
                 ->where(function ($query) use ($request) {
-                    if (!empty($request['company_id'])) {
+                    if (! empty($request['company_id'])) {
                         $query->where('inspections.company_id', $request['company_id']);
                     }
                 });
@@ -107,16 +108,16 @@ class InspectionRepository extends BaseRepository
         $data = $this->model->select($select)->with($with)->where(function ($query) use ($request) {
             filterComponent($query, $request);
 
-            if (!empty($request['company_id'])) {
+            if (! empty($request['company_id'])) {
                 $query->where('company_id', $request['company_id']);
             }
 
-            if (!empty($request['is_active'])) {
+            if (! empty($request['is_active'])) {
                 $query->where('is_active', $request['is_active']);
             }
         })->where(function ($query) use ($request) {
-            if (isset($request['searchQueryInfinite']) && !empty($request['searchQueryInfinite'])) {
-                $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
+            if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
+                $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
             }
         });
 
@@ -141,9 +142,9 @@ class InspectionRepository extends BaseRepository
         $request = $this->clearNull($request);
 
         // Determinar el ID a utilizar para buscar o crear el modelo
-        $idToUse = ($id === null || $id === 'null') && !empty($request['id']) && $request['id'] !== 'null' ? $request['id'] : $id;
+        $idToUse = ($id === null || $id === 'null') && ! empty($request['id']) && $request['id'] !== 'null' ? $request['id'] : $id;
 
-        if (!empty($idToUse)) {
+        if (! empty($idToUse)) {
             $data = $this->model->find($idToUse);
         } else {
             $data = $this->model::newModelInstance();
@@ -161,7 +162,7 @@ class InspectionRepository extends BaseRepository
     public function selectList($request = [], $with = [], $select = [], $fieldValue = 'id', $fieldTitle = 'name')
     {
         $data = $this->model->with($with)->where(function ($query) use ($request) {
-            if (!empty($request['idsAllowed'])) {
+            if (! empty($request['idsAllowed'])) {
                 $query->whereIn('id', $request['idsAllowed']);
             }
         })->get()->map(function ($value) use ($with, $select, $fieldValue, $fieldTitle) {
@@ -191,7 +192,7 @@ class InspectionRepository extends BaseRepository
     public function searchOne($request = [], $with = [], $select = ['*'])
     {
         $data = $this->model->select($select)->with($with)->where(function ($query) use ($request) {
-            if (!empty($request['company_id'])) {
+            if (! empty($request['company_id'])) {
                 $query->where('company_id', $request['company_id']);
             }
         });
@@ -204,11 +205,11 @@ class InspectionRepository extends BaseRepository
     public function countData($request = [])
     {
         $data = $this->model->where(function ($query) use ($request) {
-            if (!empty($request['company_id'])) {
+            if (! empty($request['company_id'])) {
                 $query->where('company_id', $request['company_id']);
                 $query->where('is_active', true);
             }
-            if (!empty($request['inspection_type_id'])) {
+            if (! empty($request['inspection_type_id'])) {
                 $query->where('inspection_type_id', $request['inspection_type_id']);
             }
         });
@@ -222,10 +223,10 @@ class InspectionRepository extends BaseRepository
     {
         $data = $this->model
             ->where(function ($query) use ($request) {
-                if (!empty($request['company_id'])) {
+                if (! empty($request['company_id'])) {
                     $query->where('company_id', $request['company_id']);
                 }
-                if (!empty($request['license_plate'])) {
+                if (! empty($request['license_plate'])) {
                     $query->where('license_plate', $request['license_plate']);
                 }
             })->first();

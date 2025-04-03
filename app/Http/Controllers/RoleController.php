@@ -135,7 +135,7 @@ class RoleController extends Controller
                 $msg = 'modificado';
             }
 
-            return response()->json(['code' => 200, 'message' => 'Registro ' . $msg . ' correctamente', 'data' => $data]);
+            return response()->json(['code' => 200, 'message' => 'Registro '.$msg.' correctamente', 'data' => $data]);
         } catch (Throwable $th) {
             DB::rollBack();
 

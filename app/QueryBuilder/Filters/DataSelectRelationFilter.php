@@ -8,9 +8,10 @@ use Spatie\QueryBuilder\Filters\Filter;
 class DataSelectRelationFilter implements Filter
 {
     private string $relation;
+
     private string $field;
 
-    public function __construct(string $relation = "", string $field = "")
+    public function __construct(string $relation = '', string $field = '')
     {
         $this->relation = $relation;
         $this->field = $field;
@@ -18,8 +19,8 @@ class DataSelectRelationFilter implements Filter
 
     public function __invoke(Builder $query, $value, string $property)
     {
-        $relation = !empty($this->relation) ? $this->relation : $property;
-        $field = !empty($this->field) ? $this->field : "id";
+        $relation = ! empty($this->relation) ? $this->relation : $property;
+        $field = ! empty($this->field) ? $this->field : 'id';
 
         // Uso AllowedFilter::callback('key', new DataSelectFilter()),
         $values = is_array($value) ? $value : explode(',', $value);

@@ -8,9 +8,9 @@ use App\Http\Requests\Inspection\InspectionStoreRequest;
 use App\Http\Resources\Inspection\InspectionFormResource;
 use App\Http\Resources\Inspection\InspectionGetVehicleDataResource;
 use App\Http\Resources\Inspection\InspectionListResource;
+use App\Http\Resources\Inspection\InspectionPaginateResource;
 use App\Models\InspectionDocumentVerification;
 use App\Models\InspectionInputResponse;
-use App\Http\Resources\Inspection\InspectionPaginateResource;
 use App\Models\InspectionTypeGroup;
 use App\Repositories\InspectionDocumentVerificationRepository;
 use App\Repositories\InspectionInputResponseRepository;
@@ -106,7 +106,7 @@ class InspectionController extends Controller
     {
         return $this->runTransaction(function () use ($request) {
 
-            $fields = ["id", "vehicle_id", "inspection_type_id", "user_inspector_id", "user_operator_id", "state_id", "city_id", "general_comment", "inspection_date", "company_id"];
+            $fields = ['id', 'vehicle_id', 'inspection_type_id', 'user_inspector_id', 'user_operator_id', 'state_id', 'city_id', 'general_comment', 'inspection_date', 'company_id'];
 
             $post1 = $request->only($fields);
 
@@ -143,6 +143,7 @@ class InspectionController extends Controller
                     );
                 }
             }
+
             return [
                 'code' => 200,
                 'message' => 'Inspección agregado correctamente',
@@ -194,22 +195,21 @@ class InspectionController extends Controller
             $inspectionOld = $this->inspectionRepository->find($id);
             $inspection = $this->inspectionRepository->store($post1, $id);
 
-            
             // return [
             //     'inspeccion' => $inspection->vehicle_id,
             //     'Post' => $inspectionOld->vehicle_id
             // ];
-            
-            if($inspection->vehicle_id != $inspectionOld->vehicle_id){
+
+            if ($inspection->vehicle_id != $inspectionOld->vehicle_id) {
                 $inspection->inspection_group_inspection()->sync([]);
 
                 $vehicle = $this->vehicleRepository->find($post1['vehicle_id']);
-    
+
                 $inpectionGroupsIds = $vehicle->inspection_group_vehicle->where('inspection_type_id', $inspection->inspection_type_id)->pluck('id');
-    
+
                 $inspection->inspection_group_inspection()->sync($inpectionGroupsIds);
             }
-            
+
             $post2 = $request->only(['type_documents']);
             foreach ($post2['type_documents'] as $key => $value) {
                 InspectionDocumentVerification::updateOrCreate([
@@ -272,7 +272,7 @@ class InspectionController extends Controller
 
             ($model->is_active == 1) ? $msg = 'habilitado(a)' : $msg = 'inhabilitado(a)';
 
-            return ['code' => 200, 'message' => 'Vehículo ' . $msg . ' con éxito'];
+            return ['code' => 200, 'message' => 'Vehículo '.$msg.' con éxito'];
         });
     }
 
@@ -341,12 +341,12 @@ class InspectionController extends Controller
             } else {
                 $tabs = $this->inspectionTypeGroupRepository->list(
                     [
-                        'typeData'           => 'all',
+                        'typeData' => 'all',
                         'inspection_type_id' => $request->input('inspection_type_id'),
-                        'ids'                => $inputs,
-                        'sortBy'             => json_encode([
+                        'ids' => $inputs,
+                        'sortBy' => json_encode([
                             [
-                                'key'   => 'order',
+                                'key' => 'order',
                                 'order' => 'asc',
                             ],
                         ]),
@@ -363,10 +363,10 @@ class InspectionController extends Controller
             }
 
             return [
-                'code'    => 200,
+                'code' => 200,
                 'vehicle' => $vehicle,
-                'tabs'    => $tabs,
-                'form'    => $form,
+                'tabs' => $tabs,
+                'form' => $form,
             ];
         });
     }
@@ -381,9 +381,10 @@ class InspectionController extends Controller
             $excel = Excel::raw(new InspectionListExport($data), \Maatwebsite\Excel\Excel::XLSX);
 
             $excelBase64 = base64_encode($excel);
+
             return [
                 'code' => 200,
-                'excel' => $excelBase64
+                'excel' => $excelBase64,
             ];
         });
     }
@@ -429,6 +430,7 @@ class InspectionController extends Controller
                     if ($inspectionDocumentVerification) {
                         $original = $inspectionDocumentVerification->original ? 'S' : 'N';
                     }
+
                     return [
                         'name' => $item->type_document?->name,
                         'document' => $item->document_number,
@@ -455,7 +457,6 @@ class InspectionController extends Controller
                                 $response['response'] = $decodedResponse['value'];
                             }
 
-
                             foreach ($getResponseTypeInspection as $key => $value) {
                                 $responses[$key] = '';
 
@@ -479,9 +480,10 @@ class InspectionController extends Controller
             $pdf = $this->inspectionRepository->pdf('Exports.Inspection.InspectionExportPDF', $data);
 
             $pdfBase64 = base64_encode($pdf);
+
             return [
                 'code' => 200,
-                'pdf' => $pdfBase64
+                'pdf' => $pdfBase64,
             ];
         });
     }

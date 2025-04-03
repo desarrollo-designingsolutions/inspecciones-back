@@ -22,7 +22,6 @@ class VehicleFormResource extends JsonResource
 
         $type_documents = null;
 
-        
         if ($this->type_documents) {
             $type_documents = $this->type_documents->map(function ($item) {
                 return [
@@ -36,9 +35,7 @@ class VehicleFormResource extends JsonResource
             });
         }
 
-        
         $emergenct_elements = null;
-
 
         if ($this->emergency_elements) {
             $emergenct_elements = $this->emergency_elements->map(function ($item) {
@@ -53,7 +50,6 @@ class VehicleFormResource extends JsonResource
             });
         }
 
-        
         $inspection_group_vehicle = [];
 
         if ($this->inspection_group_vehicle->isNotEmpty()) {
@@ -61,8 +57,6 @@ class VehicleFormResource extends JsonResource
                 return $item->id;
             });
         }
-
-
 
         return [
             'id' => $this->id,

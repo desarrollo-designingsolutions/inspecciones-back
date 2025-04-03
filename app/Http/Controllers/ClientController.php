@@ -171,7 +171,7 @@ class ClientController extends Controller
 
             DB::commit();
 
-            return response()->json(['code' => 200, 'message' => 'Cliente ' . $msg . ' con éxito']);
+            return response()->json(['code' => 200, 'message' => 'Cliente '.$msg.' con éxito']);
         } catch (Throwable $th) {
             DB::rollback();
 
@@ -197,7 +197,7 @@ class ClientController extends Controller
 
             return [
                 'code' => 200,
-                'excel' => $excelBase64
+                'excel' => $excelBase64,
             ];
         });
     }

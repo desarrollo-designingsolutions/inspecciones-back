@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class VehicleEmergencyElement extends Model
 {
-    use HasFactory, HasUuids, Searchable, SoftDeletes,Cacheable;
+    use Cacheable, HasFactory, HasUuids, Searchable,SoftDeletes;
 
     public function emergency_element()
     {

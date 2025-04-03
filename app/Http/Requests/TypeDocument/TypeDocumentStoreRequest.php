@@ -22,11 +22,11 @@ class TypeDocumentStoreRequest extends FormRequest
             'name' => [
                 'required',
                 Rule::unique('type_documents', 'name')
-                        ->ignore($this->id) // Ignorar el ID actual si es una actualización
-                        ->where(function ($query) {
-                            $query->where('company_id', $this->company_id) // Filtrar por empresa
-                                  ->whereNull('deleted_at'); // Excluir registros eliminados
-                        }),
+                    ->ignore($this->id) // Ignorar el ID actual si es una actualización
+                    ->where(function ($query) {
+                        $query->where('company_id', $this->company_id) // Filtrar por empresa
+                            ->whereNull('deleted_at'); // Excluir registros eliminados
+                    }),
             ],
         ];
 

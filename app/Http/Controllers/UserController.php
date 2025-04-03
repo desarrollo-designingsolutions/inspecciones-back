@@ -20,6 +20,7 @@ use Throwable;
 class UserController extends Controller
 {
     use HttpResponseTrait;
+
     public function __construct(
         protected UserRepository $userRepository,
         protected RoleRepository $roleRepository,
@@ -223,7 +224,7 @@ class UserController extends Controller
 
             DB::commit();
 
-            return response()->json(['code' => 200, 'message' => 'User ' . $msg . ' con éxito']);
+            return response()->json(['code' => 200, 'message' => 'User '.$msg.' con éxito']);
         } catch (Throwable $th) {
             DB::rollback();
 
@@ -271,7 +272,7 @@ class UserController extends Controller
             // Cambiar la photo
             if ($request->file('photo')) {
                 $file = $request->file('photo');
-                $ruta = 'companies/company_' . $user->company_id . '/' . $user->id . $request->input('photo');
+                $ruta = 'companies/company_'.$user->company_id.'/'.$user->id.$request->input('photo');
                 $photo = $file->store($ruta, 'public');
                 $user->photo = $photo;
                 $user->save();
@@ -280,7 +281,7 @@ class UserController extends Controller
             return [
                 'code' => 200,
                 'message' => 'Foto modificada con éxito.',
-                'photo' => $user->photo
+                'photo' => $user->photo,
             ];
         });
     }

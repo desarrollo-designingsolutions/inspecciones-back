@@ -7,5 +7,5 @@ use App\Traits\Cacheable;
 
 class City extends Model
 {
-    use  Cacheable;
+    use Cacheable;
 }

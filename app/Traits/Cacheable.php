@@ -49,9 +49,9 @@ trait Cacheable
 
         foreach ($this->getCachePrefixes() as $prefix) {
 
-        $project = env('KEY_REDIS_PROJECT');
+            $project = env('KEY_REDIS_PROJECT');
 
-        $prefix = $project.$prefix;
+            $prefix = $project.$prefix;
 
             $usePattern = str_ends_with($prefix, '*');
             $cleanPrefix = $usePattern ? rtrim($prefix, '*') : $prefix;

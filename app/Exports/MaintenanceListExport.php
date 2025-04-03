@@ -27,10 +27,10 @@ class MaintenanceListExport implements FromView, ShouldAutoSize, WithEvents
         $data = collect($this->data)->map(function ($value) {
             $mechanic_name = User::find($value->user_mechanic_id);
             $mechanic_name = $mechanic_name?->full_name;
-    
+
             $inspector_name = User::find($value->user_inspector_id);
             $inspector_name = $inspector_name?->full_name;
-    
+
             return [
                 'id' => $value->id,
                 'vehicle_license_plate' => $value->vehicle?->license_plate,

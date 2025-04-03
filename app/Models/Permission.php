@@ -9,8 +9,8 @@ use Spatie\Permission\Models\Permission as SpatiePermission;
 
 class Permission extends SpatiePermission
 {
+    use Cacheable,HasUuids;
     use HasFactory;
-    use HasUuids,Cacheable;
 
     protected $primaryKey = 'id';
 }

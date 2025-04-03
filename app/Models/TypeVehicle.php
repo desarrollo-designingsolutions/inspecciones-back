@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TypeVehicle extends Model
 {
-    use HasFactory, HasUuids, Searchable,SoftDeletes,Cacheable;
+    use Cacheable, HasFactory, HasUuids,Searchable,SoftDeletes;
 
     protected $casts = [
         'is_active' => 'boolean',

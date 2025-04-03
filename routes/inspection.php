@@ -3,7 +3,7 @@
 use App\Http\Controllers\InspectionController;
 use Illuminate\Support\Facades\Route;
 
-//Rutas protegidas
+// Rutas protegidas
 Route::middleware(['check.permission:inspection.list'])->group(function () {
 
     /*

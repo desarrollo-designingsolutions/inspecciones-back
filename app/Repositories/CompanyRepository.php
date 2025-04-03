@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Helpers\Constants;
 use App\Models\Company;
-use App\QueryBuilder\Filters\DataSelectFilter;
 use App\QueryBuilder\Filters\QueryFilters;
 use App\QueryBuilder\Sort\IsActiveSort;
 use App\QueryBuilder\Sort\RelatedTableSort;
@@ -23,7 +22,7 @@ class CompanyRepository extends BaseRepository
     {
         $cacheKey = $this->cacheService->generateKey("{$this->model->getTable()}_paginate", $request, 'string');
 
-        return $this->cacheService->remember($cacheKey, function () use ($request) {
+        return $this->cacheService->remember($cacheKey, function () {
             $query = QueryBuilder::for($this->model->query())
                 ->with(['country:id,name', 'state:id,name', 'city:id,name'])
                 ->select(['companies.id', 'logo', 'companies.name', 'nit', 'address', 'phone', 'email', 'companies.is_active', 'companies.created_at', 'final_date', 'companies.country_id', 'companies.state_id', 'city_id'])
@@ -74,13 +73,13 @@ class CompanyRepository extends BaseRepository
             ->where(function ($query) use ($request) {
                 filterComponent($query, $request);
 
-                if (!empty($request['name'])) {
-                    $query->where('name', 'like', '%' . $request['name'] . '%');
+                if (! empty($request['name'])) {
+                    $query->where('name', 'like', '%'.$request['name'].'%');
                 }
             })
             ->where(function ($query) use ($request) {
-                if (isset($request['searchQueryInfinite']) && !empty($request['searchQueryInfinite'])) {
-                    $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
+                if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
+                    $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
                 }
             });
 
@@ -104,9 +103,9 @@ class CompanyRepository extends BaseRepository
         $request = $this->clearNull($request);
 
         // Determinar el ID a utilizar para buscar o crear el modelo
-        $idToUse = ($id === null || $id === 'null') && !empty($request['id']) && $request['id'] !== 'null' ? $request['id'] : $id;
+        $idToUse = ($id === null || $id === 'null') && ! empty($request['id']) && $request['id'] !== 'null' ? $request['id'] : $id;
 
-        if (!empty($idToUse)) {
+        if (! empty($idToUse)) {
             $data = $this->model->find($idToUse);
         } else {
             $data = $this->model::newModelInstance();
@@ -124,7 +123,7 @@ class CompanyRepository extends BaseRepository
     public function selectList($request = [], $with = [], $select = [], $fieldValue = 'id', $fieldTitle = 'name')
     {
         $data = $this->model->with($with)->where(function ($query) use ($request) {
-            if (!empty($request['idsAllowed'])) {
+            if (! empty($request['idsAllowed'])) {
                 $query->whereIn('id', $request['idsAllowed']);
             }
         })->get()->map(function ($value) use ($with, $select, $fieldValue, $fieldTitle) {

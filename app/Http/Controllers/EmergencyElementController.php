@@ -210,7 +210,7 @@ class EmergencyElementController extends Controller
 
             return [
                 'code' => 200,
-                'excel' => $excelBase64
+                'excel' => $excelBase64,
             ];
         });
     }

@@ -10,7 +10,7 @@ class Constants
 
     public const ROLE_SUPERADMIN_UUID = '21626ff9-4940-4143-879a-0f75b46eadb7';
 
-    public const COUNTRY_ID = '48'; //Colombia
+    public const COUNTRY_ID = '48'; // Colombia
 
     public const ITEMS_PER_PAGE = '10'; // PARA LA PAGINACIONES
 

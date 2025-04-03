@@ -26,6 +26,7 @@ class PassportAuthSendResetLinkRequest extends FormRequest
         $rules = [
             'email' => 'required|email',
         ];
+
         return $rules;
     }
 

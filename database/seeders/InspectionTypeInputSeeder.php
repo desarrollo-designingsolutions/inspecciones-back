@@ -13,7 +13,7 @@ class InspectionTypeInputSeeder extends Seeder
     public function run(): void
     {
 
-        //necesito que el order sea en seciuencia numerica
+        // necesito que el order sea en seciuencia numerica
 
         $arrayData = [
             [

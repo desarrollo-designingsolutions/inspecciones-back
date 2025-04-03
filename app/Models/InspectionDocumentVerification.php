@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class InspectionDocumentVerification extends Model
 {
-    use HasUuids, Cacheable;
+    use Cacheable, HasUuids;
 
     protected $guarded = [];
 

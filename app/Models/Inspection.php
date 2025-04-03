@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Inspection extends Model
 {
-    use HasUuids, Searchable, SoftDeletes, Cacheable;
+    use Cacheable, HasUuids, Searchable, SoftDeletes;
 
     protected $casts = [
         'order' => 'integer',

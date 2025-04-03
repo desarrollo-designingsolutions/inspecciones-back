@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Maintenance extends Model
 {
-    use HasUuids, Searchable, SoftDeletes,Cacheable;
+    use Cacheable, HasUuids, Searchable,SoftDeletes;
 
     protected $casts = [
         'order' => 'integer',
@@ -37,10 +37,12 @@ class Maintenance extends Model
     {
         return $this->belongsTo(User::class, 'user_mechanic_id', 'id');
     }
+
     public function user_operator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_operator_id', 'id');
     }
+
     public function user_inspector(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_inspector_id', 'id');

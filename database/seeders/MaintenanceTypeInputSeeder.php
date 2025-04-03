@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\MaintenanceTypeInput;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class MaintenanceTypeInputSeeder extends Seeder
@@ -16,354 +15,352 @@ class MaintenanceTypeInputSeeder extends Seeder
         $arrayData = [
             [
                 'maintenance_type_group_id' => 1,
-                'name' => 'Cambio de aceite motor'
+                'name' => 'Cambio de aceite motor',
             ],
             [
                 'maintenance_type_group_id' => 1,
-                'name' => 'Cambio filtro de aceite, de combustible y filtro de agua'
+                'name' => 'Cambio filtro de aceite, de combustible y filtro de agua',
             ],
             [
                 'maintenance_type_group_id' => 1,
-                'name' => 'Cambio filtro de aire'
+                'name' => 'Cambio filtro de aire',
             ],
             [
                 'maintenance_type_group_id' => 1,
-                'name' => 'Cambio de valvulina'
+                'name' => 'Cambio de valvulina',
             ],
             [
                 'maintenance_type_group_id' => 1,
-                'name' => 'Engrase general del vehículo'
+                'name' => 'Engrase general del vehículo',
             ],
             [
                 'maintenance_type_group_id' => 1,
-                'name' => 'Cambio valvulina'
+                'name' => 'Cambio valvulina',
             ],
             [
                 'maintenance_type_group_id' => 1,
-                'name' => 'Cambio de Refrigerante'
+                'name' => 'Cambio de Refrigerante',
             ],
             [
                 'maintenance_type_group_id' => 1,
-                'name' => 'Cambio de barillas de medición de niveles'
+                'name' => 'Cambio de barillas de medición de niveles',
             ],
             [
                 'maintenance_type_group_id' => 1,
-                'name' => 'Radiador (Tanque de agua)'
+                'name' => 'Radiador (Tanque de agua)',
             ],
             [
                 'maintenance_type_group_id' => 1,
-                'name' => 'Cambio de sensores'
+                'name' => 'Cambio de sensores',
             ],
             [
                 'maintenance_type_group_id' => 1,
-                'name' => 'Inyectores'
+                'name' => 'Inyectores',
             ],
             [
                 'maintenance_type_group_id' => 1,
-                'name' => 'Motor'
+                'name' => 'Motor',
             ],
             [
                 'maintenance_type_group_id' => 2,
-                'name' => 'Caja de la dirección'
+                'name' => 'Caja de la dirección',
             ],
             [
                 'maintenance_type_group_id' => 2,
-                'name' => 'Retenedores de aceite hidráulico'
+                'name' => 'Retenedores de aceite hidráulico',
             ],
             [
                 'maintenance_type_group_id' => 2,
-                'name' => 'Crucetas'
+                'name' => 'Crucetas',
             ],
             [
                 'maintenance_type_group_id' => 2,
-                'name' => 'Mangueras'
+                'name' => 'Mangueras',
             ],
             [
                 'maintenance_type_group_id' => 2,
-                'name' => 'Bomba hidráulica'
+                'name' => 'Bomba hidráulica',
             ],
             [
                 'maintenance_type_group_id' => 2,
-                'name' => 'Barra estabilizadora'
+                'name' => 'Barra estabilizadora',
             ],
             [
                 'maintenance_type_group_id' => 2,
-                'name' => 'Alineación'
+                'name' => 'Alineación',
             ],
             [
                 'maintenance_type_group_id' => 2,
-                'name' => 'Spínder'
+                'name' => 'Spínder',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Disco del cloutch (embrague)'
+                'name' => 'Disco del cloutch (embrague)',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Prensa del cloutch (embrague)'
+                'name' => 'Prensa del cloutch (embrague)',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Balinera del embrague'
+                'name' => 'Balinera del embrague',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Niveles de aceite de la transmisión (caja)'
+                'name' => 'Niveles de aceite de la transmisión (caja)',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Niveles de aceite de los diferenciales'
+                'name' => 'Niveles de aceite de los diferenciales',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Yoke del cardan primario y secundario'
+                'name' => 'Yoke del cardan primario y secundario',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Crucetas del cardan primario y secundario'
+                'name' => 'Crucetas del cardan primario y secundario',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Engrases del sistema (lubricación)'
+                'name' => 'Engrases del sistema (lubricación)',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Diferenciales (corona, spig, planetarios)'
+                'name' => 'Diferenciales (corona, spig, planetarios)',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Ejes de diferenciales'
+                'name' => 'Ejes de diferenciales',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Retenedores de los ejes'
+                'name' => 'Retenedores de los ejes',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Rodamientos'
+                'name' => 'Rodamientos',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Tandem'
+                'name' => 'Tandem',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Pernos'
+                'name' => 'Pernos',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Llantas de repuesto'
+                'name' => 'Llantas de repuesto',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Llantas delanteras'
+                'name' => 'Llantas delanteras',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Llantas traseras'
+                'name' => 'Llantas traseras',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Cambio de rodajas'
+                'name' => 'Cambio de rodajas',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Cambio de espárragos'
+                'name' => 'Cambio de espárragos',
             ],
             [
                 'maintenance_type_group_id' => 3,
-                'name' => 'Troque'
+                'name' => 'Troque',
             ],
             [
                 'maintenance_type_group_id' => 4,
-                'name' => 'Muelles delanteros y traseros'
+                'name' => 'Muelles delanteros y traseros',
             ],
             [
                 'maintenance_type_group_id' => 4,
-                'name' => 'Bombonas traseras y delanteras'
+                'name' => 'Bombonas traseras y delanteras',
             ],
             [
                 'maintenance_type_group_id' => 4,
-                'name' => 'Tornillos centrales de muelle'
+                'name' => 'Tornillos centrales de muelle',
             ],
             [
                 'maintenance_type_group_id' => 4,
-                'name' => 'Grapas de muelles'
+                'name' => 'Grapas de muelles',
             ],
             [
                 'maintenance_type_group_id' => 4,
-                'name' => 'Tensores traseros y delanteros'
+                'name' => 'Tensores traseros y delanteros',
             ],
             [
                 'maintenance_type_group_id' => 4,
-                'name' => 'Balancines'
+                'name' => 'Balancines',
             ],
             [
                 'maintenance_type_group_id' => 4,
-                'name' => 'Pasadores de balancines y tensores'
+                'name' => 'Pasadores de balancines y tensores',
             ],
             [
                 'maintenance_type_group_id' => 4,
-                'name' => 'Pasadores de viga'
+                'name' => 'Pasadores de viga',
             ],
             [
                 'maintenance_type_group_id' => 4,
-                'name' => 'Bujes'
+                'name' => 'Bujes',
             ],
             [
                 'maintenance_type_group_id' => 4,
-                'name' => 'Bandas'
+                'name' => 'Bandas',
             ],
             [
                 'maintenance_type_group_id' => 4,
-                'name' => 'Corbatines'
+                'name' => 'Corbatines',
             ],
             [
                 'maintenance_type_group_id' => 5,
-                'name' => 'Sistema de baterías'
+                'name' => 'Sistema de baterías',
             ],
             [
                 'maintenance_type_group_id' => 5,
-                'name' => 'Revisión sistema eléctrico general (incluye luces)'
+                'name' => 'Revisión sistema eléctrico general (incluye luces)',
             ],
             [
                 'maintenance_type_group_id' => 5,
-                'name' => 'Alternador'
+                'name' => 'Alternador',
             ],
             [
                 'maintenance_type_group_id' => 5,
-                'name' => 'Arranque'
+                'name' => 'Arranque',
             ],
             [
                 'maintenance_type_group_id' => 5,
-                'name' => 'Cables'
+                'name' => 'Cables',
             ],
             [
                 'maintenance_type_group_id' => 6,
-                'name' => 'Cambio correas de la bomba de vacío'
+                'name' => 'Cambio correas de la bomba de vacío',
             ],
             [
                 'maintenance_type_group_id' => 6,
-                'name' => 'Cambio aceite de la bomba de vacío'
+                'name' => 'Cambio aceite de la bomba de vacío',
             ],
             [
                 'maintenance_type_group_id' => 6,
-                'name' => 'Cambio de filtro'
+                'name' => 'Cambio de filtro',
             ],
             [
                 'maintenance_type_group_id' => 6,
-                'name' => 'Motor'
+                'name' => 'Motor',
             ],
             [
                 'maintenance_type_group_id' => 7,
-                'name' => 'Revisión 5ª Rueda y/o King Pin'
+                'name' => 'Revisión 5ª Rueda y/o King Pin',
             ],
             [
                 'maintenance_type_group_id' => 7,
-                'name' => 'Válvulas'
+                'name' => 'Válvulas',
             ],
             [
                 'maintenance_type_group_id' => 7,
-                'name' => 'Prueba hidrostática'
+                'name' => 'Prueba hidrostática',
             ],
             [
                 'maintenance_type_group_id' => 7,
-                'name' => 'Arreglos generales en el tanque'
+                'name' => 'Arreglos generales en el tanque',
             ],
             [
                 'maintenance_type_group_id' => 7,
-                'name' => 'Cambio disco quinta rueda'
+                'name' => 'Cambio disco quinta rueda',
             ],
             [
                 'maintenance_type_group_id' => 7,
-                'name' => 'Cambio de cauchos'
+                'name' => 'Cambio de cauchos',
             ],
             [
                 'maintenance_type_group_id' => 7,
-                'name' => 'Alineación'
+                'name' => 'Alineación',
             ],
             [
                 'maintenance_type_group_id' => 7,
-                'name' => 'Tornamesa'
+                'name' => 'Tornamesa',
             ],
             [
                 'maintenance_type_group_id' => 7,
-                'name' => 'Cambio de Templetes'
+                'name' => 'Cambio de Templetes',
             ],
             [
                 'maintenance_type_group_id' => 8,
-                'name' => 'Graduación de frenos'
+                'name' => 'Graduación de frenos',
             ],
             [
                 'maintenance_type_group_id' => 8,
-                'name' => 'Inspección sistema de frenos (campanas, bujes, levas, cámaras)'
+                'name' => 'Inspección sistema de frenos (campanas, bujes, levas, cámaras)',
             ],
             [
                 'maintenance_type_group_id' => 8,
-                'name' => 'Cambio de mangueras'
+                'name' => 'Cambio de mangueras',
             ],
             [
                 'maintenance_type_group_id' => 8,
-                'name' => 'Cambio de botones de freno de seguridad'
+                'name' => 'Cambio de botones de freno de seguridad',
             ],
             [
                 'maintenance_type_group_id' => 8,
-                'name' => 'Cambio de cámaras de seguridad'
+                'name' => 'Cambio de cámaras de seguridad',
             ],
             [
                 'maintenance_type_group_id' => 8,
-                'name' => 'Válvulas'
+                'name' => 'Válvulas',
             ],
             [
                 'maintenance_type_group_id' => 9,
-                'name' => 'Cambio de aceite (Betico/Compresor)'
+                'name' => 'Cambio de aceite (Betico/Compresor)',
             ],
             [
                 'maintenance_type_group_id' => 9,
-                'name' => 'Cambio de aceite motor deutz'
+                'name' => 'Cambio de aceite motor deutz',
             ],
             [
                 'maintenance_type_group_id' => 9,
-                'name' => 'Cambio de filtro aceite'
+                'name' => 'Cambio de filtro aceite',
             ],
             [
                 'maintenance_type_group_id' => 9,
-                'name' => 'Cambio filtro de combustible'
+                'name' => 'Cambio filtro de combustible',
             ],
             [
                 'maintenance_type_group_id' => 9,
-                'name' => 'Cambio de botones de freno de seguridad'
+                'name' => 'Cambio de botones de freno de seguridad',
             ],
             [
                 'maintenance_type_group_id' => 9,
-                'name' => 'Cambio de culatas/válvulas'
+                'name' => 'Cambio de culatas/válvulas',
             ],
             [
                 'maintenance_type_group_id' => 9,
-                'name' => 'Mangueras'
+                'name' => 'Mangueras',
             ],
             [
                 'maintenance_type_group_id' => 9,
-                'name' => 'Motor deutz'
+                'name' => 'Motor deutz',
             ],
             [
                 'maintenance_type_group_id' => 9,
-                'name' => 'Betico'
+                'name' => 'Betico',
             ],
             [
                 'maintenance_type_group_id' => 10,
-                'name' => 'Cambio de amortiguador de la cabina'
+                'name' => 'Cambio de amortiguador de la cabina',
             ],
         ];
-
-
 
         // Inicializar la barra de progreso
         $this->command->info('Starting Seed Data ...');
         $bar = $this->command->getOutput()->createProgressBar(count($arrayData));
 
         foreach ($arrayData as $key => $value) {
-            $data = new MaintenanceTypeInput();
+            $data = new MaintenanceTypeInput;
             $data->maintenance_type_group_id = $value['maintenance_type_group_id'];
             $data->name = $value['name'];
             $data->order = $key + 10;

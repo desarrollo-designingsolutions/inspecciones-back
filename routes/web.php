@@ -1,19 +1,13 @@
 <?php
 
-use App\Http\Resources\Inspection\InspectionPDFGetVehicleDataResource;
-use App\Models\Inspection;
-use App\Models\InspectionTypeGroup;
 use App\Models\MaintenanceTypeGroup;
 use App\Models\Vehicle;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
 
-use function PHPUnit\Framework\isEmpty;
-
 Route::get('/', function () {
     return view('welcome');
 });
-
 
 Route::get('/prueba', function () {
     $vehicleRepository = new \App\Repositories\VehicleRepository(new Vehicle);
@@ -39,7 +33,7 @@ Route::get('/prueba', function () {
     $table[0][0] = 'Año';
     $table[0][1] = 'Mes';
 
-    foreach ($maintenanceType->sortBy("order") as $key => $value) {
+    foreach ($maintenanceType->sortBy('order') as $key => $value) {
         $table[0][$key + 2] = $value->name;
     }
 
@@ -65,9 +59,9 @@ Route::get('/prueba', function () {
                         // Verificar si la respuesta pertenece al mantenimiento actual
                         if ($response->maintenance_id === $currentMaintenance->id) {
                             if (
-                                !empty($response->type) ||
-                                !empty($response->type_maintenance) ||
-                                !empty($response->comment)
+                                ! empty($response->type) ||
+                                ! empty($response->type_maintenance) ||
+                                ! empty($response->comment)
                             ) {
                                 $count++;
                             }

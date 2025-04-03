@@ -24,7 +24,7 @@ return new class extends Migration
         Schema::table('maintenances', function (Blueprint $table) {
             // 1. Eliminar la restricción de clave foránea
             $table->dropForeign(['user_made_maintenance_id']);
-            
+
             // 2. Eliminar la columna
             $table->dropColumn('user_made_maintenance_id');
         });
