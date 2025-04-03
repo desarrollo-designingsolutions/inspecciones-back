@@ -91,7 +91,7 @@ class VehicleRepository extends BaseRepository
             if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
                 $query->orWhere('license_plate', 'like', '%'.$request['searchQueryInfinite'].'%');
             }
-        });
+        })->orderBy('license_plate', 'asc');
 
         if (isset($request['sortBy'])) {
             $sortBy = json_decode($request['sortBy'], 1);
