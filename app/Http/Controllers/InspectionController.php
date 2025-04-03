@@ -154,7 +154,7 @@ class InspectionController extends Controller
                 'title' => 'Se ha creado una nueva inspección',
                 'type_inspection' => $inspection->inspectionType->name,
                 'license_plate' => $inspection->vehicle->license_plate,
-                'action_url' => 'Inspection/Inspection-form/'.$inspection->inspection_type_id.'/edit/'.$inspection->id,
+                'action_url' => 'Inspection/Inspection-form/' . $inspection->inspection_type_id . '/edit/' . $inspection->id,
             ]);
 
             return [
@@ -280,7 +280,7 @@ class InspectionController extends Controller
 
             ($model->is_active == 1) ? $msg = 'habilitado(a)' : $msg = 'inhabilitado(a)';
 
-            return ['code' => 200, 'message' => 'Vehículo '.$msg.' con éxito'];
+            return ['code' => 200, 'message' => 'Vehículo ' . $msg . ' con éxito'];
         });
     }
 
@@ -513,7 +513,7 @@ class InspectionController extends Controller
                 'type_inspection' => $data['type_inspection'],
                 'license_plate' => $data['license_plate'],
                 'bussines_name' => $company->name,
-                'action_url' => env('SYSTEM_URL_FRONT').$data['action_url'],
+                'action_url' => env('SYSTEM_URL_FRONT') . $data['action_url'],
 
             ],  // Aquí pasas los parámetros para la plantilla, por ejemplo, el texto del mensaje
         );
@@ -666,7 +666,7 @@ class InspectionController extends Controller
         return $this->execute(function () use ($request) {
             $post = $request->all();
 
-            $inspection = Inspection::with([
+            $inspections = Inspection::with([
                 'inspection_group_inspection.inspectionTypeInputs.inspectionInputResponses.inspection',
             ])->where(function ($query) use ($post) {
                 $query->whereMonth('inspection_date', $post['month']);
@@ -676,46 +676,74 @@ class InspectionController extends Controller
                 $query->where('vehicle_id', $post['vehicle_id']);
             })->get();
 
-            if($inspection->isEmpty()) {
+            if ($inspections->isEmpty()) {
                 return [
                     'code' => 404,
                     'message' => 'No se encontraron inspecciones filtro seleccionados.',
                 ];
-
             }
 
-            $data = collect($inspection)->map(function ($item) {
-                return [
-                    'inspection_group_inspection' => $item->inspection_group_inspection->groupBy('id')->map(function ($groupTabs) {
-                        $tab = $groupTabs->first(); // Tomamos el primer elemento como base
-
-                        return [
-                            'name' => $tab->name,
-                            'inspection_type_inputs' => $tab->inspectionTypeInputs->map(function ($input) use ($groupTabs) {
-                                // Unificar todas las inspection_input_responses de este input en todas las inspecciones
-                                $allResponses = $groupTabs->flatMap(function ($tab) use ($input) {
-                                    return $tab->inspectionTypeInputs->where('id', $input->id)->first()->inspectionInputResponses;
-                                })->map(function ($response) {
-                                    // Obtener la fecha de la inspección asociada a esta respuesta
-                                    $inspectionDate = $response->inspection?->inspection_date;
-                                    $day = Carbon::create($inspectionDate)->format('d');
-
-                                    return [
-                                        'response' => $response->response,
-                                        'observation' => $response->observation,
-                                        'day' => intval($day),
-                                    ];
-                                })->all();
-
+            // Agrupar todas las inspection_group_inspection por su id para unificarlas en una sola tabla
+            $groupedInspections = $inspections->flatMap(function ($inspection) {
+                return $inspection->inspection_group_inspection->map(function ($group) use ($inspection) {
+                    return [
+                        'inspection_id' => $inspection->id,
+                        'inspection_date' => $inspection->inspection_date,
+                        'general_comment' => $inspection->general_comment,
+                        'group_id' => $group->id,
+                        'group_name' => $group->name,
+                        'inspection_type_inputs' => $group->inspectionTypeInputs->map(function ($input) use ($group, $inspection) {
+                            $responses = $input->inspectionInputResponses->filter(function ($response) use ($inspection) {
+                                return $response->inspection_id === $inspection->id;
+                            })->map(function ($response) {
+                                $inspectionDate = $response->inspection->inspection_date;
+                                $day = Carbon::create($inspectionDate)->format('d');
                                 return [
-                                    'name' => $input->name,
-                                    'inspection_input_responses' => $allResponses,
+                                    'response' => $response->response,
+                                    'observation' => $response->observation,
+                                    'day' => intval($day),
+                                    'inspection_id' => $response->inspection_id
                                 ];
-                            })->values()->all(),
+                            })->all();
+
+                            return [
+                                'id' => $input->id,
+                                'name' => $input->name,
+                                'inspection_input_responses' => $responses
+                            ];
+                        })->all()
+                    ];
+                });
+            })->groupBy('group_id')->map(function ($group) {
+                $first = $group->first();
+                return [
+                    'name' => $first['group_name'],
+                    'inspection_type_inputs' => collect($group)->flatMap(function ($item) {
+                        return $item['inspection_type_inputs'];
+                    })->groupBy('id')->map(function ($inputs) {
+                        $firstInput = $inputs->first();
+                        return [
+                            'name' => $firstInput['name'],
+                            'inspection_input_responses' => $inputs->flatMap(function ($input) {
+                                return $input['inspection_input_responses'];
+                            })->all()
                         ];
-                    })->values()->all(),
+                    })->values()->all()
                 ];
-            })->first();
+            })->values()->all();
+
+            $data = [
+                'inspections' => $groupedInspections,
+                'inspection_details' => $inspections->map(function ($inspection) {
+                    return [
+                        'id' => $inspection->id,
+                        'inspection_date' => $inspection->inspection_date,
+                        'general_comment' => $inspection->general_comment
+                    ];
+                })->all()
+            ];
+
+            // return $data;
 
             $excel = Excel::raw(new VehicleDesignExport($request->all(), $data), \Maatwebsite\Excel\Excel::XLSX);
 

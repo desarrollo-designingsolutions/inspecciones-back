@@ -1,28 +1,28 @@
 @php
-function getResponseByIdAndDay($responses, $day) {
-    // Buscar la respuesta que coincida con el día
-    $responseItem = collect($responses)->firstWhere('day', $day);
-    if ($responseItem) {
-        $response = $responseItem['response'];
-        switch ($response) {
-            case 'good':
-                return 'B';
-            case 'regular':
-                return 'R';
-            case 'bad':
-                return 'M';
-            case 'not applicable':
-                return 'NA';
-            case 'complies':
-                return 'C';
-            case 'does not comply':
-                return 'NC';
-            default:
-                return $response;
+    function getResponseByIdAndDay($responses, $day)
+    {
+        $responseItem = collect($responses)->firstWhere('day', $day);
+        if ($responseItem) {
+            $response = $responseItem['response'];
+            switch ($response) {
+                case 'good':
+                    return 'B';
+                case 'regular':
+                    return 'R';
+                case 'bad':
+                    return 'M';
+                case 'not applicable':
+                    return 'NA';
+                case 'complies':
+                    return 'C';
+                case 'does not comply':
+                    return 'NC';
+                default:
+                    return $response;
+            }
         }
+        return '';
     }
-    return "";
-}
 @endphp
 
 <div>
@@ -48,7 +48,7 @@ function getResponseByIdAndDay($responses, $day) {
                     Código:
                 </th>
                 <th colspan="10" style="text-align: center;">
-                    Fecha:
+                    Fecha: {{ $inspections['inspection_details'][0]['inspection_date'] ?? '' }}
                 </th>
                 <th colspan="10" style="text-align: center;">
                     Versión:
@@ -60,7 +60,7 @@ function getResponseByIdAndDay($responses, $day) {
 
             <tr>
                 <th colspan="5">
-                    No. Identificacion:
+                    No. Identificación: {{ $inspections['inspection_details'][0]['id'] ?? '' }}
                 </th>
                 <th colspan="10">
                     Tipo de Manguera:
@@ -75,7 +75,7 @@ function getResponseByIdAndDay($responses, $day) {
 
             <tr>
                 <th colspan="5">
-                    Mes y año de la inspección: {{ $data['month'] ?? "" }} - {{ $data['year'] ?? "" }}
+                    Mes y año de la inspección: {{ $data['month'] ?? '' }} - {{ $data['year'] ?? '' }}
                 </th>
                 <th colspan="15">
                     Nombre del operador:
@@ -94,7 +94,7 @@ function getResponseByIdAndDay($responses, $day) {
                 </th>
             </tr>
 
-            @foreach ($inspections['inspection_group_inspection'] as $inspectionTab)
+            @foreach ($inspections['inspections'] as $inspectionTab)
                 <tr>
                     <th colspan="3" style="text-align: center; font-weight: bold;">
                         {{ $inspectionTab['name'] }}
@@ -139,7 +139,8 @@ function getResponseByIdAndDay($responses, $day) {
             </tr>
             <tr>
                 <th colspan="36">
-                    OBSERVACIONES
+                    OBSERVACIONES:
+                    {{ implode(', ', array_column($inspections['inspection_details'], 'general_comment')) }}
                 </th>
             </tr>
         </thead>
