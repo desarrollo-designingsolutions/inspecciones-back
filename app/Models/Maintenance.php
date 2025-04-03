@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Cacheable;
 use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Maintenance extends Model
 {
-    use HasUuids, Searchable, SoftDeletes;
+    use HasUuids, Searchable, SoftDeletes,Cacheable;
 
     protected $casts = [
         'order' => 'integer',

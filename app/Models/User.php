@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Traits\Cacheable;
 use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,7 +17,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, HasPermissions, HasRoles, HasUuids,Notifiable,Searchable;
+    use HasApiTokens, HasFactory, HasPermissions, HasRoles, HasUuids,Notifiable,Searchable,Cacheable;
 
     /**
      * The attributes that are mass assignable.
@@ -88,7 +89,7 @@ class User extends Authenticatable
     {
         return $this->role ? $this->role->operator : false;
     }
-    
+
     public function getIsMechanicAttribute()
     {
         return $this->role ? $this->role->mechanic : false;

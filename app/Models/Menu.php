@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Traits\Cacheable;
 use Illuminate\Database\Eloquent\Model;
 
 class Menu extends Model
 {
-    //
+    use Cacheable;
 
     protected $casts = [
         'order' => 'integer',
