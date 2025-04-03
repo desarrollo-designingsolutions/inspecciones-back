@@ -14,6 +14,7 @@ use App\Models\InspectionInputResponse;
 use App\Http\Resources\Inspection\InspectionPaginateResource;
 use App\Models\InspectionTypeGroup;
 use App\Models\User;
+use App\Models\Company;
 use App\Repositories\InspectionDocumentVerificationRepository;
 use App\Repositories\InspectionInputResponseRepository;
 use App\Repositories\InspectionRepository;
@@ -146,13 +147,13 @@ class InspectionController extends Controller
                 }
             }
 
-            $user = User::where('id', '9e2805c2-0e86-48bb-b2cf-05c3a0b1f45b')->get()->first();
+            $company = Company::where('id', $post1['company_id'])->get()->first();
 
-            $this->sendNotificationGenerateInspection($user, [
+            $this->sendNotificationGenerateInspection($company, [
                 'title' => 'Se ha creado una nueva inspección',
                 'type_inspection' => $inspection->inspectionType->name,
                 'license_plate' => $inspection->vehicle->license_plate,
-                'action_url' => 'Inspection/Inspection-form/'.$inspection->inspection_type_id.'/edit/'.$inspection->id,
+                'action_url' => 'Inspection/Inspection-form/' . $inspection->inspection_type_id . '/edit/' . $inspection->id,
             ]);
 
             return [
@@ -205,17 +206,17 @@ class InspectionController extends Controller
 
             $inspectionOld = $this->inspectionRepository->find($id);
             $inspection = $this->inspectionRepository->store($post1, $id);
-            
-            if($inspection->vehicle_id != $inspectionOld->vehicle_id){
+
+            if ($inspection->vehicle_id != $inspectionOld->vehicle_id) {
                 $inspection->inspection_group_inspection()->sync([]);
 
                 $vehicle = $this->vehicleRepository->find($post1['vehicle_id']);
-    
+
                 $inpectionGroupsIds = $vehicle->inspection_group_vehicle->where('inspection_type_id', $inspection->inspection_type_id)->pluck('id');
-    
+
                 $inspection->inspection_group_inspection()->sync($inpectionGroupsIds);
             }
-            
+
             $post2 = $request->only(['type_documents']);
             foreach ($post2['type_documents'] as $key => $value) {
                 InspectionDocumentVerification::updateOrCreate([
@@ -492,26 +493,169 @@ class InspectionController extends Controller
         });
     }
 
-    private function sendNotificationGenerateInspection($user, $data)
+    private function sendNotificationGenerateInspection($company, $data)
     {
         // Enviar el correo usando el job de Brevo
         BrevoProcessSendEmail::dispatch(
             emailTo: [
                 [
-                    "name" => $user->company?->name,
-                    "email" => $user->company?->email,
+                    "name" => $company->name,
+                    "email" => $company->email,
                 ],
             ],
             subject: $data['title'],
             templateId: 7,  // El ID de la plantilla de Brevo que quieres usar
             params: [
-                "full_name" => $user->full_name,
+                "full_name" => $company->full_name,
                 "type_inspection" => $data['type_inspection'],
                 "license_plate" => $data['license_plate'],
-                "bussines_name" => $user->company?->name,
+                "bussines_name" => $company->name,
                 'action_url' => env("SYSTEM_URL_FRONT") . $data['action_url'],
 
             ],  // Aquí pasas los parámetros para la plantilla, por ejemplo, el texto del mensaje
         );
+    }
+
+    public function showReportInfo(Request $request, $id)
+    {
+        return $this->execute(function () use ($id) {
+
+            $inspection = $this->inspectionRepository->find($id);
+
+            $inputs = $inspection->inspection_group_inspection
+                ->where('inspection_type_id', $inspection->inspection_type_id)
+                ->pluck('id')
+                ->toArray();
+
+            if (empty($inputs)) {
+                $tabs = collect([]);
+            } else {
+                $tabs = $this->inspectionTypeGroupRepository->list(
+                    [
+                        'typeData'           => 'all',
+                        'inspection_type_id' => $inspection->inspection_type_id,
+                        'ids'                => $inputs,
+                        'sortBy'             => json_encode([
+                            [
+                                'key'   => 'order',
+                                'order' => 'asc',
+                            ],
+                        ]),
+                    ],
+                    with: ['inspectionTypeInputs'],
+                    select: ['id', 'name', 'order']
+                );
+
+                $newOrder = 1;
+                foreach ($tabs as $tab) {
+                    $tab->order = $newOrder;
+                    $newOrder++;
+                }
+            }
+
+            $info = [];
+            foreach ($tabs as $tab) {
+                $group = [
+                    'tab_name' => $tab->name,
+                    'inputs'   => []
+                ];
+                if (isset($tab['inspectionTypeInputs']) && count($tab['inspectionTypeInputs']) > 0) {
+                    foreach ($tab['inspectionTypeInputs'] as $input) {
+                        $inspectionInputResponse = $input['inspectionInputResponses']->first();
+
+                        // Obtención del valor: para tipo 1 se decodifica si es necesario
+                        if ($inspection->inspection_type_id == 1) {
+                            $decodedResponse = json_decode($inspectionInputResponse->response, true);
+                            $rawValue = $decodedResponse['value'] ?? $inspectionInputResponse->response;
+                        } else {
+                            $rawValue = $inspectionInputResponse->response;
+                        }
+
+                        // Filtrar según el tipo de inspección
+                        $include = false;
+                        if ($inspection->inspection_type_id == 1) {
+                            if (in_array($rawValue, ['regular', 'bad'])) {
+                                $include = true;
+                            }
+                        } elseif ($inspection->inspection_type_id == 2) {
+                            if ($rawValue === 'does not comply') {
+                                $include = true;
+                            }
+                        } else {
+                            $include = true; // Por defecto, si se requiere otro comportamiento
+                        }
+                        if (!$include) {
+                            continue;
+                        }
+
+                        // Traducción usando la función auxiliar
+                        $translatedValue = $this->translateInspectionResponse($rawValue, $inspection->inspection_type_id);
+
+                        $group['inputs'][] = [
+                            'input_name'  => $input['name'],
+                            'value'       => $translatedValue,
+                        ];
+                    }
+                }
+                $info[] = $group;
+            }
+
+            $expiredDocuments = $inspection->vehicle->type_documents
+                ->where('expiration_date', '<', now());
+
+            if ($expiredDocuments->isNotEmpty()) {
+                $documentsTab = [
+                    'tab_name' => 'Documentos',
+                    'inputs'   => []
+                ];
+
+                foreach ($expiredDocuments as $document) {
+
+                    $expiration = [
+                        'title' => 'Vencido',
+                        'color' => '#DC3545',
+                    ];
+
+                    $documentsTab['inputs'][] = [
+                        'input_name'  => $document->type_document->name,
+                        'value'       => $expiration,
+                    ];
+                }
+
+                $info[] = $documentsTab;
+            }
+
+            return [
+                'code' => 200,
+                'info' => $info
+            ];
+        });
+    }
+
+
+    private function translateInspectionResponse($value, $inspectionTypeId)
+    {
+        if ($inspectionTypeId == 1) {
+            $types = [
+                ['value' => 'regular', 'title' => 'Regular', 'color' => '#FFC107'], // Amarillo
+                ['value' => 'bad', 'title' => 'Malo', 'color' => '#DC3545'], // Rojo
+            ];
+        } elseif ($inspectionTypeId == 2) {
+            $types = [
+                ['value' => 'does not comply', 'title' => 'No Cumple', 'color' => '#DC3545'], // Rojo
+            ];
+        } else {
+            $types = [];
+        }
+
+        $result = getStatus($value, $types, 'value', 'title', '===');
+
+        // Buscar el color correspondiente en el array de tipos
+        $color = collect($types)->firstWhere('value', $value)['color'] ?? '#6C757D'; // Color gris por defecto
+
+        return [
+            'title' => $result,
+            'color' => $color
+        ];
     }
 }
