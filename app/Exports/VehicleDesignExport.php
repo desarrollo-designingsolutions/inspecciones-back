@@ -14,47 +14,45 @@ class VehicleDesignExport implements FromView, ShouldAutoSize, WithEvents
     use Exportable;
 
     public $data;
+    public $inspections;
 
-    public function __construct($data)
+    public function __construct($data, $inspections)
     {
         $this->data = $data;
+        $this->inspections = $inspections;
     }
 
     public function view(): View
     {
         // Mapeo de nombres de meses en español a sus números correspondientes
         $monthNames = [
-            'Enero' => 1,
-            'Febrero' => 2,
-            'Marzo' => 3,
-            'Abril' => 4,
-            'Mayo' => 5,
-            'Junio' => 6,
-            'Julio' => 7,
-            'Agosto' => 8,
-            'Septiembre' => 9,
-            'Octubre' => 10,
-            'Noviembre' => 11,
-            'Diciembre' => 12,
+            1 => 'Enero',
+            2 => 'Febrero',
+            3 => 'Marzo',
+            4 => 'Abril',
+            5 => 'Mayo',
+            6 => 'Junio',
+            7 => 'Julio',
+            8 => 'Agosto',
+            9 => 'Septiembre',
+            10 => 'Octubre',
+            11 => 'Noviembre',
+            12 => 'Diciembre',
         ];
 
-        // Convertir el nombre del mes a su número correspondiente
-        $monthName = $this->data['month'];
-        $monthNumber = $monthNames[$monthName];
-        $year = $this->data['year'];
-
         // Calcular los días del mes seleccionado
-        $daysInMonth = Carbon::create($year, $monthNumber, 1)->daysInMonth;
+        $daysInMonth = Carbon::create($this->data['year'], $this->data['month'], 1)->daysInMonth;
 
         return view(
             'Exports.Vehicle.VehicleDesignExportExcel',
             [
                 'data' => [
                     'license_plate' => $this->data['license_plate'],
-                    'month' => $this->data['month'],
+                    'month' => $monthNames[$this->data['month']],
                     'year' => $this->data['year'],
                     'days' => $daysInMonth,
-                ]
+                ],
+                'inspections' => $this->inspections,
             ]
         );
     }
