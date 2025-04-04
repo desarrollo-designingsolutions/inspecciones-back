@@ -564,9 +564,8 @@ class InspectionController extends Controller
                 ];
                 if (isset($tab['inspectionTypeInputs']) && count($tab['inspectionTypeInputs']) > 0) {
                     foreach ($tab['inspectionTypeInputs'] as $input) {
-                        $inspectionInputResponse = $input['inspectionInputResponses']->first();
+                        $inspectionInputResponse = $input['inspectionInputResponses']->where('inspection_id', $inspection->id)->first();
 
-                        // Obtención del valor: para tipo 1 se decodifica si es necesario
                         if ($inspection->inspection_type_id == 1) {
                             $decodedResponse = json_decode($inspectionInputResponse->response, true);
                             $rawValue = $decodedResponse['value'] ?? $inspectionInputResponse->response;
@@ -574,7 +573,6 @@ class InspectionController extends Controller
                             $rawValue = $inspectionInputResponse->response;
                         }
 
-                        // Filtrar según el tipo de inspección
                         $include = false;
                         if ($inspection->inspection_type_id == 1) {
                             if (in_array($rawValue, ['regular', 'bad'])) {
