@@ -339,7 +339,9 @@ class VehicleController extends Controller
                     'vehicle_id' => $vehicle->id,
                     'emergency_element_id' => $value['emergency_element_id']['value'],
                     'quantity' => $value['quantity'],
-                    'expiration_date' => $value['expiration_date'],
+                    'expiration_date' => (isset($value['expiration_date']) && !empty($value['expiration_date']))
+                        ? $value['expiration_date']
+                        : null,
                 ];
                 $this->vehicleEmergencyElementRepository->store($dataSave);
             }
