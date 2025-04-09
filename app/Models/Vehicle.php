@@ -21,6 +21,10 @@ class Vehicle extends Model
         'city_id' => 'integer',
     ];
 
+    protected $customCachePrefixes = [
+        'string:{table}_list*',
+    ];
+
     public function company()
     {
         return $this->belongsTo(Company::class);

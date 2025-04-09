@@ -17,6 +17,10 @@ class BrandVehicle extends Model
         'is_active' => 'boolean',
     ];
 
+    protected $customCachePrefixes = [
+        'string:{table}_list*',
+    ];
+    
     public function company()
     {
         return $this->belongsTo(Company::class);

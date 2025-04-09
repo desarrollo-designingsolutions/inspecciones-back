@@ -22,7 +22,8 @@ class VehicleListExport implements FromView, ShouldAutoSize, WithEvents
 
     public function view(): View
     {
-        $data = collect($this->data)->map(function ($value) {
+        $items = $this->data->items(); // <- extrae solo los vehículos
+        $data = collect($items)->map(function ($value) {
             return [
                 'id' => $value->id,
                 'name' => $value->name,

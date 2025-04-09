@@ -28,7 +28,7 @@ Route::middleware(['check.permission:vehicle.list'])->group(function () {
 
     Route::post('/vehicle/changeStatus', [VehicleController::class, 'changeStatus']);
 
-    Route::post('/vehicle/excelExport', [VehicleController::class, 'excelExport']);
+    Route::get('/vehicle/excelExport', [VehicleController::class, 'excelExport']);
 
     Route::post('/vehicle/validateLicensePlate', [VehicleController::class, 'validateLicensePlate']);
 

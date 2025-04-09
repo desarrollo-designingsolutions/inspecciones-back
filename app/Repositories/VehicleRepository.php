@@ -77,36 +77,41 @@ class VehicleRepository extends BaseRepository
 
     public function list($request = [], $with = [], $select = ['*'])
     {
-        $data = $this->model->select($select)->with($with)->where(function ($query) use ($request) {
-            filterComponent($query, $request);
+        $cacheKey = $this->cacheService->generateKey("{$this->model->getTable()}_list", $request, 'string');
 
-            if (! empty($request['company_id'])) {
-                $query->where('company_id', $request['company_id']);
+        return $this->cacheService->remember($cacheKey, function () use ($request, $select, $with) {
+
+            $data = $this->model->select($select)->with($with)->where(function ($query) use ($request) {
+                filterComponent($query, $request);
+
+                if (! empty($request['company_id'])) {
+                    $query->where('company_id', $request['company_id']);
+                }
+
+                if (! empty($request['is_active'])) {
+                    $query->where('is_active', $request['is_active']);
+                }
+            })->where(function ($query) use ($request) {
+                if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
+                    $query->orWhere('license_plate', 'like', '%' . $request['searchQueryInfinite'] . '%');
+                }
+            })->orderBy('license_plate', 'asc');
+
+            if (isset($request['sortBy'])) {
+                $sortBy = json_decode($request['sortBy'], 1);
+                foreach ($sortBy as $key => $value) {
+                    $data = $data->orderBy($value['key'], $value['order']);
+                }
             }
 
-            if (! empty($request['is_active'])) {
-                $query->where('is_active', $request['is_active']);
+            if (empty($request['typeData'])) {
+                $data = $data->paginate($request['perPage'] ?? Constants::ITEMS_PER_PAGE);
+            } else {
+                $data = $data->get();
             }
-        })->where(function ($query) use ($request) {
-            if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
-                $query->orWhere('license_plate', 'like', '%'.$request['searchQueryInfinite'].'%');
-            }
-        })->orderBy('license_plate', 'asc');
 
-        if (isset($request['sortBy'])) {
-            $sortBy = json_decode($request['sortBy'], 1);
-            foreach ($sortBy as $key => $value) {
-                $data = $data->orderBy($value['key'], $value['order']);
-            }
-        }
-
-        if (empty($request['typeData'])) {
-            $data = $data->paginate($request['perPage'] ?? Constants::ITEMS_PER_PAGE);
-        } else {
-            $data = $data->get();
-        }
-
-        return $data;
+            return $data;
+        }, Constants::REDIS_TTL);
     }
 
     public function store(array $request, $id = null)
@@ -226,10 +231,10 @@ class VehicleRepository extends BaseRepository
                 'inspection',
                 'maintenance',
                 'type_documents' => function ($q) use ($today) {
-                    $q->where('expiration_date', '>=', $today);
+                    $q->where('expiration_date', '<=', $today);
                 },
                 'emergency_elements' => function ($q) use ($today) {
-                    $q->where('expiration_date', '>=', $today);
+                    $q->where('expiration_date', '<=', $today);
                 },
             ])
             ->get();
@@ -248,6 +253,8 @@ class VehicleRepository extends BaseRepository
                 DB::raw('SUM(CASE WHEN i.inspection_type_id = 2 THEN 1 ELSE 0 END) as type2'),
             )
             ->where('v.company_id', $request['company_id'])
+            ->whereNull('v.deleted_at') // Excluir vehículos eliminados
+            ->whereNull('i.deleted_at') // Excluir inspecciones eliminadas
             ->groupBy(DB::raw('YEAR(i.created_at)'), DB::raw('MONTH(i.created_at)'))
             ->orderBy(DB::raw('YEAR(i.created_at)'), 'desc')
             ->orderBy(DB::raw('MONTH(i.created_at)'), 'desc');
@@ -267,7 +274,7 @@ class VehicleRepository extends BaseRepository
 
         // Filtro por año
         if (! empty($request['year'])) {
-            $query->where(DB::raw('YEAR('.$created_at.')'), $request['year']);
+            $query->where(DB::raw('YEAR(' . $created_at . ')'), $request['year']);
         }
     }
 
@@ -352,6 +359,8 @@ class VehicleRepository extends BaseRepository
                 DB::raw('SUM(CASE WHEN m.maintenance_type_id = 1 THEN 1 ELSE 0 END) as maintenance_count'),
             )
             ->where('v.company_id', $request['company_id'])
+            ->whereNull('v.deleted_at') // Excluir vehículos eliminados
+            ->whereNull('m.deleted_at') // Excluir inspecciones eliminadas
             ->groupBy(DB::raw('YEAR(m.created_at)'), DB::raw('MONTH(m.created_at)'))
             ->orderBy(DB::raw('YEAR(m.created_at)'), 'desc')
             ->orderBy(DB::raw('MONTH(m.created_at)'), 'asc');

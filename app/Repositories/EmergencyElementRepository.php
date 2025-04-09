@@ -58,36 +58,41 @@ class EmergencyElementRepository extends BaseRepository
 
     public function list($request = [], $with = [], $select = ['*'])
     {
-        $data = $this->model->select($select)->with($with)->where(function ($query) use ($request) {
-            filterComponent($query, $request);
+        $cacheKey = $this->cacheService->generateKey("{$this->model->getTable()}_list", $request, 'string');
 
-            if (! empty($request['company_id'])) {
-                $query->where('company_id', $request['company_id']);
+        return $this->cacheService->remember($cacheKey, function () use ($request, $select, $with) {
+
+            $data = $this->model->select($select)->with($with)->where(function ($query) use ($request) {
+                filterComponent($query, $request);
+
+                if (! empty($request['company_id'])) {
+                    $query->where('company_id', $request['company_id']);
+                }
+
+                if (! empty($request['is_active'])) {
+                    $query->where('is_active', $request['is_active']);
+                }
+            })->where(function ($query) use ($request) {
+                if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
+                    $query->orWhere('name', 'like', '%' . $request['searchQueryInfinite'] . '%');
+                }
+            });
+
+            if (isset($request['sortBy'])) {
+                $sortBy = json_decode($request['sortBy'], 1);
+                foreach ($sortBy as $key => $value) {
+                    $data = $data->orderBy($value['key'], $value['order']);
+                }
             }
 
-            if (! empty($request['is_active'])) {
-                $query->where('is_active', $request['is_active']);
+            if (empty($request['typeData'])) {
+                $data = $data->paginate($request['perPage'] ?? Constants::ITEMS_PER_PAGE);
+            } else {
+                $data = $data->get();
             }
-        })->where(function ($query) use ($request) {
-            if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
-                $query->orWhere('name', 'like', '%'.$request['searchQueryInfinite'].'%');
-            }
-        });
 
-        if (isset($request['sortBy'])) {
-            $sortBy = json_decode($request['sortBy'], 1);
-            foreach ($sortBy as $key => $value) {
-                $data = $data->orderBy($value['key'], $value['order']);
-            }
-        }
-
-        if (empty($request['typeData'])) {
-            $data = $data->paginate($request['perPage'] ?? Constants::ITEMS_PER_PAGE);
-        } else {
-            $data = $data->get();
-        }
-
-        return $data;
+            return $data;
+        }, Constants::REDIS_TTL);
     }
 
     public function store(array $request, $id = null)
