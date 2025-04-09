@@ -126,7 +126,7 @@ class InspectionTypeInputSeeder extends Seeder
             ],
             [
                 'inspection_type_group_id' => 1,
-                'name' => 'Kin Pin – Quinta Rueda – Tornamesa',
+                'name' => 'Kin Pin - Quinta Rueda - Tornamesa',
             ],
             [
                 'inspection_type_group_id' => 2,
@@ -438,7 +438,7 @@ class InspectionTypeInputSeeder extends Seeder
             ],
             [
                 'inspection_type_group_id' => 9,
-                'name' => 'Ap��sito ocular',
+                'name' => 'Apósito ocular',
             ],
             [
                 'inspection_type_group_id' => 9,
@@ -506,7 +506,7 @@ class InspectionTypeInputSeeder extends Seeder
             ],
             [
                 'inspection_type_group_id' => 10,
-                'name' => 'Fecha de recarga, agente y capacidad: Sep 24',
+                'name' => 'Recarga, agente y capacidad',
             ],
             [
                 'inspection_type_group_id' => 10,
@@ -530,7 +530,7 @@ class InspectionTypeInputSeeder extends Seeder
             ],
             [
                 'inspection_type_group_id' => 11,
-                'name' => 'Fecha de recarga, agente y capacidad: Nov 24',
+                'name' => 'Recarga, agente y capacidad',
             ],
             [
                 'inspection_type_group_id' => 11,
