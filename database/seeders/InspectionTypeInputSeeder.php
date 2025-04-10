@@ -714,7 +714,7 @@ class InspectionTypeInputSeeder extends Seeder
             ],
             [
                 'inspection_type_group_id' => 14,
-                'name' => 'Nivles de agua y refrigerante adecuados',
+                'name' => 'Niveles de agua y refrigerante adecuados',
             ],
             [
                 'inspection_type_group_id' => 14,
@@ -734,7 +734,7 @@ class InspectionTypeInputSeeder extends Seeder
             ],
             [
                 'inspection_type_group_id' => 14,
-                'name' => 'Bateria sin corrosion',
+                'name' => 'Bateria sin corrosión',
             ],
             [
                 'inspection_type_group_id' => 15,
