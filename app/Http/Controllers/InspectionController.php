@@ -130,7 +130,7 @@ class InspectionController extends Controller
                     'original' => $value['original'],
                 ]);
             }
-            $post3 = $request->except([...$fields, ...['type_documents']]);
+            $post3 = $request->except([...$fields, ...['type_documents', 'user_inspector_full_name']]);
 
             foreach ($post3 as $key => $value) {
                 if ($value != null) {
@@ -227,7 +227,7 @@ class InspectionController extends Controller
                     'original' => $value['original'],
                 ]);
             }
-            $post3 = $request->except([...$fields, ...['type_documents']]);
+            $post3 = $request->except([...$fields, ...['type_documents', 'user_inspector_full_name']]);
 
             foreach ($post3 as $key => $value) {
                 if ($value != null) {
