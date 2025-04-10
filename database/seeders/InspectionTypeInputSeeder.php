@@ -782,7 +782,7 @@ class InspectionTypeInputSeeder extends Seeder
             ],
             [
                 'inspection_type_group_id' => 15,
-                'name' => 'Nivel de liquido de frenos',
+                'name' => 'Nivel de líquido de frenos',
             ],
             [
                 'inspection_type_group_id' => 15,
@@ -814,7 +814,7 @@ class InspectionTypeInputSeeder extends Seeder
             ],
             [
                 'inspection_type_group_id' => 15,
-                'name' => 'Llantas con labrado notorio y buena presion',
+                'name' => 'Llantas con labrado notorio y buena presión',
             ],
             [
                 'inspection_type_group_id' => 15,
