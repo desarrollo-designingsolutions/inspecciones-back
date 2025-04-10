@@ -55,7 +55,7 @@
         <thead>
             <tr>
                 <th colspan="3" style="width: 20%; text-align: center;">
-                    <img src="{{ public_path('images/logo_ochoa.jpeg') }}" alt="logo"
+                    <img src="{{ public_path('storage/logo_ochoa.png') }}" alt="logo"
                         style="max-width: 100px; max-height: 50px;">
                 </th>
                 <th colspan="13" style="width: 80%; text-align: center;">

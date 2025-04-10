@@ -25,6 +25,7 @@ class InspectionFormResource extends JsonResource
             'user_operator_id' => new UserOperatorsSelectInfiniteResource($this->user_operator),
             'vehicle_id' => new PlateVehicleSelectInfiniteResource($this->vehicle),
             'inspection_date' => $this->inspection_date,
+            'user_inspector_full_name' => $this->user_inspector?->full_name,
             'general_comment' => $this->general_comment,
             'type_documents' => $this->inspectionDocumentVerifications->map(function ($item) {
                 return [
