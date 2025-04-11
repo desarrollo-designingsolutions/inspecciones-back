@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Authentication\PassportAuthLoginRequest;
 use App\Http\Requests\Authentication\PassportAuthSendResetLinkRequest;
+use App\Http\Requests\Authentication\PassportAuthPasswordResetLinkRequest;
 use App\Jobs\BrevoProcessSendEmail;
 use App\Models\Role;
 use App\Models\User;
@@ -16,10 +17,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
+use App\Traits\HttpResponseTrait;
 use Throwable;
 
 class PassportAuthController extends Controller
 {
+    use HttpResponseTrait;
+    
     private $userRepository;
 
     private $menuRepository;
@@ -225,20 +229,13 @@ class PassportAuthController extends Controller
         }
     }
 
-    public function passwordReset(Request $request)
+    public function passwordReset(PassportAuthPasswordResetLinkRequest $request)
     {
-        try {
-            // Validar los datos recibidos
-            $request->validate([
-                'token' => 'required',
-                'email' => 'required|email',
-                'password' => 'required|string|min:8|confirmed',
-            ]);
+        return $this->execute(function () use ($request) {
 
             $response = Password::reset(
                 $request->only('email', 'password', 'password_confirmation', 'token'),
                 function (User $user, string $password) {
-
                     // Actualizar la contraseña del usuario
                     $user->password = $password;
                     $user->save();
@@ -246,23 +243,15 @@ class PassportAuthController extends Controller
             );
 
             if ($response == Password::PASSWORD_RESET) {
-                return response()->json([
+                return [
                     'code' => 200,
                     'message' => 'La contraseña ha sido cambiada correctamente.',
-                ]);
+                ];
             }
 
-            return response()->json([
-                'code' => 400,
+            throw new \Exception(json_encode([
                 'message' => 'El token de restablecimiento es inválido o ha expirado.',
-            ], 400);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'code' => 500,
-                'message' => 'Algo Ocurrio, Comunicate Con El Equipo De Desarrollo',
-                'error' => $th->getMessage(),
-                'line' => $th->getLine(),
-            ], 500);
-        }
+            ]));
+        });
     }
 }
