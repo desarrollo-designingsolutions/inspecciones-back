@@ -60,9 +60,9 @@
                 </th>
                 <th colspan="13" style="width: 80%; text-align: center;">
                     @if ($data['inspection_type_id'] == 1)
-                        SISTEMA INTEGRADO DE GESTION PRE OPERACIONAL
+                    SISTEMA INTEGRADO DE GESTION PRE OPERACIONAL
                     @else
-                        SISTEMA INTEGRADO DE GESTION HSEQ
+                    SISTEMA INTEGRADO DE GESTION HSEQ
                     @endif
 
                     <br>
@@ -104,10 +104,12 @@
                 <td colspan="4">{{ $data['operator']['license'] }}</td>
                 <td colspan="3">RIGIDO</td>
                 <td colspan="1" width="40px" style="text-align: center">
-                    {{ $data['vehicle']['vehicle_structure_name'] == 'Rigido' ? 'X' : null }}</td>
+                    {{ $data['vehicle']['vehicle_structure_name'] == 'Rigido' ? 'X' : null }}
+                </td>
                 <td colspan="3">ARTICULADO</td>
                 <td colspan="1" width="40px" style="text-align: center">
-                    {{ $data['vehicle']['vehicle_structure_name'] == 'Articulado' ? 'X' : null }}</td>
+                    {{ $data['vehicle']['vehicle_structure_name'] == 'Articulado' ? 'X' : null }}
+                </td>
             </tr>
         </thead>
     </table>
@@ -125,12 +127,12 @@
         </thead>
         <tbody>
             @foreach ($data['documents'] as $document)
-                <tr>
-                    <td>{{ $document['name'] }}</td>
-                    <td style="text-align: center">{{ $document['document'] }}</td>
-                    <td style="text-align: center">{{ $document['expiration_date'] }}</td>
-                    <td style="text-align: center">{{ $document['original'] }}</td>
-                </tr>
+            <tr>
+                <td>{{ $document['name'] }}</td>
+                <td style="text-align: center">{{ $document['document'] }}</td>
+                <td style="text-align: center">{{ $document['expiration_date'] }}</td>
+                <td style="text-align: center">{{ $document['original'] }}</td>
+            </tr>
             @endforeach
         </tbody>
     </table>
@@ -140,52 +142,54 @@
                 <th colspan="5">INSPECCIÓN DEL VEHICULO</th>
             </tr>
             @if ($data['inspection_type_id'] == 1)
-                @foreach ($data['inspectionInputResponses'] as $group)
-                    <tr>
-                        <th>{{ $group['name'] }}</th>
+            @foreach ($data['inspectionInputResponses'] as $group)
+            <tr>
+                <th>{{ $group['name'] }}</th>
 
-                        @foreach ($data['getResponseTypeInspection'] as $resp)
-                            <th>{{ $resp['title'] }}</th>
-                        @endforeach
-                    </tr>
-
-                    @foreach ($group['inspectionTypeInputs'] as $input)
-                        <tr>
-                            <td>{{ $input['name'] }}</td>
-                            @foreach ($input['responses'] as $response)
-                                <td style="text-align: center">{{ $response }}</td>
-                            @endforeach
-                        </tr>
-                    @endforeach
+                @foreach ($data['getResponseTypeInspection'] as $resp)
+                <th>{{ $resp['title'] }}</th>
                 @endforeach
+            </tr>
+
+            @foreach ($group['inspectionTypeInputs'] as $input)
+            <tr>
+                <td>{{ $input['name'] }}</td>
+                @foreach ($input['responses'] as $response)
+                <td style="text-align: center">{{ $response }}</td>
+                @endforeach
+            </tr>
+            @endforeach
+            @endforeach
             @else
-                @foreach ($data['inspectionInputResponses'] as $group)
-                    <tr>
-                        <th>{{ $group['name'] }}</th>
+            @foreach ($data['inspectionInputResponses'] as $group)
+            <tr>
+                <th>{{ $group['name'] }}</th>
 
-                        @foreach ($data['getResponseTypeInspection'] as $resp)
-                            <th>{{ $resp['title'] }}</th>
-                        @endforeach
-                        <th>Observacion</th>
-                    </tr>
-
-                    @foreach ($group['inspectionTypeInputs'] as $input)
-                        <tr>
-                            <td>{{ $input['name'] }}</td>
-                            @foreach ($input['responses'] as $response)
-                                <td style="text-align: center">{{ $response }}</td>
-                            @endforeach
-                            <td style="text-align: center">{{ $input['observation'] }}</td>
-                        </tr>
-                    @endforeach
+                @foreach ($data['getResponseTypeInspection'] as $resp)
+                <th>{{ $resp['title'] }}</th>
                 @endforeach
+                <th>Observacion</th>
+            </tr>
+
+            @foreach ($group['inspectionTypeInputs'] as $input)
+            <tr>
+                <td style="white-space: normal; word-break: break-word;">{{ $input['name'] }}</td>
+                @foreach ($input['responses'] as $response)
+                <td style="text-align: center; white-space: normal; word-break: break-word;">{{ $response }}</td>
+                @endforeach
+                <td style="text-align: center; white-space: normal; word-break: break-word;">{{ $input['observation'] }}</td>
+            </tr>
+            @endforeach
+            @endforeach
             @endif
         </tbody>
     </table>
     <table>
         <thead>
             <tr>
-                <td><b>OBSERVACIONES GENERALES: </b>{{ $data['general_comment'] }}</td>
+                <td style="white-space: normal; word-break: break-word;">
+                    <b>OBSERVACIONES GENERALES: </b>{{ $data['general_comment'] }}
+                </td>
             </tr>
         </thead>
     </table>
