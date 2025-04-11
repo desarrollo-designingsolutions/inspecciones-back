@@ -154,7 +154,7 @@ class InspectionController extends Controller
                 'title' => 'Se ha creado una nueva inspección',
                 'type_inspection' => $inspection->inspectionType->name,
                 'license_plate' => $inspection->vehicle->license_plate,
-                'action_url' => 'Inspection/Inspection-form/' . $inspection->inspection_type_id . '/edit/' . $inspection->id,
+                'action_url' => 'Inspection/Inspection-form/' . $inspection->inspection_type_id . '/view/' . $inspection->id,
             ]);
 
             return [
