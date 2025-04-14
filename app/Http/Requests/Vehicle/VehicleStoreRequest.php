@@ -19,7 +19,7 @@ class VehicleStoreRequest extends FormRequest
         $rules = [
             // Modulo 1
             'company_id' => 'required',
-            'license_plate' => 'required|max:6|unique:vehicles,license_plate,'.$this->id.',id,company_id,'.$this->company_id,
+            'license_plate' => 'required|max:6|unique:vehicles,license_plate,' . $this->id . ',id,company_id,' . $this->company_id,
             'type_vehicle_id' => 'required',
             'date_registration' => 'required|date|before_or_equal:today',
             'brand_vehicle_id' => 'required',
@@ -35,6 +35,7 @@ class VehicleStoreRequest extends FormRequest
             'current_mileage' => 'required|numeric|min:1',
             'have_trailer' => 'required',
             'vehicle_structure_id' => 'required',
+
             // Modulo 3
             'photo_front' => [
                 'required',
@@ -73,6 +74,32 @@ class VehicleStoreRequest extends FormRequest
                         if (! $value instanceof \Illuminate\Http\UploadedFile || ! in_array($value->getClientOriginalExtension(), ['jpg', 'png'])) {
                             $fail('El archivo debe ser una imagen válida (JPG o PNG) o una ruta válida.');
                         }
+                    }
+                },
+            ],
+            'type_documents' => 'required|array',
+            'type_documents.*.date_issue' => 'required|date',
+            'type_documents.*.expiration_date' => [
+                'required', // Obligatorio
+                function ($attribute, $value, $fail) {
+                    preg_match('/^type_documents\.(\d+)\.expiration_date/', $attribute, $matches);
+                    $index = $matches[1];
+
+                    // Obtén la fecha de expedición correcta (date_issue, no expiration_date)
+                    $dateIssue = $this->type_documents[$index]['date_issue'] ?? null; 
+
+                    // Validar formato de expiration_date
+                    try {
+                        $dIssue = \Carbon\Carbon::parse($dateIssue);
+                        $dExp = \Carbon\Carbon::parse($value); // Si $value es inválido, lanzará excepción
+                    } catch (\Exception $e) {
+                        $fail("Formato de fecha inválido en {$attribute}."); 
+                        return;
+                    }
+
+                    // Comparación de fechas
+                    if (!$dExp->gt($dIssue)) {
+                        $fail("La fecha de vencimiento debe ser posterior a la fecha de expedición ({$dIssue->format('Y-m-d')}).");
                     }
                 },
             ],
@@ -134,6 +161,8 @@ class VehicleStoreRequest extends FormRequest
             'photo_right_side.extensions' => 'El archivo debe ser de tipo PNG, JPG.',
             'photo_left_side.required' => 'El campo es obligatorio',
             'photo_left_side.extensions' => 'El archivo debe ser de tipo PNG, JPG.',
+
+            'type_documents.*.expiration_date.required' => 'El campo es obligatorio',
         ];
     }
 
@@ -141,6 +170,7 @@ class VehicleStoreRequest extends FormRequest
     {
         $this->merge([
             'have_trailer' => $this->have_trailer == 'true' ? true : false,
+            'type_documents' => json_decode($this->input('type_documents'), true),
         ]);
     }
 
