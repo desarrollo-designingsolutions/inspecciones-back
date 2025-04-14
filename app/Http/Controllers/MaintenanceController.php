@@ -14,7 +14,6 @@ use App\Repositories\MaintenanceRepository;
 use App\Repositories\MaintenanceTypeGroupRepository;
 use App\Repositories\MaintenanceTypeRepository;
 use App\Repositories\VehicleRepository;
-use App\Services\CacheService;
 use App\Traits\HttpResponseTrait;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -23,8 +22,6 @@ class MaintenanceController extends Controller
 {
     use HttpResponseTrait;
 
-    private $key_redis_project;
-
     public function __construct(
         protected MaintenanceRepository $maintenanceRepository,
         protected MaintenanceTypeRepository $maintenanceTypeRepository,
@@ -32,10 +29,7 @@ class MaintenanceController extends Controller
         protected MaintenanceInputResponseRepository $maintenanceInputResponseRepository,
         protected VehicleRepository $vehicleRepository,
         protected QueryController $queryController,
-        protected CacheService $cacheService,
-    ) {
-        $this->key_redis_project = env('KEY_REDIS_PROJECT');
-    }
+    ) {}
 
     public function paginate(Request $request)
     {
@@ -113,10 +107,6 @@ class MaintenanceController extends Controller
                 );
             }
 
-            logMessage($post1['vehicle_id']['value']);
-
-            $this->cacheService->clearByPrefix($this->key_redis_project . 'string:vehicles_find_'.$post1['vehicle_id']['value'].'_*');
-
             return [
                 'code' => 200,
                 'message' => 'Mantenimiento agregado correctamente',
@@ -170,10 +160,6 @@ class MaintenanceController extends Controller
                     ]
                 );
             }
-
-            logMessage($post1['vehicle_id']);
-
-            $this->cacheService->clearByPrefix($this->key_redis_project . 'string:vehicles_find_'.$post1['vehicle_id'].'_*');
 
             return [
                 'code' => 200,
