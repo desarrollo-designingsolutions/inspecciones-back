@@ -14,6 +14,7 @@ use App\Repositories\VehicleDocumentRepository;
 use App\Repositories\VehicleEmergencyElementRepository;
 use App\Repositories\VehicleRepository;
 use App\Repositories\VehicleStructureRepository;
+use App\Services\CacheService;
 use App\Traits\HttpResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -26,6 +27,8 @@ class VehicleController extends Controller
 {
     use HttpResponseTrait;
 
+    private $key_redis_project;
+
     public function __construct(
         protected VehicleRepository $vehicleRepository,
         protected QueryController $queryController,
@@ -34,7 +37,10 @@ class VehicleController extends Controller
         protected VehicleEmergencyElementRepository $vehicleEmergencyElementRepository,
         protected MaintenanceTypeGroupRepository $maintenanceTypeGroupRepository,
         protected InspectionTypeGroupRepository $inspectionTypeGroupRepository,
-    ) {}
+        protected CacheService $cacheService,
+    ) {
+        $this->key_redis_project = env('KEY_REDIS_PROJECT');
+    }
 
     public function paginate(Request $request)
     {
@@ -488,8 +494,9 @@ class VehicleController extends Controller
 
     public function pdfExport(Request $request)
     {
+        $this->cacheService->clearByPrefix($this->key_redis_project . 'string:vehicles_find_' . $request->input('id') . '_*');
+        
         return $this->execute(function () use ($request) {
-
             $vehicle = $this->vehicleRepository->find($request->input('id'), ['maintenance']);
 
             $maintenanceType = $this->maintenanceTypeGroupRepository->list(
@@ -514,33 +521,40 @@ class VehicleController extends Controller
                 $table[0][$key + 2] = $value->name;
             }
 
-            foreach ($vehicle->maintenance as $key => $currentMaintenance) {
-                $rowIndex = $key + 1;
-                $table[$rowIndex][] = Carbon::parse($currentMaintenance->maintenance_date)->format('Y');
-                $table[$rowIndex][] = Carbon::parse($currentMaintenance->maintenance_date)->format('m');
+            // Agrupar mantenimientos por Año y Mes
+            $groupedMaintenances = collect($vehicle->maintenance)->groupBy(function ($item) {
+                return Carbon::parse($item->maintenance_date)->format('Y-m');
+            });
 
-                // Iterar sobre cada tipo de mantenimiento (columnas)
+            $rowIndex = 1;
+            foreach ($groupedMaintenances as $yearMonth => $maintenancesInGroup) {
+                $year = Carbon::parse($yearMonth . '-01')->format('Y');
+                $month = Carbon::parse($yearMonth . '-01')->format('m');
+
+                $table[$rowIndex][0] = $year;
+                $table[$rowIndex][1] = $month;
+
+                // Inicializar contadores por cada tipo de mantenimiento
                 for ($columnIndex = 2; $columnIndex < count($table[0]); $columnIndex++) {
-                    $count = 0; // Reiniciar contador para cada celda
+                    $count = 0;
                     $maintenanceTypeName = $table[0][$columnIndex];
 
-                    // Obtener el tipo de mantenimiento correspondiente a esta columna
-                    $maintenanceTypeGroup = $currentMaintenance->maintenanceType->maintenanceTypeGroups
-                        ->where('name', $maintenanceTypeName)
-                        ->first();
+                    foreach ($maintenancesInGroup as $maintenance) {
+                        $maintenanceTypeGroup = $maintenance->maintenanceType->maintenanceTypeGroups
+                            ->where('name', $maintenanceTypeName)
+                            ->first();
 
-                    if ($maintenanceTypeGroup) {
-                        // Contar solo las respuestas asociadas al mantenimiento actual
-                        foreach ($maintenanceTypeGroup->maintenanceTypeInputs as $input) {
-                            foreach ($input->maintenanceInputResponses as $response) {
-                                // Verificar si la respuesta pertenece al mantenimiento actual
-                                if ($response->maintenance_id === $currentMaintenance->id) {
-                                    if (
-                                        ! empty($response->type) ||
-                                        ! empty($response->type_maintenance) ||
-                                        ! empty($response->comment)
-                                    ) {
-                                        $count++;
+                        if ($maintenanceTypeGroup) {
+                            foreach ($maintenanceTypeGroup->maintenanceTypeInputs as $input) {
+                                foreach ($input->maintenanceInputResponses as $response) {
+                                    if ($response->maintenance_id === $maintenance->id) {
+                                        if (
+                                            !empty($response->type) ||
+                                            !empty($response->type_maintenance) ||
+                                            !empty($response->comment)
+                                        ) {
+                                            $count++;
+                                        }
                                     }
                                 }
                             }
@@ -549,6 +563,8 @@ class VehicleController extends Controller
 
                     $table[$rowIndex][$columnIndex] = $count;
                 }
+
+                $rowIndex++;
             }
 
             $data = [
