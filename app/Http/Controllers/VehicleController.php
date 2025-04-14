@@ -107,7 +107,7 @@ class VehicleController extends Controller
         }
     }
 
-    public function store(VehicleStoreRequest $request)
+    public function store(Request $request)
     {
 
         try {
@@ -194,7 +194,10 @@ class VehicleController extends Controller
             }
 
             // TYPE DOCUMENTS
-            $type_documents = json_decode($request->input('type_documents'), 1);
+            $type_documents = is_string($request->input('type_documents'))
+                ? json_decode($request->input('type_documents'), true)
+                : $request->input('type_documents');
+                
             $arrayIds = collect($type_documents)->pluck('id');
             $this->vehicleDocumentRepository->deleteArray($arrayIds, $vehicle->id);
 
@@ -353,7 +356,13 @@ class VehicleController extends Controller
             }
 
             // TYPE DOCUMENTS
-            $type_documents = json_decode($request->input('type_documents'), 1);
+
+            logMessage($request->input('type_documents'));
+
+            $type_documents = is_string($request->input('type_documents'))
+                ? json_decode($request->input('type_documents'), true)
+                : $request->input('type_documents');
+
             $arrayIds = collect($type_documents)->pluck('id');
             $this->vehicleDocumentRepository->deleteArray($arrayIds, $vehicle->id);
 
@@ -495,7 +504,7 @@ class VehicleController extends Controller
     public function pdfExport(Request $request)
     {
         $this->cacheService->clearByPrefix($this->key_redis_project . 'string:vehicles_find_' . $request->input('id') . '_*');
-        
+
         return $this->execute(function () use ($request) {
             $vehicle = $this->vehicleRepository->find($request->input('id'), ['maintenance']);
 
