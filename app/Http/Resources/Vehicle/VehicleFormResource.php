@@ -31,6 +31,7 @@ class VehicleFormResource extends JsonResource
                     'document_number' => $item->document_number,
                     'date_issue' => $item->date_issue,
                     'expiration_date' => $item->expiration_date,
+                    'photo' => $item->photo,
                 ];
             });
         }
