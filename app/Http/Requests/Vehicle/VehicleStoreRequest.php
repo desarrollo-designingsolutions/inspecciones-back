@@ -76,6 +76,7 @@ class VehicleStoreRequest extends FormRequest
                         }
                     }
                 },
+                
             ],
             'type_documents' => 'required|array',
             'type_documents.*.date_issue' => 'required|date',
