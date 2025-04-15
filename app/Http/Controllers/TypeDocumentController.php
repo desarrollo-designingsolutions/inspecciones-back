@@ -154,7 +154,7 @@ class TypeDocumentController extends Controller
             if ($typeVehicle) {
                 
                 if (
-                    $typeVehicle->VehicleDocuments()->exists()
+                    $typeVehicle->vehicleDocuments()->exists()
                 ) {
                     throw new \Exception('No se puede eliminar el registro, por que tiene relación de datos en otros módulos');
                 }

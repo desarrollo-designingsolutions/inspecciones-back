@@ -187,11 +187,11 @@ class UserController extends Controller
             if ($user) {
 
                 // Verificar si hay registros relacionados
-                // if (
-                //     $user->users()->exists()
-                // ) {
-                //     throw new \Exception('No se puede eliminar el usuario, por que tiene relación de datos en otros módulos');
-                // }
+                if (
+                    $user->inspectionUserInspections()->exists() || $user->operatorUserInspections()->exists() || $user->machanicUserMaintenances()->exists() || $user->operatorUserMaintenances()->exists() || $user->inspectionUserMaintenances()->exists()
+                ) {
+                    throw new \Exception('No se puede eliminar el usuario, por que tiene relación de datos en otros módulos');
+                }
 
                 $user->delete();
                 $msg = 'Registro eliminado correctamente';
@@ -206,7 +206,7 @@ class UserController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'message' => $th->getMessage(),
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);

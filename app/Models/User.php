@@ -94,4 +94,29 @@ class User extends Authenticatable
     {
         return $this->role ? $this->role->mechanic : false;
     }
+
+    public function inspectionUserInspections()
+    {
+        return $this->hasMany(Inspection::class, 'user_inspector_id', 'id');
+    }
+
+    public function operatorUserInspections()
+    {
+        return $this->hasMany(Inspection::class, 'user_operator_id', 'id');
+    }
+
+    public function machanicUserMaintenances()
+    {
+        return $this->hasMany(Maintenance::class, 'user_mechanic_id', 'id');
+    }
+
+    public function operatorUserMaintenances()
+    {
+        return $this->hasMany(Maintenance::class, 'user_operator_id', 'id');
+    }
+
+    public function inspectionUserMaintenances()
+    {
+        return $this->hasMany(Maintenance::class, 'user_inspector_id', 'id');
+    }
 }

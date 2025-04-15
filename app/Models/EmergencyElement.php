@@ -26,7 +26,7 @@ class EmergencyElement extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function VehicleEmergencyElements()
+    public function vehicleEmergencyElements()
     {
         return $this->hasMany(VehicleEmergencyElement::class, 'emergency_element_id');
     }

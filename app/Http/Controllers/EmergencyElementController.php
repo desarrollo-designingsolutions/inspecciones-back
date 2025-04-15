@@ -155,7 +155,7 @@ class EmergencyElementController extends Controller
             if ($typeVehicle) {
 
                 if (
-                    $typeVehicle->VehicleEmergencyElements()->exists()
+                    $typeVehicle->vehicleEmergencyElements()->exists()
                 ) {
                     throw new \Exception('No se puede eliminar el registro, por que tiene relación de datos en otros módulos');
                 }
