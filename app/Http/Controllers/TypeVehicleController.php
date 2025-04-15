@@ -152,6 +152,14 @@ class TypeVehicleController extends Controller
             DB::beginTransaction();
             $typeVehicle = $this->typeVehicleRepository->find($id);
             if ($typeVehicle) {
+
+                if (
+                    $typeVehicle->vehicles()->exists()
+                ) {
+                    throw new \Exception('No se puede eliminar el registro, por que tiene relación de datos en otros módulos');
+                }
+
+
                 $typeVehicle->delete();
                 $msg = 'Registro eliminado correctamente';
             } else {
@@ -165,7 +173,7 @@ class TypeVehicleController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'message' => $th->getMessage(),
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);

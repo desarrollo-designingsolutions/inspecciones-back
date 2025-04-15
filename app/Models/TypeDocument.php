@@ -25,4 +25,9 @@ class TypeDocument extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function VehicleDocuments()
+    {
+        return $this->hasMany(VehicleDocument::class, 'type_document_id');
+    }
 }

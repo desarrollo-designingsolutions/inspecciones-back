@@ -152,6 +152,13 @@ class BrandVehicleController extends Controller
             DB::beginTransaction();
             $brandVehicle = $this->brandVehicleRepository->find($id);
             if ($brandVehicle) {
+
+                if (
+                    $brandVehicle->vehicles()->exists()
+                ) {
+                    throw new \Exception('No se puede eliminar el registro, por que tiene relación de datos en otros módulos');
+                }
+
                 $brandVehicle->delete();
                 $msg = 'Registro eliminado correctamente';
             } else {
@@ -165,7 +172,7 @@ class BrandVehicleController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'message' => $th->getMessage(),
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);
