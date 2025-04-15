@@ -414,6 +414,13 @@ class VehicleController extends Controller
             DB::beginTransaction();
             $vehicle = $this->vehicleRepository->find($id);
             if ($vehicle) {
+
+                if (
+                    $vehicle->inspection()->exists() || $vehicle->maintenance()->exists()
+                ) {
+                    throw new \Exception('No se puede eliminar el registro, por que tiene relación de datos en otros módulos');
+                }
+
                 $vehicle->type_documents()->delete();
                 $vehicle->emergency_elements()->delete();
                 $vehicle->delete();
@@ -429,7 +436,7 @@ class VehicleController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'message' => $th->getMessage(),
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);

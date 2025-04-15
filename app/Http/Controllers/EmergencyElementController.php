@@ -153,6 +153,13 @@ class EmergencyElementController extends Controller
             DB::beginTransaction();
             $typeVehicle = $this->emergencyElementRepository->find($id);
             if ($typeVehicle) {
+
+                if (
+                    $typeVehicle->VehicleEmergencyElements()->exists()
+                ) {
+                    throw new \Exception('No se puede eliminar el registro, por que tiene relación de datos en otros módulos');
+                }
+
                 $typeVehicle->delete();
                 $msg = 'Registro eliminado correctamente';
             } else {
@@ -166,7 +173,7 @@ class EmergencyElementController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => Constants::ERROR_MESSAGE_TRYCATCH,
+                'message' => $th->getMessage(),
                 'error' => $th->getMessage(),
                 'line' => $th->getLine(),
             ], 500);

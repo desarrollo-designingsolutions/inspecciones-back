@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TypeVehicle extends Model
 {
-    use Cacheable, HasFactory, HasUuids,Searchable,SoftDeletes;
+    use Cacheable, HasFactory, HasUuids, Searchable, SoftDeletes;
 
     protected $casts = [
         'is_active' => 'boolean',
@@ -24,5 +24,10 @@ class TypeVehicle extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function vehicles()
+    {
+        return $this->hasMany(Vehicle::class, 'type_vehicle_id');
     }
 }

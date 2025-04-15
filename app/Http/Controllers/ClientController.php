@@ -140,6 +140,13 @@ class ClientController extends Controller
             DB::beginTransaction();
             $client = $this->clientRepository->find($id);
             if ($client) {
+
+                // if (
+                //     $client->company()->exists()
+                // ) {
+                //     throw new \Exception('No se puede eliminar el registro, por que tiene relación de datos en otros módulos');
+                // }
+
                 $client->delete();
                 $msg = 'Registro eliminado correctamente';
             } else {
