@@ -170,7 +170,7 @@ class VehicleStoreRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'have_trailer' => $this->have_trailer == 'true' ? true : false,
+            'have_trailer' => formattedElement($this->have_trailer),
             'type_documents' => json_decode($this->input('type_documents'), true),
         ]);
     }
