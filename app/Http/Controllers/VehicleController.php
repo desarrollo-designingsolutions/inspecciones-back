@@ -107,7 +107,7 @@ class VehicleController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function store(VehicleStoreRequest $request)
     {
 
         try {
