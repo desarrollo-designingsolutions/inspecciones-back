@@ -25,6 +25,7 @@ use App\Repositories\VehicleRepository;
 use App\Traits\HttpResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class InspectionController extends Controller
@@ -736,7 +737,8 @@ class InspectionController extends Controller
                     return [
                         'id' => $inspection->id,
                         'inspection_date' => $inspection->inspection_date,
-                        'general_comment' => $inspection->general_comment
+                        'general_comment' => $inspection->general_comment,
+                        'user_operator' => $inspection->user_operator?->full_name
                     ];
                 })->all()
             ];
@@ -751,6 +753,134 @@ class InspectionController extends Controller
                 'code' => 200,
                 'excel' => $excelBase64,
                 'inspection' => $data,
+            ];
+        });
+    }
+
+    public function pdfReportExport(Request $request)
+    {
+        return $this->execute(function () use ($request) {
+            $post = $request->all();
+
+            $inspections = Inspection::with([
+                'inspection_group_inspection.inspectionTypeInputs.inspectionInputResponses.inspection',
+            ])->where(function ($query) use ($post) {
+                $query->whereMonth('inspection_date', $post['month']);
+                $query->whereYear('inspection_date', $post['year']);
+                $query->where('inspection_type_id', $post['inspectionType_id']);
+                $query->where('company_id', $post['company_id']);
+                $query->where('vehicle_id', $post['vehicle_id']);
+            })->get();
+
+            if ($inspections->isEmpty()) {
+                return [
+                    'code' => 404,
+                    'message' => 'No se encontraron inspecciones filtro seleccionados.',
+                ];
+            }
+
+            // Agrupar todas las inspection_group_inspection por su id para unificarlas en una sola tabla
+            $groupedInspections = $inspections->flatMap(function ($inspection) {
+                return $inspection->inspection_group_inspection->map(function ($group) use ($inspection) {
+                    return [
+                        'inspection_id' => $inspection->id,
+                        'inspection_date' => $inspection->inspection_date,
+                        'general_comment' => $inspection->general_comment,
+                        'group_id' => $group->id,
+                        'group_name' => $group->name,
+                        'inspection_type_inputs' => $group->inspectionTypeInputs->map(function ($input) use ($group, $inspection) {
+                            $responses = $input->inspectionInputResponses->filter(function ($response) use ($inspection) {
+                                return $response->inspection_id === $inspection->id;
+                            })->map(function ($response) {
+                                $inspectionDate = $response->inspection->inspection_date;
+                                $day = Carbon::create($inspectionDate)->format('d');
+                                return [
+                                    'response' => $response->response,
+                                    'observation' => $response->observation,
+                                    'day' => intval($day),
+                                    'inspection_id' => $response->inspection_id
+                                ];
+                            })->all();
+
+                            return [
+                                'id' => $input->id,
+                                'name' => $input->name,
+                                'inspection_input_responses' => $responses
+                            ];
+                        })->all()
+                    ];
+                });
+            })->groupBy('group_id')->map(function ($group) {
+                $first = $group->first();
+                return [
+                    'name' => $first['group_name'],
+                    'inspection_type_inputs' => collect($group)->flatMap(function ($item) {
+                        return $item['inspection_type_inputs'];
+                    })->groupBy('id')->map(function ($inputs) {
+                        $firstInput = $inputs->first();
+                        return [
+                            'name' => $firstInput['name'],
+                            'inspection_input_responses' => $inputs->flatMap(function ($input) {
+                                return $input['inspection_input_responses'];
+                            })->all()
+                        ];
+                    })->values()->all()
+                ];
+            })->values()->all();
+
+            // Mapeo de nombres de meses en español a sus números correspondientes
+            $monthNames = [
+                1 => 'Enero',
+                2 => 'Febrero',
+                3 => 'Marzo',
+                4 => 'Abril',
+                5 => 'Mayo',
+                6 => 'Junio',
+                7 => 'Julio',
+                8 => 'Agosto',
+                9 => 'Septiembre',
+                10 => 'Octubre',
+                11 => 'Noviembre',
+                12 => 'Diciembre',
+            ];
+
+            // Calcular los días del mes seleccionado
+            $daysInMonth = Carbon::create($request['year'], $request['month'], 1)->daysInMonth;
+
+            $viewData = [
+                'data' => [
+                    'license_plate' => $request['license_plate'],
+                    'month' => $monthNames[$request['month']],
+                    'year' => $request['year'],
+                    'days' => $daysInMonth,
+                ],
+                'inspections' => $groupedInspections,
+                'inspection_details' => $inspections->map(function ($inspection) {
+                    return [
+                        'id' => $inspection->id,
+                        'inspection_date' => $inspection->inspection_date,
+                        'general_comment' => $inspection->general_comment,
+                        'user_operator' => $inspection->user_operator?->full_name
+                    ];
+                })->all()
+            ];
+
+            $pdf = $this->inspectionRepository
+                ->pdf('Exports.Vehicle.VehicleDesignExportPdf', $viewData, is_stream: false);
+
+            if (empty($pdf)) {
+                throw new \Exception('Error al generar el PDF');
+            }
+
+            $content = $pdf->getOriginalContent();
+
+            $filename = 'temp/pdf/reporte de vehiculos ' . $monthNames[$request['month']] . $request['year'] . $daysInMonth . '.pdf';
+            Storage::disk('public')->put($filename, $content);
+            $path = Storage::disk('public')->url($filename);
+
+            return [
+                'code' => 200,
+                'path' => $path,
             ];
         });
     }

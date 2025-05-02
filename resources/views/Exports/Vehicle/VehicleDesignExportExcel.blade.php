@@ -1,28 +1,36 @@
 @php
-    function getResponseByIdAndDay($responses, $day)
-    {
-        $responseItem = collect($responses)->firstWhere('day', $day);
-        if ($responseItem) {
-            $response = $responseItem['response'];
-            switch ($response) {
-                case 'good':
-                    return 'B';
-                case 'regular':
-                    return 'R';
-                case 'bad':
-                    return 'M';
-                case 'not applicable':
-                    return 'NA';
-                case 'complies':
-                    return 'C';
-                case 'does not comply':
-                    return 'NC';
-                default:
-                    return $response;
-            }
-        }
-        return '';
-    }
+function getResponseByIdAndDay($responses, $day)
+{
+$responseItem = collect($responses)->firstWhere('day', $day);
+if ($responseItem) {
+$response = $responseItem['response'];
+switch ($response) {
+case 'good':
+return 'B';
+case 'regular':
+return 'R';
+case 'bad':
+return 'M';
+case 'not applicable':
+return 'NA';
+case 'complies':
+return 'C';
+case 'does not comply':
+return 'NC';
+default:
+return $response;
+}
+}
+return '';
+}
+
+// Procesar operadores por día
+$operatorsByDay = [];
+foreach ($inspections['inspection_details'] as $detail) {
+$date = \Carbon\Carbon::parse($detail['inspection_date']);
+$day = $date->day; // Obtener el día del mes (1-31)
+$operatorsByDay[$day] = $detail['user_operator'] ?? 'Sin operador';
+}
 @endphp
 
 <div>
@@ -32,7 +40,7 @@
                 <th colspan="2"></th>
                 <th colspan="3" style="padding: 10px;">
                     <div style="display: flex; justify-content: center; align-items: center; text-align: center;">
-                        <img src="https://api.inspecciones.desarrollo.com.co/storage/companies/company_9e21d8d4-e4fc-410b-b730-853b536b1634/en9ZVxNUhRGB1omZsvlnHfqSKTvhhD5PXi3GVxA4.png"
+                        <img src="{{ public_path('storage/logo_ochoa.png') }}"
                             alt="Logo" width="45" height="45">
                     </div>
                 </th>
@@ -45,16 +53,16 @@
 
             <tr>
                 <th colspan="5" style="text-align: center; font-weight: bold; background: gray;">
-                    Código:
+                    Código: HSEQ-F-25
                 </th>
                 <th colspan="10" style="text-align: center;">
-                    Fecha: 
+                    Fecha:
                 </th>
                 <th colspan="10" style="text-align: center;">
-                    Versión:
+                    Versión: 3
                 </th>
                 <th colspan="11" style="text-align: center; font-weight: bold; background: gray;">
-                    Página:
+                    Página: 1 de 1
                 </th>
             </tr>
 
@@ -79,6 +87,7 @@
                 </th>
                 <th colspan="15">
                     Nombre del operador:
+                    {{ collect($operatorsByDay)->filter()->sortKeys()->first() ?? '' }}
                 </th>
                 <th colspan="16">
                     Placa Vehículo: {{ $data['license_plate'] }}
@@ -95,53 +104,57 @@
             </tr>
 
             @foreach ($inspections['inspections'] as $inspectionTab)
-                <tr>
-                    <th colspan="3" style="text-align: center; font-weight: bold;">
-                        {{ $inspectionTab['name'] }}
-                    </th>
-                    <th colspan="1" style="text-align: center; font-weight: bold;">
-                        APLICA
-                    </th>
-                    <th colspan="1" style="text-align: center; font-weight: bold;">
-                        NO APLICA
-                    </th>
-                    @for ($i = 1; $i <= $data['days']; $i++)
-                        <th colspan="1" style="text-align: center; font-weight: bold;">{{ $i }}</th>
+            <tr>
+                <th colspan="1" style="text-align: center; font-weight: bold;">
+                    item
+                </th>
+                <th colspan="4" style="text-align: center; font-weight: bold; text-transform: uppercase;">
+                    {{ $inspectionTab['name'] }}
+                </th>
+                @for ($i = 1; $i <= $data['days']; $i++)
+                    <th colspan="1" style="text-align: center; font-weight: bold;">{{ $i }}</th>
                     @endfor
-                </tr>
+            </tr>
 
-                @foreach ($inspectionTab['inspection_type_inputs'] as $inspectionInput)
-                    <tr>
-                        <th colspan="5">
-                            {{ $inspectionInput['name'] }}
-                        </th>
-                        @for ($i = 1; $i <= $data['days']; $i++)
-                            <th colspan="1" style="text-align: center; font-weight: bold;">
-                                {{ getResponseByIdAndDay($inspectionInput['inspection_input_responses'], $i) }}
-                            </th>
-                        @endfor
-                    </tr>
-                @endforeach
+            @foreach ($inspectionTab['inspection_type_inputs'] as $inspectionInput)
+            <tr>
+                <th colspan="1" style="text-align: center;">
+                    {{ $loop->iteration }}
+                </th>
+                <th colspan="4" style="text-align:left;">
+                    {{ $inspectionInput['name'] }}
+                </th>
+                @for ($i = 1; $i <= $data['days']; $i++)
+                    <th colspan="1" style="text-align: center; font-weight: bold;">
+                    {{ getResponseByIdAndDay($inspectionInput['inspection_input_responses'], $i) }}
+                    </th>
+                    @endfor
+            </tr>
+            @endforeach
             @endforeach
 
             <tr>
-                <th colspan="36"></th>
-            </tr>
-
-            <tr>
-                <th colspan="36"></th>
-            </tr>
-
-            <tr>
-                <th colspan="36">
+                <th colspan="36" style="text-align: center;">
                     Califique B (Bueno), M (Malo), NA (No Aplica), C (Cumple), NC (No Cumple), R (Regular)
                 </th>
             </tr>
             <tr>
-                <th colspan="36">
+                <th colspan="36" style="text-align:left; height: 50px; vertical-align: top;">
                     OBSERVACIONES:
                 </th>
             </tr>
+
+            <tr>
+                <th colspan="5" style="text-align: center; font-weight: bold;">
+                    NOMBRE OPERADOR DE ACUERDO A ASIGNACIÓN DIARIA
+                </th>
+                @for ($i = 1; $i <= $data['days']; $i++)
+                    <th colspan="1" style="text-align: center; white-space: normal; word-wrap: break-word; min-width: 50px;">
+                    {{ $operatorsByDay[$i] ?? '' }}
+                    </th>
+                    @endfor
+            </tr>
+
         </thead>
     </table>
 </div>
