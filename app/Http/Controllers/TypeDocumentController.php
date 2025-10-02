@@ -152,7 +152,7 @@ class TypeDocumentController extends Controller
             DB::beginTransaction();
             $typeVehicle = $this->typeDocumentRepository->find($id);
             if ($typeVehicle) {
-                
+
                 if (
                     $typeVehicle->vehicleDocuments()->exists()
                 ) {

@@ -16,7 +16,7 @@ class EmergencyElement extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
-    
+
     protected $customCachePrefixes = [
         'string:{table}_list*',
     ];

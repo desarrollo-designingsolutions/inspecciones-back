@@ -19,7 +19,7 @@ class VehicleStoreRequest extends FormRequest
         $rules = [
             // Modulo 1
             'company_id' => 'required',
-            'license_plate' => 'required|max:6|unique:vehicles,license_plate,' . $this->id . ',id,company_id,' . $this->company_id,
+            'license_plate' => 'required|max:6|unique:vehicles,license_plate,'.$this->id.',id,company_id,'.$this->company_id,
             'type_vehicle_id' => 'required',
             'date_registration' => 'required|date|before_or_equal:today',
             'brand_vehicle_id' => 'required',
@@ -76,7 +76,7 @@ class VehicleStoreRequest extends FormRequest
                         }
                     }
                 },
-                
+
             ],
             'type_documents' => 'required|array',
             'type_documents.*.date_issue' => 'required|date',
@@ -87,19 +87,20 @@ class VehicleStoreRequest extends FormRequest
                     $index = $matches[1];
 
                     // Obtén la fecha de expedición correcta (date_issue, no expiration_date)
-                    $dateIssue = $this->type_documents[$index]['date_issue'] ?? null; 
+                    $dateIssue = $this->type_documents[$index]['date_issue'] ?? null;
 
                     // Validar formato de expiration_date
                     try {
                         $dIssue = \Carbon\Carbon::parse($dateIssue);
                         $dExp = \Carbon\Carbon::parse($value); // Si $value es inválido, lanzará excepción
                     } catch (\Exception $e) {
-                        $fail("Formato de fecha inválido en {$attribute}."); 
+                        $fail("Formato de fecha inválido en {$attribute}.");
+
                         return;
                     }
 
                     // Comparación de fechas
-                    if (!$dExp->gt($dIssue)) {
+                    if (! $dExp->gt($dIssue)) {
                         $fail("La fecha de vencimiento debe ser posterior a la fecha de expedición ({$dIssue->format('Y-m-d')}).");
                     }
                 },

@@ -145,7 +145,7 @@ class VehicleController extends Controller
             // PHOTOS
             if ($request->file('photo_front')) {
                 $file = $request->file('photo_front');
-                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_front');
+                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_front');
                 $photo_front = $file->store($ruta, 'public');
                 $vehicle->photo_front = $photo_front;
                 $vehicle->save();
@@ -153,7 +153,7 @@ class VehicleController extends Controller
 
             if ($request->file('photo_rear')) {
                 $file = $request->file('photo_rear');
-                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_rear');
+                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_rear');
                 $photo_rear = $file->store($ruta, 'public');
                 $vehicle->photo_rear = $photo_rear;
                 $vehicle->save();
@@ -161,7 +161,7 @@ class VehicleController extends Controller
 
             if ($request->file('photo_right_side')) {
                 $file = $request->file('photo_right_side');
-                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_right_side');
+                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_right_side');
                 $photo_right_side = $file->store($ruta, 'public');
                 $vehicle->photo_right_side = $photo_right_side;
                 $vehicle->save();
@@ -169,7 +169,7 @@ class VehicleController extends Controller
 
             if ($request->file('photo_left_side')) {
                 $file = $request->file('photo_left_side');
-                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_left_side');
+                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_left_side');
                 $photo_left_side = $file->store($ruta, 'public');
                 $vehicle->photo_left_side = $photo_left_side;
                 $vehicle->save();
@@ -186,7 +186,7 @@ class VehicleController extends Controller
                     'vehicle_id' => $vehicle->id,
                     'emergency_element_id' => $value['emergency_element_id']['value'],
                     'quantity' => $value['quantity'],
-                    'expiration_date' => (isset($value['expiration_date']) && !empty($value['expiration_date']))
+                    'expiration_date' => (isset($value['expiration_date']) && ! empty($value['expiration_date']))
                         ? $value['expiration_date']
                         : null,
                 ];
@@ -197,25 +197,25 @@ class VehicleController extends Controller
             $type_documents = is_string($request->input('type_documents'))
                 ? json_decode($request->input('type_documents'), true)
                 : $request->input('type_documents');
-                
+
             $arrayIds = collect($type_documents)->pluck('id');
             $this->vehicleDocumentRepository->deleteArray($arrayIds, $vehicle->id);
 
             $cantfiles = $request->input('cantfiles');
 
             for ($i = 0; $i < $cantfiles; $i++) {
-                $idFile = $request->input('file_id' . $i) == 'null' ? null : $request->input('file_id' . $i);
+                $idFile = $request->input('file_id'.$i) == 'null' ? null : $request->input('file_id'.$i);
 
                 $dataSave = [
                     'id' => $idFile,
                     'vehicle_id' => $vehicle->id,
-                    'type_document_id' => $request->input('file_type_document_id' . $i),
-                    'document_number' => $request->input('file_document_number' . $i),
-                    'date_issue' => $request->input('file_date_issue' . $i),
-                    'expiration_date' => $request->input('file_expiration_date' . $i),
+                    'type_document_id' => $request->input('file_type_document_id'.$i),
+                    'document_number' => $request->input('file_document_number'.$i),
+                    'date_issue' => $request->input('file_date_issue'.$i),
+                    'expiration_date' => $request->input('file_expiration_date'.$i),
                 ];
-                if ($request->hasFile('file_photo' . $i)) {
-                    $file = $request->file('file_photo' . $i);
+                if ($request->hasFile('file_photo'.$i)) {
+                    $file = $request->file('file_photo'.$i);
                     $company_id = $request->input('company_id');
 
                     // Define la ruta donde se guardará el archivo
@@ -307,7 +307,7 @@ class VehicleController extends Controller
             // PHOTOS
             if ($request->file('photo_front')) {
                 $file = $request->file('photo_front');
-                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_front');
+                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_front');
                 $photo_front = $file->store($ruta, 'public');
                 $vehicle->photo_front = $photo_front;
                 $vehicle->save();
@@ -315,7 +315,7 @@ class VehicleController extends Controller
 
             if ($request->file('photo_rear')) {
                 $file = $request->file('photo_rear');
-                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_rear');
+                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_rear');
                 $photo_rear = $file->store($ruta, 'public');
                 $vehicle->photo_rear = $photo_rear;
                 $vehicle->save();
@@ -323,7 +323,7 @@ class VehicleController extends Controller
 
             if ($request->file('photo_right_side')) {
                 $file = $request->file('photo_right_side');
-                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_right_side');
+                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_right_side');
                 $photo_right_side = $file->store($ruta, 'public');
                 $vehicle->photo_right_side = $photo_right_side;
                 $vehicle->save();
@@ -331,7 +331,7 @@ class VehicleController extends Controller
 
             if ($request->file('photo_left_side')) {
                 $file = $request->file('photo_left_side');
-                $ruta = 'companies/company_' . $vehicle->company_id . '/vehicle/' . $vehicle->id . $request->input('photo_left_side');
+                $ruta = 'companies/company_'.$vehicle->company_id.'/vehicle/'.$vehicle->id.$request->input('photo_left_side');
                 $photo_left_side = $file->store($ruta, 'public');
                 $vehicle->photo_left_side = $photo_left_side;
                 $vehicle->save();
@@ -348,7 +348,7 @@ class VehicleController extends Controller
                     'vehicle_id' => $vehicle->id,
                     'emergency_element_id' => $value['emergency_element_id']['value'],
                     'quantity' => $value['quantity'],
-                    'expiration_date' => (isset($value['expiration_date']) && !empty($value['expiration_date']))
+                    'expiration_date' => (isset($value['expiration_date']) && ! empty($value['expiration_date']))
                         ? $value['expiration_date']
                         : null,
                 ];
@@ -369,18 +369,18 @@ class VehicleController extends Controller
             $cantfiles = $request->input('cantfiles');
 
             for ($i = 0; $i < $cantfiles; $i++) {
-                $idFile = $request->input('file_id' . $i) == 'null' ? null : $request->input('file_id' . $i);
+                $idFile = $request->input('file_id'.$i) == 'null' ? null : $request->input('file_id'.$i);
 
                 $dataSave = [
                     'id' => $idFile,
                     'vehicle_id' => $vehicle->id,
-                    'type_document_id' => $request->input('file_type_document_id' . $i),
-                    'document_number' => $request->input('file_document_number' . $i),
-                    'date_issue' => $request->input('file_date_issue' . $i),
-                    'expiration_date' => $request->input('file_expiration_date' . $i),
+                    'type_document_id' => $request->input('file_type_document_id'.$i),
+                    'document_number' => $request->input('file_document_number'.$i),
+                    'date_issue' => $request->input('file_date_issue'.$i),
+                    'expiration_date' => $request->input('file_expiration_date'.$i),
                 ];
-                if ($request->hasFile('file_photo' . $i)) {
-                    $file = $request->file('file_photo' . $i);
+                if ($request->hasFile('file_photo'.$i)) {
+                    $file = $request->file('file_photo'.$i);
                     $company_id = $request->input('company_id');
 
                     // Define la ruta donde se guardará el archivo
@@ -454,7 +454,7 @@ class VehicleController extends Controller
 
             DB::commit();
 
-            return response()->json(['code' => 200, 'message' => 'Vehículo ' . $msg . ' con éxito']);
+            return response()->json(['code' => 200, 'message' => 'Vehículo '.$msg.' con éxito']);
         } catch (Throwable $th) {
             DB::rollback();
 
@@ -510,7 +510,7 @@ class VehicleController extends Controller
 
     public function pdfExport(Request $request)
     {
-        $this->cacheService->clearByPrefix($this->key_redis_project . 'string:vehicles_find_' . $request->input('id') . '_*');
+        $this->cacheService->clearByPrefix($this->key_redis_project.'string:vehicles_find_'.$request->input('id').'_*');
 
         return $this->execute(function () use ($request) {
             $vehicle = $this->vehicleRepository->find($request->input('id'), ['maintenance']);
@@ -538,14 +538,14 @@ class VehicleController extends Controller
             }
 
             // Agrupar mantenimientos por Año y Mes
-            $groupedMaintenances = collect($vehicle->maintenance)->groupBy(function ($item) {
-                return Carbon::parse($item->maintenance_date)->format('Y-m');
-            });
+            $groupedMaintenances = collect($vehicle->maintenance)
+                ->groupBy(fn ($item) => Carbon::parse($item->maintenance_date)->format('Y-m'))
+                ->sortKeys(); // ascendente: 2025-01, 2025-04, 2025-06
 
             $rowIndex = 1;
             foreach ($groupedMaintenances as $yearMonth => $maintenancesInGroup) {
-                $year = Carbon::parse($yearMonth . '-01')->format('Y');
-                $month = Carbon::parse($yearMonth . '-01')->format('m');
+                $year = Carbon::parse($yearMonth.'-01')->format('Y');
+                $month = Carbon::parse($yearMonth.'-01')->format('m');
 
                 $table[$rowIndex][0] = $year;
                 $table[$rowIndex][1] = $month;
@@ -565,9 +565,8 @@ class VehicleController extends Controller
                                 foreach ($input->maintenanceInputResponses as $response) {
                                     if ($response->maintenance_id === $maintenance->id) {
                                         if (
-                                            !empty($response->type) ||
-                                            !empty($response->type_maintenance) ||
-                                            !empty($response->comment)
+                                            empty($response->type) &&
+                                            ! empty($response->type_maintenance)
                                         ) {
                                             $count++;
                                         }
@@ -597,7 +596,7 @@ class VehicleController extends Controller
 
             $content = $pdf->getOriginalContent();
 
-            $filename = 'temp/pdf/hoja_de_vida_' . $vehicle->license_plate . '.pdf';
+            $filename = 'temp/pdf/hoja_de_vida_'.$vehicle->license_plate.'.pdf';
             Storage::disk('public')->put($filename, $content);
             $path = Storage::disk('public')->url($filename);
 

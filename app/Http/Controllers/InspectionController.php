@@ -155,7 +155,7 @@ class InspectionController extends Controller
                 'title' => 'Se ha creado una nueva inspección',
                 'type_inspection' => $inspection->inspectionType->name,
                 'license_plate' => $inspection->vehicle->license_plate,
-                'action_url' => 'Inspection/Inspection-form/' . $inspection->inspection_type_id . '/view/' . $inspection->id,
+                'action_url' => 'Inspection/Inspection-form/'.$inspection->inspection_type_id.'/view/'.$inspection->id,
             ]);
 
             return [
@@ -281,7 +281,7 @@ class InspectionController extends Controller
 
             ($model->is_active == 1) ? $msg = 'habilitado(a)' : $msg = 'inhabilitado(a)';
 
-            return ['code' => 200, 'message' => 'Vehículo ' . $msg . ' con éxito'];
+            return ['code' => 200, 'message' => 'Vehículo '.$msg.' con éxito'];
         });
     }
 
@@ -514,7 +514,7 @@ class InspectionController extends Controller
                 'type_inspection' => $data['type_inspection'],
                 'license_plate' => $data['license_plate'],
                 'bussines_name' => $company->name,
-                'action_url' => env('SYSTEM_URL_FRONT') . $data['action_url'],
+                'action_url' => env('SYSTEM_URL_FRONT').$data['action_url'],
 
             ],  // Aquí pasas los parámetros para la plantilla, por ejemplo, el texto del mensaje
         );
@@ -691,43 +691,46 @@ class InspectionController extends Controller
                         'general_comment' => $inspection->general_comment,
                         'group_id' => $group->id,
                         'group_name' => $group->name,
-                        'inspection_type_inputs' => $group->inspectionTypeInputs->map(function ($input) use ($group, $inspection) {
+                        'inspection_type_inputs' => $group->inspectionTypeInputs->map(function ($input) use ($inspection) {
                             $responses = $input->inspectionInputResponses->filter(function ($response) use ($inspection) {
                                 return $response->inspection_id === $inspection->id;
                             })->map(function ($response) {
                                 $inspectionDate = $response->inspection->inspection_date;
                                 $day = Carbon::create($inspectionDate)->format('d');
+
                                 return [
                                     'response' => $response->response,
                                     'observation' => $response->observation,
                                     'day' => intval($day),
-                                    'inspection_id' => $response->inspection_id
+                                    'inspection_id' => $response->inspection_id,
                                 ];
                             })->all();
 
                             return [
                                 'id' => $input->id,
                                 'name' => $input->name,
-                                'inspection_input_responses' => $responses
+                                'inspection_input_responses' => $responses,
                             ];
-                        })->all()
+                        })->all(),
                     ];
                 });
             })->groupBy('group_id')->map(function ($group) {
                 $first = $group->first();
+
                 return [
                     'name' => $first['group_name'],
                     'inspection_type_inputs' => collect($group)->flatMap(function ($item) {
                         return $item['inspection_type_inputs'];
                     })->groupBy('id')->map(function ($inputs) {
                         $firstInput = $inputs->first();
+
                         return [
                             'name' => $firstInput['name'],
                             'inspection_input_responses' => $inputs->flatMap(function ($input) {
                                 return $input['inspection_input_responses'];
-                            })->all()
+                            })->all(),
                         ];
-                    })->values()->all()
+                    })->values()->all(),
                 ];
             })->values()->all();
 
@@ -738,9 +741,9 @@ class InspectionController extends Controller
                         'id' => $inspection->id,
                         'inspection_date' => $inspection->inspection_date,
                         'general_comment' => $inspection->general_comment,
-                        'user_operator' => $inspection->user_operator?->full_name
+                        'user_operator' => $inspection->user_operator?->full_name,
                     ];
-                })->all()
+                })->all(),
             ];
 
             // return $data;
@@ -788,43 +791,46 @@ class InspectionController extends Controller
                         'general_comment' => $inspection->general_comment,
                         'group_id' => $group->id,
                         'group_name' => $group->name,
-                        'inspection_type_inputs' => $group->inspectionTypeInputs->map(function ($input) use ($group, $inspection) {
+                        'inspection_type_inputs' => $group->inspectionTypeInputs->map(function ($input) use ($inspection) {
                             $responses = $input->inspectionInputResponses->filter(function ($response) use ($inspection) {
                                 return $response->inspection_id === $inspection->id;
                             })->map(function ($response) {
                                 $inspectionDate = $response->inspection->inspection_date;
                                 $day = Carbon::create($inspectionDate)->format('d');
+
                                 return [
                                     'response' => $response->response,
                                     'observation' => $response->observation,
                                     'day' => intval($day),
-                                    'inspection_id' => $response->inspection_id
+                                    'inspection_id' => $response->inspection_id,
                                 ];
                             })->all();
 
                             return [
                                 'id' => $input->id,
                                 'name' => $input->name,
-                                'inspection_input_responses' => $responses
+                                'inspection_input_responses' => $responses,
                             ];
-                        })->all()
+                        })->all(),
                     ];
                 });
             })->groupBy('group_id')->map(function ($group) {
                 $first = $group->first();
+
                 return [
                     'name' => $first['group_name'],
                     'inspection_type_inputs' => collect($group)->flatMap(function ($item) {
                         return $item['inspection_type_inputs'];
                     })->groupBy('id')->map(function ($inputs) {
                         $firstInput = $inputs->first();
+
                         return [
                             'name' => $firstInput['name'],
                             'inspection_input_responses' => $inputs->flatMap(function ($input) {
                                 return $input['inspection_input_responses'];
-                            })->all()
+                            })->all(),
                         ];
-                    })->values()->all()
+                    })->values()->all(),
                 ];
             })->values()->all();
 
@@ -860,9 +866,9 @@ class InspectionController extends Controller
                         'id' => $inspection->id,
                         'inspection_date' => $inspection->inspection_date,
                         'general_comment' => $inspection->general_comment,
-                        'user_operator' => $inspection->user_operator?->full_name
+                        'user_operator' => $inspection->user_operator?->full_name,
                     ];
-                })->all()
+                })->all(),
             ];
 
             $pdf = $this->inspectionRepository
@@ -874,7 +880,7 @@ class InspectionController extends Controller
 
             $content = $pdf->getOriginalContent();
 
-            $filename = 'temp/pdf/reporte de vehiculos ' . $monthNames[$request['month']] . $request['year'] . $daysInMonth . '.pdf';
+            $filename = 'temp/pdf/reporte de vehiculos '.$monthNames[$request['month']].$request['year'].$daysInMonth.'.pdf';
             Storage::disk('public')->put($filename, $content);
             $path = Storage::disk('public')->url($filename);
 
