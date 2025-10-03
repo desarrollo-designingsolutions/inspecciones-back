@@ -53,6 +53,11 @@ class Maintenance extends Model
         return $this->belongsTo(City::class);
     }
 
+    public function state(): BelongsTo
+    {
+        return $this->belongsTo(State::class);
+    }
+
     public function maintenanceInputResponses(): HasMany
     {
         return $this->hasMany(MaintenanceTypeInputResponse::class);

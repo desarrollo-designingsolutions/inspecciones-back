@@ -9,6 +9,7 @@ use App\Http\Resources\Maintenance\MaintenanceFormResource;
 use App\Http\Resources\Maintenance\MaintenanceGetVehicleDataResource;
 use App\Http\Resources\Maintenance\MaintenanceListResource;
 use App\Http\Resources\Maintenance\MaintenancePaginateResource;
+use App\Models\Maintenance;
 use App\Repositories\MaintenanceInputResponseRepository;
 use App\Repositories\MaintenanceRepository;
 use App\Repositories\MaintenanceTypeGroupRepository;
@@ -16,6 +17,8 @@ use App\Repositories\MaintenanceTypeRepository;
 use App\Repositories\VehicleRepository;
 use App\Traits\HttpResponseTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class MaintenanceController extends Controller
@@ -283,7 +286,7 @@ class MaintenanceController extends Controller
 
             ($model->is_active == 1) ? $msg = 'habilitado(a)' : $msg = 'inhabilitado(a)';
 
-            return ['code' => 200, 'message' => 'Vehículo '.$msg.' con éxito'];
+            return ['code' => 200, 'message' => 'Vehículo ' . $msg . ' con éxito'];
         });
     }
 
@@ -301,6 +304,88 @@ class MaintenanceController extends Controller
             return [
                 'code' => 200,
                 'excel' => $excelBase64,
+            ];
+        });
+    }
+
+    public function pdfReportExport(Request $request)
+    {
+        return $this->execute(function () use ($request) {
+            $post = $request->all();
+
+            // 1) Carga todos los mantenimientos con sus relaciones anidadas
+            $maintenance = Maintenance::with([
+                'maintenanceType.maintenanceTypeGroups.maintenanceTypeInputs.maintenanceInputResponses',
+                'vehicle',             // Incluye datos del vehículo
+                'user_operator'             // Incluye datos del operador (relación con user_operator_id)
+            ])
+                ->find($post['maintenance_id']);
+
+            // Recorre los grupos de su tipo de mantenimiento
+            foreach ($maintenance->maintenanceType->maintenanceTypeGroups as $group) {
+                $inputsData = [];
+
+                // Cada input de ese grupo
+                foreach ($group->maintenanceTypeInputs as $input) {
+                    // Buscar la respuesta para este mantenimiento e input
+                    $response = $input->maintenanceInputResponses
+                        ->firstWhere('maintenance_id', $maintenance->id);
+
+                    $inputsData[] = [
+                        'input_id'         => $input->id,
+                        'input_name'       => $input->name,
+                        'response_id'      => $response?->id,
+                        'response_type'   => $response->type ? getResponseMaintenanceInput($response->type) : null,
+                        'response_type_maintenance'   => $response->type_maintenance ? getResponseTypeMaintenance($response->type_maintenance) : null,
+                        'response_comment' => $response?->comment,
+                    ];
+                }
+
+                $typesData[] = [
+                    'group_id'    => $group->id,
+                    'group_name'  => $group->name,
+                    'inputs'      => $inputsData,
+                ];
+            }
+
+            $data = [
+                'maintenance_date' => $maintenance->maintenance_date,
+                'state' => $maintenance->state->name,
+                'city' => $maintenance->city->name,
+                'maintenance_id'   => $maintenance->id,
+                'general_comment'  => $maintenance->general_comment,
+                'status'           => getResponseStatus($maintenance->status),
+                'vehicle' => [
+                    'plate'     => $maintenance->vehicle->license_plate ?? '',
+                    'current_mileage'     => $maintenance->vehicle->current_mileage ?? '',
+                    'brand'     => $maintenance->vehicle->brand_vehicle->name ?? '',
+                    'model'     => $maintenance->vehicle->model ?? '',
+                    'structure' => $maintenance->vehicle->vehicle_structure->name ?? '',
+                ],
+                'operator' => [
+                    'name'     => $maintenance->user_operator->full_name ?? '',
+                    'document' => $maintenance->user_operator->document ?? '',
+                    'license'  => $maintenance->user_operator->license ?? '',
+                ],
+                'groups' => $typesData,
+            ];
+
+            // 4) Genera PDF
+            $pdf = $this->maintenanceRepository
+                ->pdf('Exports.Maintenance.MaintenanceReportExportPdf', $data, is_stream: false);
+            if (! $pdf) {
+                throw new \Exception('Error al generar el PDF');
+            }
+
+            // 5) Guarda y devuelve URL
+            $content  = $pdf->getOriginalContent();
+            $filename = "reporte de mantenimiento {$maintenance->vehicle->license_plate}.pdf";
+            Storage::disk('public')->put($filename, $content);
+            $path = Storage::disk('public')->url($filename);
+
+            return [
+                'code' => 200,
+                'path' => $path,
             ];
         });
     }

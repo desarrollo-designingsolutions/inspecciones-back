@@ -102,13 +102,9 @@
             <tr>
                 <td colspan="4">Licencia de Conducción</td>
                 <td colspan="4">{{ $data['operator']['license'] }}</td>
-                <td colspan="3">RIGIDO</td>
-                <td colspan="1" width="40px" style="text-align: center">
-                    {{ $data['vehicle']['vehicle_structure_name'] == 'Rigido' ? 'X' : null }}
-                </td>
-                <td colspan="3">ARTICULADO</td>
-                <td colspan="1" width="40px" style="text-align: center">
-                    {{ $data['vehicle']['vehicle_structure_name'] == 'Articulado' ? 'X' : null }}
+                <td colspan="4">Estructura del Vehículo</td>
+                <td colspan="4">
+                    {{ $data['vehicle']['vehicle_structure_name'] }}
                 </td>
             </tr>
         </thead>

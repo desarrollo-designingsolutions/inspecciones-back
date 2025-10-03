@@ -24,6 +24,7 @@ class MaintenancePaginateResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'vehicle_id' => $this->vehicle?->id,
             'vehicle_license_plate' => $this->vehicle?->license_plate,
             'maintenance_date' => Carbon::parse($this->maintenance_date)->format('d-m-Y'),
             'vehicle_brand_name' => $this->vehicle?->brand_vehicle?->name,

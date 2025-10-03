@@ -23,6 +23,6 @@ class MaintenanceType extends Model
 
     public function maintenanceTypeGroups(): HasMany
     {
-        return $this->hasMany(MaintenanceTypeGroup::class);
+        return $this->hasMany(MaintenanceTypeGroup::class)->orderBy('order');
     }
 }
