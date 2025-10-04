@@ -47,7 +47,6 @@
       background-color: #00BFFF;
       text-align: center;
       font-weight: bold;
-      color: white;
       padding: 2px;
       font-size: 8px;
     }
@@ -93,7 +92,7 @@
     <thead>
       <tr>
         <td colspan="6">Codigo: GO-F-01</td>
-        <td colspan="6">Fecha: {{ now()->format('Y-m-d') }}</td>
+        <td colspan="6">Fecha: 13/01/2023</td>
         <td colspan="6">Versión 12</td>
         <td colspan="6">Pagina 1 de 1</td>
       </tr>
@@ -147,10 +146,10 @@
             </td>
           </tr>
           <tr>
-            <td colspan="2" class="subheader">ITEM</td>
-            <td colspan="2" class="subheader">OBSERVACIONES</td>
-            <td class="subheader">INSP</td>
-            <td class="subheader">MANT</td>
+            <td colspan="2" class="subheader" style="text-align: center;">ITEM</td>
+            <td colspan="2" class="subheader" style="text-align: center;">OBSERVACIONES</td>
+            <td class="subheader" style="text-align: center;">INSP</td>
+            <td class="subheader" style="text-align: center;">MANT</td>
           </tr>
 
           @foreach($leftGroups[$i]['inputs'] as $input)
@@ -185,10 +184,10 @@
             </td>
           </tr>
           <tr>
-            <td colspan="2" class="subheader">ITEM</td>
-            <td colspan="2" class="subheader">OBSERVACIONES</td>
-            <td class="subheader">INSP</td>
-            <td class="subheader">MANT</td>
+            <td colspan="2" class="subheader" style="text-align: center;">ITEM</td>
+            <td colspan="2" class="subheader" style="text-align: center;">OBSERVACIONES</td>
+            <td class="subheader" style="text-align: center;">INSP</td>
+            <td class="subheader" style="text-align: center;">MANT</td>
           </tr>
 
           @foreach($rightGroups[$i]['inputs'] as $input)
