@@ -3,27 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Authentication\PassportAuthLoginRequest;
-use App\Http\Requests\Authentication\PassportAuthSendResetLinkRequest;
 use App\Http\Requests\Authentication\PassportAuthPasswordResetLinkRequest;
+use App\Http\Requests\Authentication\PassportAuthSendResetLinkRequest;
 use App\Jobs\BrevoProcessSendEmail;
 use App\Models\Role;
 use App\Models\User;
 use App\Repositories\MenuRepository;
 use App\Repositories\UserRepository;
 use App\Services\MailService;
+use App\Traits\HttpResponseTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
-use App\Traits\HttpResponseTrait;
 use Throwable;
 
 class PassportAuthController extends Controller
 {
     use HttpResponseTrait;
-    
+
     private $userRepository;
 
     private $menuRepository;

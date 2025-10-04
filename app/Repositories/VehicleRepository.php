@@ -93,7 +93,7 @@ class VehicleRepository extends BaseRepository
                 }
             })->where(function ($query) use ($request) {
                 if (isset($request['searchQueryInfinite']) && ! empty($request['searchQueryInfinite'])) {
-                    $query->orWhere('license_plate', 'like', '%' . $request['searchQueryInfinite'] . '%');
+                    $query->orWhere('license_plate', 'like', '%'.$request['searchQueryInfinite'].'%');
                 }
             })->orderBy('license_plate', 'asc');
 
@@ -274,7 +274,7 @@ class VehicleRepository extends BaseRepository
 
         // Filtro por año
         if (! empty($request['year'])) {
-            $query->where(DB::raw('YEAR(' . $created_at . ')'), $request['year']);
+            $query->where(DB::raw('YEAR('.$created_at.')'), $request['year']);
         }
     }
 

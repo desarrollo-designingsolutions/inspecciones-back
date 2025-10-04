@@ -95,11 +95,11 @@ class MaintenanceRepository extends BaseRepository
                     foreignKey: 'user_mechanic_id'
                 )),
                 AllowedSort::custom('status', new StatusOldSort($customTypes)),
-                ])->where(function ($query) use ($request) {
-                    if (! empty($request['company_id'])) {
-                        $query->where('maintenances.company_id', $request['company_id']);
-                    }
-                });
+            ])->where(function ($query) use ($request) {
+                if (! empty($request['company_id'])) {
+                    $query->where('maintenances.company_id', $request['company_id']);
+                }
+            });
 
         if (empty($request['typeData'])) {
             $query = $query->paginate(request()->perPage ?? Constants::ITEMS_PER_PAGE);

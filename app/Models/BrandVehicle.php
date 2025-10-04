@@ -20,7 +20,7 @@ class BrandVehicle extends Model
     protected $customCachePrefixes = [
         'string:{table}_list*',
     ];
-    
+
     public function company()
     {
         return $this->belongsTo(Company::class);

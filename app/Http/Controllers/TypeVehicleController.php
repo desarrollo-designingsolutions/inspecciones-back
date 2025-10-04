@@ -159,7 +159,6 @@ class TypeVehicleController extends Controller
                     throw new \Exception('No se puede eliminar el registro, por que tiene relación de datos en otros módulos');
                 }
 
-
                 $typeVehicle->delete();
                 $msg = 'Registro eliminado correctamente';
             } else {
