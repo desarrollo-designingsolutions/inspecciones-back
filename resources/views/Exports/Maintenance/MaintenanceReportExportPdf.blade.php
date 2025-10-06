@@ -142,7 +142,7 @@
         <table class="group-table">
           <tr>
             <td colspan="6" class="group-header" style="text-align: center;">
-              {{ $leftGroups[$i]['group_name'] }}
+             {{ strtoupper($rightGroups[$i]['group_name']) }}
             </td>
           </tr>
           <tr>
@@ -180,7 +180,7 @@
         <table class="group-table">
           <tr>
             <td colspan="6" class="group-header" style="text-align: center;">
-              {{ $rightGroups[$i]['group_name'] }}
+             {{ strtoupper($rightGroups[$i]['group_name']) }}
             </td>
           </tr>
           <tr>
