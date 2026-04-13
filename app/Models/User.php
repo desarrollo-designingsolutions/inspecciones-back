@@ -19,6 +19,8 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use Cacheable, HasApiTokens, HasFactory, HasPermissions, HasRoles,HasUuids,Notifiable,Searchable;
 
+    protected $guard_name = 'api';
+
     /**
      * The attributes that are mass assignable.
      *
